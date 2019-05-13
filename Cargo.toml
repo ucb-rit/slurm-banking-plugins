@@ -1,0 +1,15 @@
+[package]
+name = "plugins"
+version = "0.1.0"
+authors = ["Nicolas Chan <nicolas@nicolaschan.com>"]
+edition = "2018"
+
+[lib]
+name = "job_submit_bank"
+path = "src/job_submit_bank.rs"
+crate-type = ["cdylib"]
+
+[dependencies]
+c_str_macro = "1.0.2"
+libc = "0.2.54"
+reqwest = "0.9.16"
