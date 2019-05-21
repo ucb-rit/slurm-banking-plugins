@@ -2,29 +2,28 @@
 
 __Currently in development - Not ready for use__
 
-Slurm banking plugins provide allocation management to Slurm. The plugins deduct service units for completed and running jobs and prevent jobs from running if there are insufficient service units available. There are two plugins, one running on job submission and the other on job completion. The job completion plugin will reimburse service units if the job ran for less time than was expected based on its submission options.
+Slurm banking plugins provide allocation management to Slurm. The plugins deduct service units for completed and running jobs and prevent jobs from running if there are insufficient service units available. There are two plugins, one running on job submission and the other on job completion. The job completion plugin will reimburse service units if the job ran for less time than was expected based on its submission options. The plugins interact with an HTTP-based API to keep track of service units per account and user.
 
-## Design
+These plugins are written in [Rust](https://www.rust-lang.org), an efficient and memory-safe programming language. It uses [rust-bindgen](https://github.com/rust-lang/rust-bindgen) to automatically generate the Rust foreign function interface (FFI) bindings based on the Slurm C header files.
 
-The plugins interact with an API to keep track of service units per account and user. [slurm-banking-dummy-api](https://github.com/ucb-rit/slurm-banking-dummy-api) is a dummy API for testing the functionality.
+## Build Requirements
+- [Rust](https://www.rust-lang.org/) (including [cargo](https://doc.rust-lang.org/cargo/))
+- [Slurm](https://github.com/SchedMD/slurm) header files
+- [Clang](http://clang.llvm.org/get_started.html) (dependency for [rust-bindgen](https://rust-lang.github.io/rust-bindgen/requirements.html))
+- [OpenSSL](https://www.openssl.org/) (dependency for [reqwest](https://docs.rs/reqwest/0.9.17/reqwest/))
 
-## Usage
+## Building
+If you have all the dependencies, just run `make` :)
 
-### Requirements
-- [rust](https://www.rust-lang.org/)
-- openssl (for a dependency)
+After building, you will find the `.so` files in the same directory as the Makefile.
 
-### Setup
-After building, you will find the `.so` files in `target/{debug,release}`.
-
-```bash
-cargo build
-```
-
-#### NixOS
-On [NixOS](https://nixos.org), I have to run the following to build in order to satisfy the openssl dependency:
+### NixOS
+`shell.nix` provides the environment for development on [NixOS](https://nixos.org). I run the following:
 
 ```bash
-nix-shell -p openssl pkgconfig
-cargo build
+nix-shell 
+make
 ```
+
+## Developing
+I use the [docker-centos7-slurm](https://github.com/giovtorres/docker-centos7-slurm) Docker container as a base, and build the plugins on top of it. `make docker` builds the development container and drops you into a shell where you can test out the plugins by submitting jobs.

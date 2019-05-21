@@ -1,3 +1,0 @@
-[submodule "slurm-banking-dummy-api"]
-	path = slurm-banking-dummy-api
-	url = https://github.com/ucb-rit/slurm-banking-dummy-api.git
