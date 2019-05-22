@@ -17,11 +17,13 @@ mod safe_helpers;
 
 use config::Config;
 use std::collections::HashMap;
+use std::fs::File;
+use std::io::prelude::*;
 use std::os::raw::c_char;
 use std::sync::Mutex;
 
 static PRICES_CONFIG_FILE_PATH: &str = "/etc/slurm/prices";
-static PLUGIN_NAME: &str = "job_submit_bank";
+static PLUGIN_NAME: &str = "jobcomp_bank";
 
 lazy_static! {
     static ref settings: Mutex<Config> = Mutex::new(Config::default());
@@ -34,10 +36,10 @@ unsafe impl Sync for StaticCString {}
 
 // Begin static values required by Slurm
 #[no_mangle]
-pub static plugin_name: StaticCString = StaticCString(b"Slurm bank submit\0" as *const u8);
+pub static plugin_name: StaticCString = StaticCString(b"Slurm bank completion\0" as *const u8);
 
 #[no_mangle]
-pub static plugin_type: StaticCString = StaticCString(b"job_submit/bank\0" as *const u8);
+pub static plugin_type: StaticCString = StaticCString(b"jobcomp/bank\0" as *const u8);
 
 #[no_mangle]
 pub static plugin_version: u32 = SLURM_VERSION_NUMBER;
@@ -74,46 +76,36 @@ pub extern "C" fn init() -> u32 {
 }
 
 #[no_mangle]
-pub extern "C" fn job_submit(
-    job_desc: *const job_descriptor,
-    submit_uid: u32,
-    _error_msg: *mut *const c_char,
-) -> u32 {
-    log("job_submit invoke");
-    let account: String = match safe_helpers::deref_cstr(unsafe { (*job_desc).account }) {
-        Some(account) => account,
-        None => return ESLURM_INVALID_ACCOUNT,
-    };
-    let partition: String = match safe_helpers::deref_cstr(unsafe { (*job_desc).partition }) {
-        Some(partition) => partition,
-        None => return ESLURM_INVALID_PARTITION_NAME,
-    };
-    let max_cpus: u32 = unsafe { (*job_desc).max_cpus };
-    let time_limit_minutes: u32 = unsafe { (*job_desc).time_limit }; // in minutes
-    let max_nodes: u32 = unsafe { (*job_desc).max_nodes };
-
-    log(&format!(
-        "account: {}, partition: {}, max_cpus: {}, time_limit: {}, max_nodes: {}",
-        account, partition, max_cpus, time_limit_minutes, max_nodes
-    ));
-
-    let conf = settings.lock().unwrap();
-    let prices: HashMap<String, String> = conf.get::<HashMap<String, String>>("Prices").unwrap();
-    let expected_cost =
-        match accounting::expected_cost(&partition, max_cpus, time_limit_minutes, &prices) {
-            Some(cost) => cost,
-            None => return ESLURM_INTERNAL,
-        };
-    let deduction = accounting::deduct_service_units(&account, submit_uid, expected_cost);
-
-    log(&format!("expected cost: {:?}", expected_cost));
-    log(&format!("deduction {:?}", deduction));
-
-    SLURM_SUCCESS
+pub extern "C" fn fini() -> u32 {
+    return SLURM_SUCCESS;
 }
 
 #[no_mangle]
-pub extern "C" fn job_modify() -> u32 {
-    println!("Job modified");
+pub extern "C" fn slurm_jobcomp_set_location(location: *const c_char) -> u32 {
+    return SLURM_SUCCESS;
+}
+
+#[no_mangle]
+pub extern "C" fn slurm_jobcomp_log_record(job_ptr: *const job_record) -> u32 {
+    return SLURM_SUCCESS;
+}
+
+#[no_mangle]
+pub extern "C" fn slurm_jobcomp_get_errno() -> u32 {
+    return ESLURM_JOBCOMP_MIN;
+}
+
+#[no_mangle]
+pub extern "C" fn slurm_jobcomp_strerror(errnum: u32) -> *const c_char {
+    return std::ptr::null as *const i8;
+}
+
+#[no_mangle]
+pub extern "C" fn slurm_jobcomp_get_jobs(job_cond: *const slurmdb_job_cond_t) -> List {
+    return std::ptr::null;
+}
+
+#[no_mangle]
+pub extern "C" fn slurm_jobcomp_archive(arch_cond: *const slurmdb_archive_cond_t) -> u32 {
     return SLURM_SUCCESS;
 }

@@ -1,6 +1,7 @@
 plugins: src/*.rs
 	cargo build --release
 	cp target/release/libjob_submit_bank.so job_submit_bank.so
+	cp target/release/libjobcomp_bank.so jobcomp_bank.so
 docker:
 	docker build -f docker/build -t slurm-banking-plugins .
 	docker run -it -h ernie slurm-banking-plugins

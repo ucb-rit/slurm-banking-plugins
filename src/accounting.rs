@@ -1,6 +1,6 @@
 extern crate rust_decimal;
 
-use rust_decimal::Decimal;
+use rust_decimal::{Decimal, RoundingStrategy};
 use std::collections::HashMap;
 use std::str::FromStr;
 
@@ -25,5 +25,5 @@ pub fn expected_cost(
     let time_limit_minutes = Decimal::from(time_limit_minutes);
     let hourly_price = price_per_cpu_hour(partition, prices);
     hourly_price
-        .map(|price| price * max_cpus * time_limit_minutes / Decimal::new(60, 0).round_dp(2))
+        .map(|price| price * max_cpus * time_limit_minutes / Decimal::new(60, 0).round_dp_with_strategy(2, RoundingStrategy::RoundHalfUp))
 }
