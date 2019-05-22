@@ -26,4 +26,6 @@ make
 ```
 
 ## Developing
-I use the [docker-centos7-slurm](https://github.com/giovtorres/docker-centos7-slurm) Docker container as a base, and build the plugins on top of it. `make docker` builds the development container and drops you into a shell where you can test out the plugins by submitting jobs.
+I use the [docker-centos7-slurm](https://github.com/giovtorres/docker-centos7-slurm) Docker container as a base, and build the plugins on top of it. 
+
+`make docker-dev` builds the development container with Slurm plus all the other necessary dependencies for the plugins and drops you into a shell. The code is stored in `/slurm-banking-plugins` in the container. After making your changes, use `make && make install` to compile and install the plugins, then restart Slurm with `supervisorctl restart all`.

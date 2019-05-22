@@ -11,3 +11,6 @@ savio3 = 1.00
 savio3_bigmem = 2.67
 savio3_xlmem = 1.00
 savio3_gpu = 1.00
+
+[API]
+url = "http://localhost:5000"
