@@ -1,0 +1,13 @@
+[Prices]
+savio = 0.75
+savio_bigmem = 1.67
+savio2 = 1.00
+savio2_bigmem = 1.20
+savio2_gpu = 2.67
+savio2_1080ti = 1.67
+savio2_htc = 1.20
+savio2_knl = 0.40
+savio3 = 1.00
+savio3_bigmem = 2.67
+savio3_xlmem = 1.00
+savio3_gpu = 1.00

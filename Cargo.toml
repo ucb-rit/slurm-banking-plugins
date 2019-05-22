@@ -10,7 +10,7 @@ path = "src/job_submit_bank.rs"
 crate-type = ["cdylib"]
 
 [dependencies]
-libc = "0.2.54"
+config = "0.9"
 reqwest = "0.9.16"
 
 [build-dependencies]
