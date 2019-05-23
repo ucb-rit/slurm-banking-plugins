@@ -2,7 +2,6 @@
 extern crate lazy_static;
 
 extern crate config;
-extern crate swagger;
 extern crate rust_decimal;
 extern crate slurm_banking;
 
@@ -58,6 +57,8 @@ pub extern "C" fn job_submit(
     submit_uid: u32,
     _error_msg: *mut *const c_char,
 ) -> u32 {
+    return SLURM_SUCCESS;
+    /*
     log("job_submit invoke");
     let account: String = match safe_helpers::deref_cstr(unsafe { (*job_desc).account }) {
         Some(account) => account,
@@ -88,7 +89,7 @@ pub extern "C" fn job_submit(
     log(&format!("expected cost: {:?}", expected_cost));
     log(&format!("deduction {:?}", deduction));
 
-    SLURM_SUCCESS
+    SLURM_SUCCESS*/
 }
 
 #[no_mangle]

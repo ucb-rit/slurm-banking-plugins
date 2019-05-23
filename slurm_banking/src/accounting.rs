@@ -1,4 +1,5 @@
 extern crate rust_decimal;
+extern crate swagger;
 
 use rust_decimal::{Decimal, RoundingStrategy};
 use std::collections::HashMap;

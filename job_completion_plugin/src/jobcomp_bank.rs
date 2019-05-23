@@ -7,6 +7,7 @@ extern crate slurm_banking;
 
 use slurm_banking::bindings::*;
 use slurm_banking::logging;
+use slurm_banking::safe_helpers;
 
 use config::Config;
 use std::collections::HashMap;
@@ -77,7 +78,12 @@ pub extern "C" fn slurm_jobcomp_set_location(_location: *const c_char) -> u32 {
 }
 
 #[no_mangle]
-pub extern "C" fn slurm_jobcomp_log_record(_job_ptr: *const job_record) -> u32 {
+pub extern "C" fn slurm_jobcomp_log_record(job_ptr: *const job_record) -> u32 {
+    let account: String = match safe_helpers::deref_cstr(unsafe { (*job_ptr).account }) {
+        Some(account) => account,
+        None => return ESLURM_INVALID_ACCOUNT,
+    };
+    log(&account);
     return SLURM_SUCCESS;
 }
 

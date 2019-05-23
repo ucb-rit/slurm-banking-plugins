@@ -9,7 +9,7 @@ jobcomp_bank.so: mybrc_rest_client job_completion_plugin/**/*
 job_submit_bank.so: mybrc_rest_client job_submit_plugin/**/*
 	CPATH=$(SLURM_SOURCE_CODE_DIR):$(CPATH) SLURM_SOURCE_CODE_DIR=$(SLURM_SOURCE_CODE_DIR) $(MAKE) -C job_submit_plugin all
 	cp job_submit_plugin/*.so .
-mybrc_rest_client:
+mybrc_rest_client: spec/swagger.json
 	docker run --rm -v $(shell pwd):/local swaggerapi/swagger-codegen-cli generate \
 		-i /local/spec/swagger.json \
 		-l rust \
@@ -20,6 +20,7 @@ docker: docker/**/* **/*
 	docker build -f docker/build/Dockerfile -t slurm-banking-plugins .
 	docker run -it -h ernie slurm-banking-plugins
 
+.PHONY: docker-dev
 docker-dev: docker/**/* **/*
 	docker build -f docker/dev/Dockerfile -t slurm-banking-plugins-dev .
 	docker run \

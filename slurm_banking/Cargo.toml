@@ -7,6 +7,7 @@ edition = "2018"
 [dependencies]
 config = "0.9"
 rust_decimal = "1.0.1"
+swagger = { path = "../mybrc_rest_client" }
 
 [build-dependencies]
 bindgen = "0.49.0"
