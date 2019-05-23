@@ -13,9 +13,11 @@ These plugins are written in [Rust](https://www.rust-lang.org), an efficient and
 - [OpenSSL](https://www.openssl.org/) (dependency for [reqwest](https://docs.rs/reqwest/0.9.17/reqwest/))
 
 ## Building
-If you have all the dependencies, just run `make` :)
+Since the Slurm `jobcomp` plugins need access to the `"src/common/slurm_jobcomp.h"` header, we need access to the Slurm source code `src` directory in order to build (as well as the normal `<slurm/slurm.h>` headers on the `CPATH`). 
 
-After building, you will find the `.so` files in the same directory as the Makefile.
+1. Edit the path to the path at the top of the Makefile to point to the Slurm source code directory
+2. Once you have all the dependencies, just run `make` :)
+3. After building, you will find the `.so` files in the same directory as the Makefile
 
 ### NixOS
 `shell.nix` provides the environment for development on [NixOS](https://nixos.org). I run the following:
