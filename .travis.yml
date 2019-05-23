@@ -3,7 +3,7 @@ jobs:
   include:
     - stage: build
       script:
-        - git clone https://github.com/SchedMD/slurm.git slurm
+        - git clone https://github.com/SchedMD/slurm.git slurm && pushd slurm && ./configure && popd
         - make
     - stage: build-docker
       script:
