@@ -1,4 +1,10 @@
 language: rust
-script:
-  - git clone https://github.com/SchedMD/slurm.git slurm
-  - make
+jobs:
+  include:
+    - stage: build
+      script:
+        - git clone https://github.com/SchedMD/slurm.git slurm
+        - make
+    - stage: build-docker
+      script:
+        - make docker
