@@ -1,5 +1,7 @@
 # Slurm Banking Plugins
 
+![Travis Build Status](https://travis-ci.org/ucb-rit/slurm-banking-plugins.svg?branch=master)
+
 __Currently in development - Not ready for use__
 
 Slurm banking plugins provide allocation management to Slurm. The plugins deduct service units for completed and running jobs and prevent jobs from running if there are insufficient service units available. There are two plugins, one running on job submission and the other on job completion. The job completion plugin will reimburse service units if the job ran for less time than was expected based on its submission options. The plugins interact with an HTTP-based API to keep track of service units per account and user.
