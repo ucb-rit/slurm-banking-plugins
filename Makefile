@@ -10,7 +10,10 @@ job_submit_bank.so: mybrc_rest_client job_submit_plugin/**/*
 	CPATH=$(SLURM_SOURCE_CODE_DIR):$(CPATH) SLURM_SOURCE_CODE_DIR=$(SLURM_SOURCE_CODE_DIR) $(MAKE) -C job_submit_plugin all
 	cp job_submit_plugin/*.so .
 mybrc_rest_client:
-	swagger-codegen generate -i spec/swagger.json -l rust -o mybrc_rest_client
+	docker run --rm -v $(shell pwd):/local swaggerapi/swagger-codegen-cli generate \
+		-i /local/spec/swagger.json \
+		-l rust \
+		-o /local/mybrc_rest_client
 
 .PHONY: docker
 docker: docker/**/* **/*

@@ -10,11 +10,15 @@
 
 use std::rc::Rc;
 use std::borrow::Borrow;
+use std::borrow::Cow;
+use std::collections::HashMap;
 
 use hyper;
 use serde_json;
 use futures;
 use futures::{Future, Stream};
+
+use hyper::header::UserAgent;
 
 use super::{Error, configuration};
 
@@ -31,187 +35,425 @@ impl<C: hyper::client::Connect> JobsApiClient<C> {
 }
 
 pub trait JobsApi {
-    fn jobs_create(&self, data: ::models::Job) -> Box<Future<Item = ::models::Job, Error = Error>>;
-    fn jobs_delete(&self, jobnumber: i32) -> Box<Future<Item = (), Error = Error>>;
-    fn jobs_list(&self, page: i32) -> Box<Future<Item = ::models::InlineResponse2001, Error = Error>>;
-    fn jobs_partial_update(&self, jobnumber: i32, data: ::models::Job) -> Box<Future<Item = ::models::Job, Error = Error>>;
-    fn jobs_read(&self, jobnumber: i32) -> Box<Future<Item = ::models::Job, Error = Error>>;
-    fn jobs_update(&self, jobnumber: i32, data: ::models::Job) -> Box<Future<Item = ::models::Job, Error = Error>>;
+    fn jobs_create(&self, data: ::models::Job) -> Box<Future<Item = ::models::Job, Error = Error<serde_json::Value>>>;
+    fn jobs_delete(&self, jobnumber: i32) -> Box<Future<Item = (), Error = Error<serde_json::Value>>>;
+    fn jobs_list(&self, page: i32) -> Box<Future<Item = ::models::InlineResponse2001, Error = Error<serde_json::Value>>>;
+    fn jobs_partial_update(&self, jobnumber: i32, data: ::models::Job) -> Box<Future<Item = ::models::Job, Error = Error<serde_json::Value>>>;
+    fn jobs_read(&self, jobnumber: i32) -> Box<Future<Item = ::models::Job, Error = Error<serde_json::Value>>>;
+    fn jobs_update(&self, jobnumber: i32, data: ::models::Job) -> Box<Future<Item = ::models::Job, Error = Error<serde_json::Value>>>;
 }
 
 
 impl<C: hyper::client::Connect>JobsApi for JobsApiClient<C> {
-    fn jobs_create(&self, data: ::models::Job) -> Box<Future<Item = ::models::Job, Error = Error>> {
+    fn jobs_create(&self, data: ::models::Job) -> Box<Future<Item = ::models::Job, Error = Error<serde_json::Value>>> {
         let configuration: &configuration::Configuration<C> = self.configuration.borrow();
 
+        let mut auth_headers = HashMap::<String, String>::new();
+        let mut auth_query = HashMap::<String, String>::new();
+        if let Some(ref auth_conf) = configuration.basic_auth {
+            let auth = hyper::header::Authorization(
+                hyper::header::Basic {
+                    username: auth_conf.0.to_owned(),
+                    password: auth_conf.1.to_owned(),
+                }
+            );
+            auth_headers.insert("Authorization".to_owned(), auth.to_string());
+        };
         let method = hyper::Method::Post;
 
-        let uri_str = format!("{}/jobs/", configuration.base_path);
+        let query_string = {
+            let mut query = ::url::form_urlencoded::Serializer::new(String::new());
+            for (key, val) in &auth_query {
+                query.append_pair(key, val);
+            }
+            query.finish()
+        };
+        let uri_str = format!("{}/jobs/?{}", configuration.base_path, query_string);
 
-        let uri = uri_str.parse();
         // TODO(farcaller): handle error
         // if let Err(e) = uri {
         //     return Box::new(futures::future::err(e));
         // }
-        let mut req = hyper::Request::new(method, uri.unwrap());
+        let mut uri: hyper::Uri = uri_str.parse().unwrap();
+
+        let mut req = hyper::Request::new(method, uri);
+
+        if let Some(ref user_agent) = configuration.user_agent {
+            req.headers_mut().set(UserAgent::new(Cow::Owned(user_agent.clone())));
+        }
 
 
-        let serialized = serde_json::to_string(&body).unwrap();
+        for (key, val) in auth_headers {
+            req.headers_mut().set_raw(key, val);
+        }
+
+        let serialized = serde_json::to_string(&data).unwrap();
         req.headers_mut().set(hyper::header::ContentType::json());
         req.headers_mut().set(hyper::header::ContentLength(serialized.len() as u64));
         req.set_body(serialized);
 
         // send request
         Box::new(
-            configuration.client.request(req).and_then(|res| { res.body().concat2() })
+        configuration.client.request(req)
             .map_err(|e| Error::from(e))
+            .and_then(|resp| {
+                let status = resp.status();
+                resp.body().concat2()
+                    .and_then(move |body| Ok((status, body)))
+                    .map_err(|e| Error::from(e))
+            })
+            .and_then(|(status, body)| {
+                if status.is_success() {
+                    Ok(body)
+                } else {
+                    Err(Error::from((status, &*body)))
+                }
+            })
             .and_then(|body| {
                 let parsed: Result<::models::Job, _> = serde_json::from_slice(&body);
                 parsed.map_err(|e| Error::from(e))
-            }).map_err(|e| Error::from(e))
+            })
         )
     }
 
-    fn jobs_delete(&self, jobnumber: i32) -> Box<Future<Item = (), Error = Error>> {
+    fn jobs_delete(&self, jobnumber: i32) -> Box<Future<Item = (), Error = Error<serde_json::Value>>> {
         let configuration: &configuration::Configuration<C> = self.configuration.borrow();
 
+        let mut auth_headers = HashMap::<String, String>::new();
+        let mut auth_query = HashMap::<String, String>::new();
+        if let Some(ref auth_conf) = configuration.basic_auth {
+            let auth = hyper::header::Authorization(
+                hyper::header::Basic {
+                    username: auth_conf.0.to_owned(),
+                    password: auth_conf.1.to_owned(),
+                }
+            );
+            auth_headers.insert("Authorization".to_owned(), auth.to_string());
+        };
         let method = hyper::Method::Delete;
 
-        let uri_str = format!("{}/jobs/{jobnumber}/", configuration.base_path, jobnumber=jobnumber);
+        let query_string = {
+            let mut query = ::url::form_urlencoded::Serializer::new(String::new());
+            for (key, val) in &auth_query {
+                query.append_pair(key, val);
+            }
+            query.finish()
+        };
+        let uri_str = format!("{}/jobs/{jobnumber}/?{}", configuration.base_path, query_string, jobnumber=jobnumber);
 
-        let uri = uri_str.parse();
         // TODO(farcaller): handle error
         // if let Err(e) = uri {
         //     return Box::new(futures::future::err(e));
         // }
-        let mut req = hyper::Request::new(method, uri.unwrap());
+        let mut uri: hyper::Uri = uri_str.parse().unwrap();
 
+        let mut req = hyper::Request::new(method, uri);
+
+        if let Some(ref user_agent) = configuration.user_agent {
+            req.headers_mut().set(UserAgent::new(Cow::Owned(user_agent.clone())));
+        }
+
+
+        for (key, val) in auth_headers {
+            req.headers_mut().set_raw(key, val);
+        }
 
 
         // send request
         Box::new(
-            configuration.client.request(req).and_then(|res| { res.body().concat2() })
+        configuration.client.request(req)
             .map_err(|e| Error::from(e))
+            .and_then(|resp| {
+                let status = resp.status();
+                resp.body().concat2()
+                    .and_then(move |body| Ok((status, body)))
+                    .map_err(|e| Error::from(e))
+            })
+            .and_then(|(status, body)| {
+                if status.is_success() {
+                    Ok(body)
+                } else {
+                    Err(Error::from((status, &*body)))
+                }
+            })
             .and_then(|_| futures::future::ok(()))
         )
     }
 
-    fn jobs_list(&self, page: i32) -> Box<Future<Item = ::models::InlineResponse2001, Error = Error>> {
+    fn jobs_list(&self, page: i32) -> Box<Future<Item = ::models::InlineResponse2001, Error = Error<serde_json::Value>>> {
         let configuration: &configuration::Configuration<C> = self.configuration.borrow();
 
+        let mut auth_headers = HashMap::<String, String>::new();
+        let mut auth_query = HashMap::<String, String>::new();
+        if let Some(ref auth_conf) = configuration.basic_auth {
+            let auth = hyper::header::Authorization(
+                hyper::header::Basic {
+                    username: auth_conf.0.to_owned(),
+                    password: auth_conf.1.to_owned(),
+                }
+            );
+            auth_headers.insert("Authorization".to_owned(), auth.to_string());
+        };
         let method = hyper::Method::Get;
 
-        let query = ::url::form_urlencoded::Serializer::new(String::new())
-            .append_pair("page", &page.to_string())
-            .finish();
-        let uri_str = format!("{}/jobs/{}", configuration.base_path, query);
+        let query_string = {
+            let mut query = ::url::form_urlencoded::Serializer::new(String::new());
+            query.append_pair("page", &page.to_string());
+            for (key, val) in &auth_query {
+                query.append_pair(key, val);
+            }
+            query.finish()
+        };
+        let uri_str = format!("{}/jobs/?{}", configuration.base_path, query_string);
 
-        let uri = uri_str.parse();
         // TODO(farcaller): handle error
         // if let Err(e) = uri {
         //     return Box::new(futures::future::err(e));
         // }
-        let mut req = hyper::Request::new(method, uri.unwrap());
+        let mut uri: hyper::Uri = uri_str.parse().unwrap();
 
+        let mut req = hyper::Request::new(method, uri);
+
+        if let Some(ref user_agent) = configuration.user_agent {
+            req.headers_mut().set(UserAgent::new(Cow::Owned(user_agent.clone())));
+        }
+
+
+        for (key, val) in auth_headers {
+            req.headers_mut().set_raw(key, val);
+        }
 
 
         // send request
         Box::new(
-            configuration.client.request(req).and_then(|res| { res.body().concat2() })
+        configuration.client.request(req)
             .map_err(|e| Error::from(e))
+            .and_then(|resp| {
+                let status = resp.status();
+                resp.body().concat2()
+                    .and_then(move |body| Ok((status, body)))
+                    .map_err(|e| Error::from(e))
+            })
+            .and_then(|(status, body)| {
+                if status.is_success() {
+                    Ok(body)
+                } else {
+                    Err(Error::from((status, &*body)))
+                }
+            })
             .and_then(|body| {
                 let parsed: Result<::models::InlineResponse2001, _> = serde_json::from_slice(&body);
                 parsed.map_err(|e| Error::from(e))
-            }).map_err(|e| Error::from(e))
+            })
         )
     }
 
-    fn jobs_partial_update(&self, jobnumber: i32, data: ::models::Job) -> Box<Future<Item = ::models::Job, Error = Error>> {
+    fn jobs_partial_update(&self, jobnumber: i32, data: ::models::Job) -> Box<Future<Item = ::models::Job, Error = Error<serde_json::Value>>> {
         let configuration: &configuration::Configuration<C> = self.configuration.borrow();
 
+        let mut auth_headers = HashMap::<String, String>::new();
+        let mut auth_query = HashMap::<String, String>::new();
+        if let Some(ref auth_conf) = configuration.basic_auth {
+            let auth = hyper::header::Authorization(
+                hyper::header::Basic {
+                    username: auth_conf.0.to_owned(),
+                    password: auth_conf.1.to_owned(),
+                }
+            );
+            auth_headers.insert("Authorization".to_owned(), auth.to_string());
+        };
         let method = hyper::Method::Patch;
 
-        let uri_str = format!("{}/jobs/{jobnumber}/", configuration.base_path, jobnumber=jobnumber);
+        let query_string = {
+            let mut query = ::url::form_urlencoded::Serializer::new(String::new());
+            for (key, val) in &auth_query {
+                query.append_pair(key, val);
+            }
+            query.finish()
+        };
+        let uri_str = format!("{}/jobs/{jobnumber}/?{}", configuration.base_path, query_string, jobnumber=jobnumber);
 
-        let uri = uri_str.parse();
         // TODO(farcaller): handle error
         // if let Err(e) = uri {
         //     return Box::new(futures::future::err(e));
         // }
-        let mut req = hyper::Request::new(method, uri.unwrap());
+        let mut uri: hyper::Uri = uri_str.parse().unwrap();
+
+        let mut req = hyper::Request::new(method, uri);
+
+        if let Some(ref user_agent) = configuration.user_agent {
+            req.headers_mut().set(UserAgent::new(Cow::Owned(user_agent.clone())));
+        }
 
 
-        let serialized = serde_json::to_string(&body).unwrap();
+        for (key, val) in auth_headers {
+            req.headers_mut().set_raw(key, val);
+        }
+
+        let serialized = serde_json::to_string(&data).unwrap();
         req.headers_mut().set(hyper::header::ContentType::json());
         req.headers_mut().set(hyper::header::ContentLength(serialized.len() as u64));
         req.set_body(serialized);
 
         // send request
         Box::new(
-            configuration.client.request(req).and_then(|res| { res.body().concat2() })
+        configuration.client.request(req)
             .map_err(|e| Error::from(e))
+            .and_then(|resp| {
+                let status = resp.status();
+                resp.body().concat2()
+                    .and_then(move |body| Ok((status, body)))
+                    .map_err(|e| Error::from(e))
+            })
+            .and_then(|(status, body)| {
+                if status.is_success() {
+                    Ok(body)
+                } else {
+                    Err(Error::from((status, &*body)))
+                }
+            })
             .and_then(|body| {
                 let parsed: Result<::models::Job, _> = serde_json::from_slice(&body);
                 parsed.map_err(|e| Error::from(e))
-            }).map_err(|e| Error::from(e))
+            })
         )
     }
 
-    fn jobs_read(&self, jobnumber: i32) -> Box<Future<Item = ::models::Job, Error = Error>> {
+    fn jobs_read(&self, jobnumber: i32) -> Box<Future<Item = ::models::Job, Error = Error<serde_json::Value>>> {
         let configuration: &configuration::Configuration<C> = self.configuration.borrow();
 
+        let mut auth_headers = HashMap::<String, String>::new();
+        let mut auth_query = HashMap::<String, String>::new();
+        if let Some(ref auth_conf) = configuration.basic_auth {
+            let auth = hyper::header::Authorization(
+                hyper::header::Basic {
+                    username: auth_conf.0.to_owned(),
+                    password: auth_conf.1.to_owned(),
+                }
+            );
+            auth_headers.insert("Authorization".to_owned(), auth.to_string());
+        };
         let method = hyper::Method::Get;
 
-        let uri_str = format!("{}/jobs/{jobnumber}/", configuration.base_path, jobnumber=jobnumber);
+        let query_string = {
+            let mut query = ::url::form_urlencoded::Serializer::new(String::new());
+            for (key, val) in &auth_query {
+                query.append_pair(key, val);
+            }
+            query.finish()
+        };
+        let uri_str = format!("{}/jobs/{jobnumber}/?{}", configuration.base_path, query_string, jobnumber=jobnumber);
 
-        let uri = uri_str.parse();
         // TODO(farcaller): handle error
         // if let Err(e) = uri {
         //     return Box::new(futures::future::err(e));
         // }
-        let mut req = hyper::Request::new(method, uri.unwrap());
+        let mut uri: hyper::Uri = uri_str.parse().unwrap();
 
+        let mut req = hyper::Request::new(method, uri);
+
+        if let Some(ref user_agent) = configuration.user_agent {
+            req.headers_mut().set(UserAgent::new(Cow::Owned(user_agent.clone())));
+        }
+
+
+        for (key, val) in auth_headers {
+            req.headers_mut().set_raw(key, val);
+        }
 
 
         // send request
         Box::new(
-            configuration.client.request(req).and_then(|res| { res.body().concat2() })
+        configuration.client.request(req)
             .map_err(|e| Error::from(e))
+            .and_then(|resp| {
+                let status = resp.status();
+                resp.body().concat2()
+                    .and_then(move |body| Ok((status, body)))
+                    .map_err(|e| Error::from(e))
+            })
+            .and_then(|(status, body)| {
+                if status.is_success() {
+                    Ok(body)
+                } else {
+                    Err(Error::from((status, &*body)))
+                }
+            })
             .and_then(|body| {
                 let parsed: Result<::models::Job, _> = serde_json::from_slice(&body);
                 parsed.map_err(|e| Error::from(e))
-            }).map_err(|e| Error::from(e))
+            })
         )
     }
 
-    fn jobs_update(&self, jobnumber: i32, data: ::models::Job) -> Box<Future<Item = ::models::Job, Error = Error>> {
+    fn jobs_update(&self, jobnumber: i32, data: ::models::Job) -> Box<Future<Item = ::models::Job, Error = Error<serde_json::Value>>> {
         let configuration: &configuration::Configuration<C> = self.configuration.borrow();
 
+        let mut auth_headers = HashMap::<String, String>::new();
+        let mut auth_query = HashMap::<String, String>::new();
+        if let Some(ref auth_conf) = configuration.basic_auth {
+            let auth = hyper::header::Authorization(
+                hyper::header::Basic {
+                    username: auth_conf.0.to_owned(),
+                    password: auth_conf.1.to_owned(),
+                }
+            );
+            auth_headers.insert("Authorization".to_owned(), auth.to_string());
+        };
         let method = hyper::Method::Put;
 
-        let uri_str = format!("{}/jobs/{jobnumber}/", configuration.base_path, jobnumber=jobnumber);
+        let query_string = {
+            let mut query = ::url::form_urlencoded::Serializer::new(String::new());
+            for (key, val) in &auth_query {
+                query.append_pair(key, val);
+            }
+            query.finish()
+        };
+        let uri_str = format!("{}/jobs/{jobnumber}/?{}", configuration.base_path, query_string, jobnumber=jobnumber);
 
-        let uri = uri_str.parse();
         // TODO(farcaller): handle error
         // if let Err(e) = uri {
         //     return Box::new(futures::future::err(e));
         // }
-        let mut req = hyper::Request::new(method, uri.unwrap());
+        let mut uri: hyper::Uri = uri_str.parse().unwrap();
+
+        let mut req = hyper::Request::new(method, uri);
+
+        if let Some(ref user_agent) = configuration.user_agent {
+            req.headers_mut().set(UserAgent::new(Cow::Owned(user_agent.clone())));
+        }
 
 
-        let serialized = serde_json::to_string(&body).unwrap();
+        for (key, val) in auth_headers {
+            req.headers_mut().set_raw(key, val);
+        }
+
+        let serialized = serde_json::to_string(&data).unwrap();
         req.headers_mut().set(hyper::header::ContentType::json());
         req.headers_mut().set(hyper::header::ContentLength(serialized.len() as u64));
         req.set_body(serialized);
 
         // send request
         Box::new(
-            configuration.client.request(req).and_then(|res| { res.body().concat2() })
+        configuration.client.request(req)
             .map_err(|e| Error::from(e))
+            .and_then(|resp| {
+                let status = resp.status();
+                resp.body().concat2()
+                    .and_then(move |body| Ok((status, body)))
+                    .map_err(|e| Error::from(e))
+            })
+            .and_then(|(status, body)| {
+                if status.is_success() {
+                    Ok(body)
+                } else {
+                    Err(Error::from((status, &*body)))
+                }
+            })
             .and_then(|body| {
                 let parsed: Result<::models::Job, _> = serde_json::from_slice(&body);
                 parsed.map_err(|e| Error::from(e))
-            }).map_err(|e| Error::from(e))
+            })
         )
     }
 

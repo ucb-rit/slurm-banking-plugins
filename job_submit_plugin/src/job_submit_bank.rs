@@ -2,6 +2,7 @@
 extern crate lazy_static;
 
 extern crate config;
+extern crate swagger;
 extern crate rust_decimal;
 extern crate slurm_banking;
 

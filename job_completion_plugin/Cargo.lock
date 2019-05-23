@@ -462,6 +462,7 @@ name = "slurm_banking"
 version = "0.1.0"
 dependencies = [
  "bindgen 0.49.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "config 0.9.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "rust_decimal 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
