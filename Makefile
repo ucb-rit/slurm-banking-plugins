@@ -4,10 +4,10 @@ PLUGIN_INSTALL_PREFIX=/usr/lib64/slurm/
 all: jobcomp_bank.so job_submit_bank.so 
 
 jobcomp_bank.so: job_completion_plugin/**/*
-	SLURM_SOURCE_CODE_DIR=$(SLURM_SOURCE_CODE_DIR) $(MAKE) -C job_completion_plugin all
+	CPATH=$(SLURM_SOURCE_CODE_DIR):$(CPATH) SLURM_SOURCE_CODE_DIR=$(SLURM_SOURCE_CODE_DIR) $(MAKE) -C job_completion_plugin all
 	cp job_completion_plugin/*.so .
 job_submit_bank.so: job_submit_plugin/**/*
-	SLURM_SOURCE_CODE_DIR=$(SLURM_SOURCE_CODE_DIR) $(MAKE) -C job_submit_plugin all
+	CPATH=$(SLURM_SOURCE_CODE_DIR):$(CPATH) SLURM_SOURCE_CODE_DIR=$(SLURM_SOURCE_CODE_DIR) $(MAKE) -C job_submit_plugin all
 	cp job_submit_plugin/*.so .
 
 .PHONY: docker
