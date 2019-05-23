@@ -1,13 +1,13 @@
-SLURM_SOURCE_CODE_DIR=/home/nicolas/dev/slurm
+SLURM_SOURCE_CODE_DIR=/slurm
 PLUGIN_INSTALL_PREFIX=/usr/lib64/slurm/
 
 all: jobcomp_bank.so job_submit_bank.so 
 
 jobcomp_bank.so: job_completion_plugin/**/*
-	CPATH=$(SLURM_SOURCE_CODE_DIR):$(CPATH) $(MAKE) -C job_completion_plugin all
+	SLURM_SOURCE_CODE_DIR=$(SLURM_SOURCE_CODE_DIR) $(MAKE) -C job_completion_plugin all
 	cp job_completion_plugin/*.so .
 job_submit_bank.so: job_submit_plugin/**/*
-	CPATH=$(SLURM_SOURCE_CODE_DIR):$(CPATH) $(MAKE) -C job_submit_plugin all
+	SLURM_SOURCE_CODE_DIR=$(SLURM_SOURCE_CODE_DIR) $(MAKE) -C job_submit_plugin all
 	cp job_submit_plugin/*.so .
 
 .PHONY: docker
@@ -17,7 +17,11 @@ docker: docker/**/* **/*
 
 docker-dev: docker/**/* **/*
 	docker build -f docker/dev/Dockerfile -t slurm-banking-plugins-dev .
-	docker run -v $(shell pwd)/src:/slurm-banking-plugins/src -it -h ernie slurm-banking-plugins-dev
+	docker run \
+		-v $(shell pwd)/job_submit_plugin/src:/slurm-banking-plugins/job_submit_plugin/src \
+		-v $(shell pwd)/job_completion_plugin/src:/slurm-banking-plugins/job_completion_plugin/src \
+		-v $(shell pwd)/slurm_banking/src:/slurm-banking-plugins/slurm_banking/src \
+		-it -h ernie slurm-banking-plugins-dev
 	
 install: 
 	cp job_completion_plugin/jobcomp_bank.so $(PLUGIN_INSTALL_PREFIX)/.

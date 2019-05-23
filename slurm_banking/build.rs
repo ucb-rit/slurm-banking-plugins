@@ -7,6 +7,8 @@ use std::path::PathBuf;
 fn main() {
     let bindings = bindgen::Builder::default()
         .blacklist_item("IPPORT_RESERVED") // this is defined twice and causes an error
+        .clang_arg("-I".to_owned() + &env::var("SLURM_SOURCE_CODE_DIR")
+            .expect("Set environment variable SLURM_SOURCE_CODE_DIR to point to the Slurm source code"))
         .header("wrapper.h")
         .rustfmt_bindings(true)
         .generate()

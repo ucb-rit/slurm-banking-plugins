@@ -15,7 +15,6 @@ use std::collections::HashMap;
 use std::os::raw::c_char;
 use std::sync::Mutex;
 
-static PRICES_CONFIG_FILE_PATH: &str = "/etc/slurm/prices";
 static PLUGIN_NAME: &str = "job_submit_bank";
 
 lazy_static! {
@@ -44,28 +43,12 @@ fn log(message: &str) {
 
 // Slurm
 #[no_mangle]
-pub extern "C" fn init() -> u32 {
+pub extern "C" fn init() -> i32 {
     let mut conf = SETTINGS.lock().unwrap();
-    log(&format!(
-        "Looking for config file at {}",
-        PRICES_CONFIG_FILE_PATH
-    ));
-    match conf.merge(config::File::with_name(PRICES_CONFIG_FILE_PATH)) {
-        Ok(_) => {}
-        Err(_) => {
-            log("Could not find config file");
-            return ESLURM_INTERNAL;
-        }
-    };
-    log(&format!(
-        "Using url {:?}",
-        conf.get::<HashMap<String, String>>("Prices")
-    ));
-    log(&format!(
-        "Plugin initialized using the prices config file from {}",
-        PRICES_CONFIG_FILE_PATH
-    ));
-    return SLURM_SUCCESS;
+    match slurm_banking::prices_config::load_config_from_file(&mut conf) {
+        Ok(()) => SLURM_SUCCESS as i32,
+        Err(_) => SLURM_ERROR
+    }
 }
 
 #[no_mangle]

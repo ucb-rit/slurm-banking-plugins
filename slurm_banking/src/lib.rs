@@ -8,13 +8,6 @@ pub mod bindings {
 }
 
 pub mod accounting;
+pub mod prices_config;
 pub mod logging;
 pub mod safe_helpers;
-
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
-    }
-}
