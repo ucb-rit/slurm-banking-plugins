@@ -6,6 +6,3 @@ jobs:
         - rustup component add rustfmt
         - git clone https://github.com/SchedMD/slurm.git slurm && pushd slurm && ./configure && popd
         - make
-    - stage: build-docker
-      script:
-        - make docker
