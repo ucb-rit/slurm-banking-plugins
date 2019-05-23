@@ -1,4 +1,4 @@
-SLURM_SOURCE_CODE_DIR=./slurm
+SLURM_SOURCE_CODE_DIR=$(pwd)/slurm
 PLUGIN_INSTALL_PREFIX=/usr/lib64/slurm/
 
 all: jobcomp_bank.so job_submit_bank.so 
