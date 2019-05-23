@@ -1,0 +1,16 @@
+[package]
+name = "slurm_banking_job_completion_plugin"
+version = "0.1.0"
+authors = ["Nicolas Chan <nicolaschan@berkeley.edu>"]
+edition = "2018"
+
+[lib]
+name = "jobcomp_bank"
+path = "src/jobcomp_bank.rs"
+crate-type = ["cdylib"]
+
+[dependencies]
+config = "0.9"
+lazy_static = "1.3.0"
+rust_decimal = "1.0.1"
+slurm_banking = { path = "../slurm_banking" }
