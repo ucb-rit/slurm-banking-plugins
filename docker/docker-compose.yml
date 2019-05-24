@@ -1,0 +1,9 @@
+version: '3.7'
+
+services:
+  slurm:
+    image: slurm-banking-plugins
+  mybrc-rest:
+    image: mybrc-rest
+    ports:
+      - 8181:8181
