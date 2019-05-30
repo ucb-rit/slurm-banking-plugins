@@ -70,9 +70,16 @@ pub extern "C" fn job_submit(
     let time_limit_minutes: u32 = unsafe { (*job_desc).time_limit }; // in minutes
     let max_nodes: u32 = unsafe { (*job_desc).max_nodes };
 
+    let job_id: u32 = unsafe { (*job_desc).job_id };
+    let user_id: u32 = unsafe { (*job_desc).user_id };
+    let qos: String = match safe_helpers::deref_cstr(unsafe { (*job_desc).qos }) {
+        Some(qos) => qos,
+        None => return ESLURM_INVALID_QOS
+    };
+
     log(&format!(
-        "account: {}, partition: {}, max_cpus: {}, time_limit: {}, max_nodes: {}",
-        account, partition, max_cpus, time_limit_minutes, max_nodes
+        "job_id: {}, user_id: {}, qos: {}, account: {}, partition: {}, max_cpus: {}, time_limit: {}, max_nodes: {}",
+        job_id, user_id, qos, account, partition, max_cpus, time_limit_minutes, max_nodes
     ));
 
     let conf = SETTINGS.lock().unwrap();
