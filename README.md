@@ -12,7 +12,6 @@ These plugins are written in [Rust](https://www.rust-lang.org), an efficient and
 - [Rust](https://www.rust-lang.org/) (including [cargo](https://doc.rust-lang.org/cargo/))
 - [Slurm](https://github.com/SchedMD/slurm) header files
 - [Clang](http://clang.llvm.org/get_started.html) (dependency for [rust-bindgen](https://rust-lang.github.io/rust-bindgen/requirements.html))
-- [OpenSSL](https://www.openssl.org/) (dependency for [reqwest](https://docs.rs/reqwest/0.9.17/reqwest/))
 
 ## Building
 Since the Slurm `jobcomp` plugins need access to the `"src/common/slurm_jobcomp.h"` header, we need access to the Slurm source code `src` directory in order to build (as well as the normal `<slurm/slurm.h>` headers on the `CPATH`). 
@@ -38,8 +37,8 @@ I use the [docker-centos7-slurm](https://github.com/giovtorres/docker-centos7-sl
 ```bash
 docker run --name=mybrc-rest -d -p 8181:8181 mybrc-rest
 docker run \
-  -v (pwd)/job_submit_plugin/src:/slurm-banking-plugins/job_submit_plugin/src \
-  -v (pwd)/job_completion_plugin/src:/slurm-banking-plugins/job_completion_plugin/src \
-  -v (pwd)/slurm_banking/src:/slurm-banking-plugins/slurm_banking/src \
+  -v $(pwd)/job_submit_plugin/src:/slurm-banking-plugins/job_submit_plugin/src \
+  -v $(pwd)/job_completion_plugin/src:/slurm-banking-plugins/job_completion_plugin/src \
+  -v $(pwd)/slurm_banking/src:/slurm-banking-plugins/slurm_banking/src \
   --link mybrc-rest -it -h ernie slurm-banking-plugins-dev
 ```
