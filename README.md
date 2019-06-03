@@ -33,3 +33,13 @@ make
 I use the [docker-centos7-slurm](https://github.com/giovtorres/docker-centos7-slurm) Docker container as a base, and build the plugins on top of it. 
 
 `make docker-dev` builds the development container with Slurm plus all the other necessary dependencies for the plugins and drops you into a shell. The code is stored in `/slurm-banking-plugins` in the container. After making your changes, use `make && make install` to compile and install the plugins, then restart Slurm with `supervisorctl restart all`.
+
+### Testing with myBRC
+```bash
+docker run --name=mybrc-rest -d -p 8181:8181 mybrc-rest
+docker run \
+  -v (pwd)/job_submit_plugin/src:/slurm-banking-plugins/job_submit_plugin/src \
+  -v (pwd)/job_completion_plugin/src:/slurm-banking-plugins/job_completion_plugin/src \
+  -v (pwd)/slurm_banking/src:/slurm-banking-plugins/slurm_banking/src \
+  --link mybrc-rest -it -h ernie slurm-banking-plugins-dev
+```
