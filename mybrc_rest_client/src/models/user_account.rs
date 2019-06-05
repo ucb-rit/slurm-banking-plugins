@@ -21,19 +21,16 @@ pub struct UserAccount {
   #[serde(rename = "accountid")]
   accountid: Option<String>,
   #[serde(rename = "userallocation")]
-  userallocation: i32,
-  #[serde(rename = "userbalance")]
-  userbalance: i32
+  userallocation: i32
 }
 
 impl UserAccount {
-  pub fn new(userallocation: i32, userbalance: i32) -> UserAccount {
+  pub fn new(userallocation: i32) -> UserAccount {
     UserAccount {
       useraccountassociationid: None,
       userid: None,
       accountid: None,
-      userallocation: userallocation,
-      userbalance: userbalance
+      userallocation: userallocation
     }
   }
 
@@ -99,20 +96,6 @@ impl UserAccount {
 
   pub fn userallocation(&self) -> &i32 {
     &self.userallocation
-  }
-
-
-  pub fn set_userbalance(&mut self, userbalance: i32) {
-    self.userbalance = userbalance;
-  }
-
-  pub fn with_userbalance(mut self, userbalance: i32) -> UserAccount {
-    self.userbalance = userbalance;
-    self
-  }
-
-  pub fn userbalance(&self) -> &i32 {
-    &self.userbalance
   }
 
 

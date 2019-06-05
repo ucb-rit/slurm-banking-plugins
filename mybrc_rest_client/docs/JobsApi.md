@@ -1,15 +1,15 @@
 # \JobsApi
 
-All URIs are relative to *http://localhost:8181*
+All URIs are relative to *http://localhost:8880/mybrc-rest*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**jobs_create**](JobsApi.md#jobs_create) | **Post** /jobs/ | 
-[**jobs_delete**](JobsApi.md#jobs_delete) | **Delete** /jobs/{jobnumber}/ | 
+[**jobs_delete**](JobsApi.md#jobs_delete) | **Delete** /jobs/{jobslurmid}/ | 
 [**jobs_list**](JobsApi.md#jobs_list) | **Get** /jobs/ | 
-[**jobs_partial_update**](JobsApi.md#jobs_partial_update) | **Patch** /jobs/{jobnumber}/ | 
-[**jobs_read**](JobsApi.md#jobs_read) | **Get** /jobs/{jobnumber}/ | 
-[**jobs_update**](JobsApi.md#jobs_update) | **Put** /jobs/{jobnumber}/ | 
+[**jobs_partial_update**](JobsApi.md#jobs_partial_update) | **Patch** /jobs/{jobslurmid}/ | 
+[**jobs_read**](JobsApi.md#jobs_read) | **Get** /jobs/{jobslurmid}/ | 
+[**jobs_update**](JobsApi.md#jobs_update) | **Put** /jobs/{jobslurmid}/ | 
 
 
 # **jobs_create**
@@ -41,7 +41,7 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **jobs_delete**
-> jobs_delete(ctx, jobnumber)
+> jobs_delete(ctx, jobslurmid)
 
 
 ViewSet for /api/jobs/
@@ -51,7 +51,7 @@ ViewSet for /api/jobs/
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context containing the authentication | nil if no authentication
-  **jobnumber** | **i32**| A unique integer value identifying this job. | 
+  **jobslurmid** | **String**| A unique value identifying this job. | 
 
 ### Return type
 
@@ -104,7 +104,7 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **jobs_partial_update**
-> ::models::Job jobs_partial_update(ctx, jobnumber, data)
+> ::models::Job jobs_partial_update(ctx, jobslurmid, data)
 
 
 ViewSet for /api/jobs/
@@ -114,7 +114,7 @@ ViewSet for /api/jobs/
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context containing the authentication | nil if no authentication
-  **jobnumber** | **i32**| A unique integer value identifying this job. | 
+  **jobslurmid** | **String**| A unique value identifying this job. | 
   **data** | [**Job**](Job.md)|  | 
 
 ### Return type
@@ -133,7 +133,7 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **jobs_read**
-> ::models::Job jobs_read(ctx, jobnumber)
+> ::models::Job jobs_read(ctx, jobslurmid)
 
 
 Get one Job.
@@ -143,7 +143,7 @@ Get one Job.
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context containing the authentication | nil if no authentication
-  **jobnumber** | **i32**| A unique integer value identifying this job. | 
+  **jobslurmid** | **String**| A unique value identifying this job. | 
 
 ### Return type
 
@@ -161,7 +161,7 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **jobs_update**
-> ::models::Job jobs_update(ctx, jobnumber, data)
+> ::models::Job jobs_update(ctx, jobslurmid, data)
 
 
 ViewSet for /api/jobs/
@@ -171,7 +171,7 @@ ViewSet for /api/jobs/
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context containing the authentication | nil if no authentication
-  **jobnumber** | **i32**| A unique integer value identifying this job. | 
+  **jobslurmid** | **String**| A unique value identifying this job. | 
   **data** | [**Job**](Job.md)|  | 
 
 ### Return type

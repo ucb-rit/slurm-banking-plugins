@@ -37,7 +37,7 @@ impl<C: hyper::client::Connect> UseraccountassociationsApiClient<C> {
 pub trait UseraccountassociationsApi {
     fn useraccountassociations_list(&self, page: i32) -> Box<Future<Item = ::models::InlineResponse2002, Error = Error<serde_json::Value>>>;
     fn useraccountassociations_partial_update(&self, id: i32, data: ::models::UserAccount) -> Box<Future<Item = ::models::UserAccount, Error = Error<serde_json::Value>>>;
-    fn useraccountassociations_read(&self, id: i32) -> Box<Future<Item = ::models::UserAccount, Error = Error<serde_json::Value>>>;
+    fn useraccountassociations_read(&self, id: i32, username: &str, account_id: &str) -> Box<Future<Item = ::models::UserAccount, Error = Error<serde_json::Value>>>;
     fn useraccountassociations_update(&self, id: i32, data: ::models::UserAccount) -> Box<Future<Item = ::models::UserAccount, Error = Error<serde_json::Value>>>;
 }
 
@@ -182,7 +182,7 @@ impl<C: hyper::client::Connect>UseraccountassociationsApi for Useraccountassocia
         )
     }
 
-    fn useraccountassociations_read(&self, id: i32) -> Box<Future<Item = ::models::UserAccount, Error = Error<serde_json::Value>>> {
+    fn useraccountassociations_read(&self, id: i32, username: &str, account_id: &str) -> Box<Future<Item = ::models::UserAccount, Error = Error<serde_json::Value>>> {
         let configuration: &configuration::Configuration<C> = self.configuration.borrow();
 
         let mut auth_headers = HashMap::<String, String>::new();
@@ -200,6 +200,8 @@ impl<C: hyper::client::Connect>UseraccountassociationsApi for Useraccountassocia
 
         let query_string = {
             let mut query = ::url::form_urlencoded::Serializer::new(String::new());
+            query.append_pair("username", &username.to_string());
+            query.append_pair("account_id", &account_id.to_string());
             for (key, val) in &auth_query {
                 query.append_pair(key, val);
             }

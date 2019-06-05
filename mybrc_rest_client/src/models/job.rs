@@ -14,10 +14,8 @@ use serde_json::Value;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Job {
-  #[serde(rename = "jobnumber")]
-  jobnumber: Option<i32>,
   #[serde(rename = "jobslurmid")]
-  jobslurmid: i32,
+  jobslurmid: String,
   #[serde(rename = "submitdate")]
   submitdate: String,
   #[serde(rename = "startdate")]
@@ -25,17 +23,17 @@ pub struct Job {
   #[serde(rename = "enddate")]
   enddate: Option<String>,
   #[serde(rename = "userid")]
-  userid: i32,
+  userid: String,
   #[serde(rename = "accountid")]
-  accountid: i32,
+  accountid: String,
   #[serde(rename = "amount")]
   amount: String,
   #[serde(rename = "jobstatus")]
-  jobstatus: i32,
+  jobstatus: String,
   #[serde(rename = "partition")]
-  partition: i32,
+  partition: String,
   #[serde(rename = "qos")]
-  qos: i32,
+  qos: String,
   #[serde(rename = "created")]
   created: Option<String>,
   #[serde(rename = "updated")]
@@ -43,9 +41,8 @@ pub struct Job {
 }
 
 impl Job {
-  pub fn new(jobslurmid: i32, submitdate: String, userid: i32, accountid: i32, amount: String, jobstatus: i32, partition: i32, qos: i32) -> Job {
+  pub fn new(jobslurmid: String, submitdate: String, userid: String, accountid: String, amount: String, jobstatus: String, partition: String, qos: String) -> Job {
     Job {
-      jobnumber: None,
       jobslurmid: jobslurmid,
       submitdate: submitdate,
       startdate: None,
@@ -61,33 +58,16 @@ impl Job {
     }
   }
 
-  pub fn set_jobnumber(&mut self, jobnumber: i32) {
-    self.jobnumber = Some(jobnumber);
-  }
-
-  pub fn with_jobnumber(mut self, jobnumber: i32) -> Job {
-    self.jobnumber = Some(jobnumber);
-    self
-  }
-
-  pub fn jobnumber(&self) -> Option<&i32> {
-    self.jobnumber.as_ref()
-  }
-
-  pub fn reset_jobnumber(&mut self) {
-    self.jobnumber = None;
-  }
-
-  pub fn set_jobslurmid(&mut self, jobslurmid: i32) {
+  pub fn set_jobslurmid(&mut self, jobslurmid: String) {
     self.jobslurmid = jobslurmid;
   }
 
-  pub fn with_jobslurmid(mut self, jobslurmid: i32) -> Job {
+  pub fn with_jobslurmid(mut self, jobslurmid: String) -> Job {
     self.jobslurmid = jobslurmid;
     self
   }
 
-  pub fn jobslurmid(&self) -> &i32 {
+  pub fn jobslurmid(&self) -> &String {
     &self.jobslurmid
   }
 
@@ -140,30 +120,30 @@ impl Job {
     self.enddate = None;
   }
 
-  pub fn set_userid(&mut self, userid: i32) {
+  pub fn set_userid(&mut self, userid: String) {
     self.userid = userid;
   }
 
-  pub fn with_userid(mut self, userid: i32) -> Job {
+  pub fn with_userid(mut self, userid: String) -> Job {
     self.userid = userid;
     self
   }
 
-  pub fn userid(&self) -> &i32 {
+  pub fn userid(&self) -> &String {
     &self.userid
   }
 
 
-  pub fn set_accountid(&mut self, accountid: i32) {
+  pub fn set_accountid(&mut self, accountid: String) {
     self.accountid = accountid;
   }
 
-  pub fn with_accountid(mut self, accountid: i32) -> Job {
+  pub fn with_accountid(mut self, accountid: String) -> Job {
     self.accountid = accountid;
     self
   }
 
-  pub fn accountid(&self) -> &i32 {
+  pub fn accountid(&self) -> &String {
     &self.accountid
   }
 
@@ -182,44 +162,44 @@ impl Job {
   }
 
 
-  pub fn set_jobstatus(&mut self, jobstatus: i32) {
+  pub fn set_jobstatus(&mut self, jobstatus: String) {
     self.jobstatus = jobstatus;
   }
 
-  pub fn with_jobstatus(mut self, jobstatus: i32) -> Job {
+  pub fn with_jobstatus(mut self, jobstatus: String) -> Job {
     self.jobstatus = jobstatus;
     self
   }
 
-  pub fn jobstatus(&self) -> &i32 {
+  pub fn jobstatus(&self) -> &String {
     &self.jobstatus
   }
 
 
-  pub fn set_partition(&mut self, partition: i32) {
+  pub fn set_partition(&mut self, partition: String) {
     self.partition = partition;
   }
 
-  pub fn with_partition(mut self, partition: i32) -> Job {
+  pub fn with_partition(mut self, partition: String) -> Job {
     self.partition = partition;
     self
   }
 
-  pub fn partition(&self) -> &i32 {
+  pub fn partition(&self) -> &String {
     &self.partition
   }
 
 
-  pub fn set_qos(&mut self, qos: i32) {
+  pub fn set_qos(&mut self, qos: String) {
     self.qos = qos;
   }
 
-  pub fn with_qos(mut self, qos: i32) -> Job {
+  pub fn with_qos(mut self, qos: String) -> Job {
     self.qos = qos;
     self
   }
 
-  pub fn qos(&self) -> &i32 {
+  pub fn qos(&self) -> &String {
     &self.qos
   }
 

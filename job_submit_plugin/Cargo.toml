@@ -10,7 +10,9 @@ path = "src/job_submit_bank.rs"
 crate-type = ["cdylib"]
 
 [dependencies]
+chrono = "0.4"
 config = "0.9"
 lazy_static = "1.3.0"
 rust_decimal = "1.0.1"
 slurm_banking = { path = "../slurm_banking" }
+swagger = { path = "../mybrc_rest_client" }

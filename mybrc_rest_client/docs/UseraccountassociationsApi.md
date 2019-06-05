@@ -1,6 +1,6 @@
 # \UseraccountassociationsApi
 
-All URIs are relative to *http://localhost:8181*
+All URIs are relative to *http://localhost:8880/mybrc-rest*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
@@ -75,10 +75,10 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **useraccountassociations_read**
-> ::models::UserAccount useraccountassociations_read(ctx, id)
+> ::models::UserAccount useraccountassociations_read(ctx, id, optional)
 
 
-Get one UserAccountAssociation.
+Filler description.
 
 ### Required Parameters
 
@@ -86,6 +86,16 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context containing the authentication | nil if no authentication
   **id** | **i32**| A unique integer value identifying this Active User Project Link. | 
+ **optional** | **map[string]interface{}** | optional parameters | nil if no parameters
+
+### Optional Parameters
+Optional parameters are passed through a map[string]interface{}.
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **id** | **i32**| A unique integer value identifying this Active User Project Link. | 
+ **username** | **String**| Filler description. | 
+ **account_id** | **String**| Filler description. | 
 
 ### Return type
 

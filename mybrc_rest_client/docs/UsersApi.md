@@ -1,6 +1,6 @@
 # \UsersApi
 
-All URIs are relative to *http://localhost:8181*
+All URIs are relative to *http://localhost:8880/mybrc-rest*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------

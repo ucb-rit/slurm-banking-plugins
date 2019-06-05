@@ -17,18 +17,18 @@ Put the package under your project folder and add the following in import:
 
 ## Documentation for API Endpoints
 
-All URIs are relative to *http://localhost:8181*
+All URIs are relative to *http://localhost:8880/mybrc-rest*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
 *AccountsApi* | [**accounts_list**](docs/AccountsApi.md#accounts_list) | **Get** /accounts/ | 
 *AccountsApi* | [**accounts_read**](docs/AccountsApi.md#accounts_read) | **Get** /accounts/{name}/ | 
 *JobsApi* | [**jobs_create**](docs/JobsApi.md#jobs_create) | **Post** /jobs/ | 
-*JobsApi* | [**jobs_delete**](docs/JobsApi.md#jobs_delete) | **Delete** /jobs/{jobnumber}/ | 
+*JobsApi* | [**jobs_delete**](docs/JobsApi.md#jobs_delete) | **Delete** /jobs/{jobslurmid}/ | 
 *JobsApi* | [**jobs_list**](docs/JobsApi.md#jobs_list) | **Get** /jobs/ | 
-*JobsApi* | [**jobs_partial_update**](docs/JobsApi.md#jobs_partial_update) | **Patch** /jobs/{jobnumber}/ | 
-*JobsApi* | [**jobs_read**](docs/JobsApi.md#jobs_read) | **Get** /jobs/{jobnumber}/ | 
-*JobsApi* | [**jobs_update**](docs/JobsApi.md#jobs_update) | **Put** /jobs/{jobnumber}/ | 
+*JobsApi* | [**jobs_partial_update**](docs/JobsApi.md#jobs_partial_update) | **Patch** /jobs/{jobslurmid}/ | 
+*JobsApi* | [**jobs_read**](docs/JobsApi.md#jobs_read) | **Get** /jobs/{jobslurmid}/ | 
+*JobsApi* | [**jobs_update**](docs/JobsApi.md#jobs_update) | **Put** /jobs/{jobslurmid}/ | 
 *UseraccountassociationsApi* | [**useraccountassociations_list**](docs/UseraccountassociationsApi.md#useraccountassociations_list) | **Get** /useraccountassociations/ | 
 *UseraccountassociationsApi* | [**useraccountassociations_partial_update**](docs/UseraccountassociationsApi.md#useraccountassociations_partial_update) | **Patch** /useraccountassociations/{id}/ | 
 *UseraccountassociationsApi* | [**useraccountassociations_read**](docs/UseraccountassociationsApi.md#useraccountassociations_read) | **Get** /useraccountassociations/{id}/ | 

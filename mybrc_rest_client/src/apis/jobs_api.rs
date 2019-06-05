@@ -36,11 +36,11 @@ impl<C: hyper::client::Connect> JobsApiClient<C> {
 
 pub trait JobsApi {
     fn jobs_create(&self, data: ::models::Job) -> Box<Future<Item = ::models::Job, Error = Error<serde_json::Value>>>;
-    fn jobs_delete(&self, jobnumber: i32) -> Box<Future<Item = (), Error = Error<serde_json::Value>>>;
+    fn jobs_delete(&self, jobslurmid: &str) -> Box<Future<Item = (), Error = Error<serde_json::Value>>>;
     fn jobs_list(&self, page: i32) -> Box<Future<Item = ::models::InlineResponse2001, Error = Error<serde_json::Value>>>;
-    fn jobs_partial_update(&self, jobnumber: i32, data: ::models::Job) -> Box<Future<Item = ::models::Job, Error = Error<serde_json::Value>>>;
-    fn jobs_read(&self, jobnumber: i32) -> Box<Future<Item = ::models::Job, Error = Error<serde_json::Value>>>;
-    fn jobs_update(&self, jobnumber: i32, data: ::models::Job) -> Box<Future<Item = ::models::Job, Error = Error<serde_json::Value>>>;
+    fn jobs_partial_update(&self, jobslurmid: &str, data: ::models::Job) -> Box<Future<Item = ::models::Job, Error = Error<serde_json::Value>>>;
+    fn jobs_read(&self, jobslurmid: &str) -> Box<Future<Item = ::models::Job, Error = Error<serde_json::Value>>>;
+    fn jobs_update(&self, jobslurmid: &str, data: ::models::Job) -> Box<Future<Item = ::models::Job, Error = Error<serde_json::Value>>>;
 }
 
 
@@ -116,7 +116,7 @@ impl<C: hyper::client::Connect>JobsApi for JobsApiClient<C> {
         )
     }
 
-    fn jobs_delete(&self, jobnumber: i32) -> Box<Future<Item = (), Error = Error<serde_json::Value>>> {
+    fn jobs_delete(&self, jobslurmid: &str) -> Box<Future<Item = (), Error = Error<serde_json::Value>>> {
         let configuration: &configuration::Configuration<C> = self.configuration.borrow();
 
         let mut auth_headers = HashMap::<String, String>::new();
@@ -139,7 +139,7 @@ impl<C: hyper::client::Connect>JobsApi for JobsApiClient<C> {
             }
             query.finish()
         };
-        let uri_str = format!("{}/jobs/{jobnumber}/?{}", configuration.base_path, query_string, jobnumber=jobnumber);
+        let uri_str = format!("{}/jobs/{jobslurmid}/?{}", configuration.base_path, query_string, jobslurmid=jobslurmid);
 
         // TODO(farcaller): handle error
         // if let Err(e) = uri {
@@ -248,7 +248,7 @@ impl<C: hyper::client::Connect>JobsApi for JobsApiClient<C> {
         )
     }
 
-    fn jobs_partial_update(&self, jobnumber: i32, data: ::models::Job) -> Box<Future<Item = ::models::Job, Error = Error<serde_json::Value>>> {
+    fn jobs_partial_update(&self, jobslurmid: &str, data: ::models::Job) -> Box<Future<Item = ::models::Job, Error = Error<serde_json::Value>>> {
         let configuration: &configuration::Configuration<C> = self.configuration.borrow();
 
         let mut auth_headers = HashMap::<String, String>::new();
@@ -271,7 +271,7 @@ impl<C: hyper::client::Connect>JobsApi for JobsApiClient<C> {
             }
             query.finish()
         };
-        let uri_str = format!("{}/jobs/{jobnumber}/?{}", configuration.base_path, query_string, jobnumber=jobnumber);
+        let uri_str = format!("{}/jobs/{jobslurmid}/?{}", configuration.base_path, query_string, jobslurmid=jobslurmid);
 
         // TODO(farcaller): handle error
         // if let Err(e) = uri {
@@ -319,7 +319,7 @@ impl<C: hyper::client::Connect>JobsApi for JobsApiClient<C> {
         )
     }
 
-    fn jobs_read(&self, jobnumber: i32) -> Box<Future<Item = ::models::Job, Error = Error<serde_json::Value>>> {
+    fn jobs_read(&self, jobslurmid: &str) -> Box<Future<Item = ::models::Job, Error = Error<serde_json::Value>>> {
         let configuration: &configuration::Configuration<C> = self.configuration.borrow();
 
         let mut auth_headers = HashMap::<String, String>::new();
@@ -342,7 +342,7 @@ impl<C: hyper::client::Connect>JobsApi for JobsApiClient<C> {
             }
             query.finish()
         };
-        let uri_str = format!("{}/jobs/{jobnumber}/?{}", configuration.base_path, query_string, jobnumber=jobnumber);
+        let uri_str = format!("{}/jobs/{jobslurmid}/?{}", configuration.base_path, query_string, jobslurmid=jobslurmid);
 
         // TODO(farcaller): handle error
         // if let Err(e) = uri {
@@ -386,7 +386,7 @@ impl<C: hyper::client::Connect>JobsApi for JobsApiClient<C> {
         )
     }
 
-    fn jobs_update(&self, jobnumber: i32, data: ::models::Job) -> Box<Future<Item = ::models::Job, Error = Error<serde_json::Value>>> {
+    fn jobs_update(&self, jobslurmid: &str, data: ::models::Job) -> Box<Future<Item = ::models::Job, Error = Error<serde_json::Value>>> {
         let configuration: &configuration::Configuration<C> = self.configuration.borrow();
 
         let mut auth_headers = HashMap::<String, String>::new();
@@ -409,7 +409,7 @@ impl<C: hyper::client::Connect>JobsApi for JobsApiClient<C> {
             }
             query.finish()
         };
-        let uri_str = format!("{}/jobs/{jobnumber}/?{}", configuration.base_path, query_string, jobnumber=jobnumber);
+        let uri_str = format!("{}/jobs/{jobslurmid}/?{}", configuration.base_path, query_string, jobslurmid=jobslurmid);
 
         // TODO(farcaller): handle error
         // if let Err(e) = uri {

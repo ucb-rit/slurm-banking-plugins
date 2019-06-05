@@ -4,6 +4,7 @@ extern crate lazy_static;
 extern crate config;
 extern crate rust_decimal;
 extern crate slurm_banking;
+extern crate swagger;
 
 use slurm_banking::accounting;
 use slurm_banking::bindings::*;
@@ -11,6 +12,7 @@ use slurm_banking::logging;
 use slurm_banking::safe_helpers;
 
 use config::Config;
+use chrono::prelude::Utc;
 use std::collections::HashMap;
 use std::os::raw::c_char;
 use std::sync::Mutex;
@@ -58,30 +60,36 @@ pub extern "C" fn job_submit(
     _error_msg: *mut *const c_char,
 ) -> u32 {
     log("job_submit invoke");
-    let account: String = match safe_helpers::deref_cstr(unsafe { (*job_desc).account }) {
-        Some(account) => account,
-        None => return ESLURM_INVALID_ACCOUNT,
-    };
-    let partition: String = match safe_helpers::deref_cstr(unsafe { (*job_desc).partition }) {
-        Some(partition) => partition,
-        None => return ESLURM_INVALID_PARTITION_NAME,
-    };
     let max_cpus: u32 = unsafe { (*job_desc).max_cpus };
     let time_limit_minutes: u32 = unsafe { (*job_desc).time_limit }; // in minutes
     let max_nodes: u32 = unsafe { (*job_desc).max_nodes };
 
-    let job_id: u32 = unsafe { (*job_desc).job_id };
-    let user_id: u32 = unsafe { (*job_desc).user_id };
+    let jobslurmid = match safe_helpers::deref_cstr(unsafe { (*job_desc).job_id_str }) {
+        Some(jobslurmid) => jobslurmid,
+        None => return ESLURM_INVALID_JOB_ID
+    };
+    let submitdate = Utc::now().to_rfc3339();
+    let userid: u32 = unsafe { (*job_desc).user_id };
+    let account: String = match safe_helpers::deref_cstr(unsafe { (*job_desc).account }) {
+        Some(account) => account,
+        None => return ESLURM_INVALID_ACCOUNT,
+    };
+    let amount: String = "0".to_string();
+    let job_status: String = "".to_string();
+    let partition: String = match safe_helpers::deref_cstr(unsafe { (*job_desc).partition }) {
+        Some(partition) => partition,
+        None => return ESLURM_INVALID_PARTITION_NAME,
+    };
     let qos: String = match safe_helpers::deref_cstr(unsafe { (*job_desc).qos }) {
         Some(qos) => qos,
         None => return ESLURM_INVALID_QOS
     };
 
-    log(&format!(
-        "job_id: {}, user_id: {}, qos: {}, account: {}, partition: {}, max_cpus: {}, time_limit: {}, max_nodes: {}",
-        job_id, user_id, qos, account, partition, max_cpus, time_limit_minutes, max_nodes
-    ));
+    let job = swagger::models::Job::new(jobslurmid, submitdate, userid.to_string(), account, amount, job_status, partition, qos);
 
+    log(&format!("{:?}", job));
+
+    /*
     let conf = SETTINGS.lock().unwrap();
     let prices: HashMap<String, String> = conf.get::<HashMap<String, String>>("Prices").unwrap();
     let expected_cost =
@@ -93,6 +101,7 @@ pub extern "C" fn job_submit(
 
     log(&format!("expected cost: {:?}", expected_cost));
     log(&format!("deduction {:?}", deduction));
+    */
 
     SLURM_SUCCESS
 }
