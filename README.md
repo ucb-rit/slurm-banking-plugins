@@ -22,6 +22,18 @@ Since the Slurm `jobcomp` plugins need access to the `"src/common/slurm_jobcomp.
 2. Once you have all the dependencies, just run `make` :)
 3. After building, you will find the `.so` files in the same directory as the Makefile.
 
+### On Savio
+```bash
+# After installing Rust (using rustup)...
+module load clang
+git clone https://github.com/ucb-rit/slurm-banking-plugins.git && cd slurm-banking-plugins
+rmdir slurm && ln -s /path/to/slurm/source slurm # Point to slurm source
+make
+make install
+vim /etc/slurm/slurm.conf # Edit slurm.conf
+cp prices.toml /etc/slurm/prices.toml
+```
+
 ### NixOS
 `shell.nix` provides the environment for development on [NixOS](https://nixos.org). I run the following:
 
