@@ -3,5 +3,4 @@ jobs:
   include:
     - stage: build
       script:
-        - rustup component add rustfmt
         - make
