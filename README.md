@@ -4,7 +4,7 @@
 
 __Currently in development - Not ready for use__
 
-Slurm banking plugins provide allocation management to Slurm. The plugins deduct service units for completed and running jobs and prevent jobs from running if there are insufficient service units available. There are two plugins, one running on job submission and the other on job completion. The job completion plugin will reimburse service units if the job ran for less time than was expected based on its submission options. The plugins interact with an HTTP-based API to keep track of service units per account and user.
+Slurm banking plugins provide allocation management to Slurm. The plugins deduct service units for completed and running jobs and prevent jobs from running if there are insufficient service units available. There are two plugins, one running on job submission and the other on job completion. The job completion plugin will reimburse service units if the job ran for less time than was expected based on its submission options. The plugins interact with a REST API (provided by mybrc-rest) to keep track of the jobs and account balances.
 
 These plugins are written in [Rust](https://www.rust-lang.org), an efficient and memory-safe programming language. It uses [rust-bindgen](https://github.com/rust-lang/rust-bindgen) to automatically generate the Rust foreign function interface (FFI) bindings based on the Slurm C header files.
 
