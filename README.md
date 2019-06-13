@@ -77,16 +77,13 @@ Current banking interaction is through two simple calls:
 
 #### Build mybrc-rest Docker image from scgup
 ```bash
+# Build mybrc-rest Docker image from scgup
 docker build -f Dockerfile.mybrc-rest -t mybrc-rest
-```
 
-#### Build slurm-banking-plugins-dev image
-```bash
+# Build slurm-banking-plugins-dev image
 make docker-dev
-```
 
-#### Launch containers
-```bash
+# Launch containers
 docker run --name=mybrc-rest -d -p 8181:8181 mybrc-rest
 docker run \
   -v $(pwd)/job_submit_plugin/src:/slurm-banking-plugins/job_submit_plugin/src \
