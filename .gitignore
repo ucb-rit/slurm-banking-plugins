@@ -1,3 +1,4 @@
 target
 *.so
 .vscode
+slurm/*

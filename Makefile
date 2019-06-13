@@ -4,8 +4,7 @@ PLUGIN_INSTALL_PREFIX=/usr/lib64/slurm/
 all: jobcomp_bank.so job_submit_bank.so 
 
 slurm/slurm/slurm.h:
-	cd $(SLURM_SOURCE_CODE_DIR)
-	./configure
+	cd $(SLURM_SOURCE_CODE_DIR) && ./configure
 jobcomp_bank.so: slurm/slurm/slurm.h mybrc_rest_client job_completion_plugin/**/*
 	CPATH=$(SLURM_SOURCE_CODE_DIR):$(CPATH) SLURM_SOURCE_CODE_DIR=$(SLURM_SOURCE_CODE_DIR) $(MAKE) -C job_completion_plugin all
 	cp job_completion_plugin/*.so .
