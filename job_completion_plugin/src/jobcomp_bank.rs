@@ -83,7 +83,9 @@ pub extern "C" fn slurm_jobcomp_log_record(job_ptr: *const job_record) -> u32 {
         Some(account) => account,
         None => return ESLURM_INVALID_ACCOUNT,
     };
+    let job_id = unsafe { (*job_ptr).job_id };
     log(&account);
+    log(&format!("job id: {:?}", job_id));
     return SLURM_SUCCESS;
 }
 

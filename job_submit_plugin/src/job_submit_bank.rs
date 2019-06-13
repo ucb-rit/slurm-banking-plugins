@@ -55,7 +55,7 @@ pub extern "C" fn init() -> i32 {
 
 #[no_mangle]
 pub extern "C" fn job_submit(
-    job_desc: *const job_descriptor,
+    job_desc: *mut job_descriptor,
     submit_uid: u32,
     _error_msg: *mut *const c_char,
 ) -> u32 {
@@ -63,33 +63,13 @@ pub extern "C" fn job_submit(
     let max_cpus: u32 = unsafe { (*job_desc).max_cpus };
     let time_limit_minutes: u32 = unsafe { (*job_desc).time_limit }; // in minutes
     let max_nodes: u32 = unsafe { (*job_desc).max_nodes };
-
-    let jobslurmid = match safe_helpers::deref_cstr(unsafe { (*job_desc).job_id_str }) {
-        Some(jobslurmid) => jobslurmid,
-        None => return ESLURM_INVALID_JOB_ID
-    };
-    let submitdate = Utc::now().to_rfc3339();
-    let userid: u32 = unsafe { (*job_desc).user_id };
-    let account: String = match safe_helpers::deref_cstr(unsafe { (*job_desc).account }) {
-        Some(account) => account,
-        None => return ESLURM_INVALID_ACCOUNT,
-    };
-    let amount: String = "0".to_string();
-    let job_status: String = "".to_string();
     let partition: String = match safe_helpers::deref_cstr(unsafe { (*job_desc).partition }) {
         Some(partition) => partition,
         None => return ESLURM_INVALID_PARTITION_NAME,
     };
-    let qos: String = match safe_helpers::deref_cstr(unsafe { (*job_desc).qos }) {
-        Some(qos) => qos,
-        None => return ESLURM_INVALID_QOS
-    };
 
-    let job = swagger::models::Job::new(jobslurmid, submitdate, userid.to_string(), account, amount, job_status, partition, qos);
+    log(&format!("job_id_str: {:?}", safe_helpers::deref_cstr(unsafe { (*job_desc).job_id_str })));
 
-    log(&format!("{:?}", job));
-
-    /*
     let conf = SETTINGS.lock().unwrap();
     let prices: HashMap<String, String> = conf.get::<HashMap<String, String>>("Prices").unwrap();
     let expected_cost =
@@ -97,11 +77,39 @@ pub extern "C" fn job_submit(
             Some(cost) => cost,
             None => return ESLURM_INTERNAL,
         };
-    let deduction = accounting::deduct_service_units(&account, submit_uid, expected_cost);
 
     log(&format!("expected cost: {:?}", expected_cost));
-    log(&format!("deduction {:?}", deduction));
-    */
+
+    let jobslurmid = unsafe { (*job_desc).job_id };
+    let submitdate = Utc::now().to_rfc3339();
+    let userid: u32 = unsafe { (*job_desc).user_id };
+    let account: String = match safe_helpers::deref_cstr(unsafe { (*job_desc).account }) {
+        Some(account) => account,
+        None => return ESLURM_INVALID_ACCOUNT,
+    };
+    let amount: String = expected_cost.to_string();
+    let job_status: String = "".to_string();
+    let qos: String = match safe_helpers::deref_cstr(unsafe { (*job_desc).qos }) {
+        Some(qos) => qos,
+        None => return ESLURM_INVALID_QOS
+    };
+
+    let job = swagger::models::Job::new(
+        jobslurmid.to_string(), 
+        submitdate, 
+        userid.to_string(), 
+        account.clone(),
+        amount, 
+        job_status, 
+        partition, 
+        qos);
+
+    accounting::deduct_service_units(&account, userid, expected_cost);
+
+    log(&format!("{:?}", job));
+    log(&format!("{:?}", accounting::post_job(job)));
+
+    unsafe { (*job_desc).job_id = 100; }
 
     SLURM_SUCCESS
 }
