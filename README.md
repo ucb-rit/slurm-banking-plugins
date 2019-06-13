@@ -52,6 +52,18 @@ Current banking interaction is through two simple calls:
 - `PUT` to `/jobs/{slurmjobid}` will create/update a job no matter what, and update the usage even if that means the account is overdrawn
 
 ### Testing with myBRC
+
+#### Build mybrc-rest Docker image from scgup
+```bash
+docker build -f Dockerfile.mybrc-rest -t mybrc-rest
+```
+
+#### Build slurm-banking-plugins-dev image
+```bash
+make docker-dev
+```
+
+#### Launch containers
 ```bash
 docker run --name=mybrc-rest -d -p 8181:8181 mybrc-rest
 docker run \
