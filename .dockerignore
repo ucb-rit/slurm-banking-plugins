@@ -1,4 +1,3 @@
-slurm
 target
 *.so
 slurm_banking/wrappers/src

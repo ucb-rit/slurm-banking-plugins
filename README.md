@@ -30,6 +30,9 @@ nix-shell
 make
 ```
 
+### Help
+For additional reference on building, check [the build on travis-ci](https://travis-ci.org/ucb-rit/slurm-banking-plugins).
+
 ## Usage
 1. Move the `.so` files to `/usr/lib64/slurm`:
 ```bash
@@ -45,6 +48,9 @@ cp prices.toml /etc/slurm/prices.toml
 JobSubmitPlugins=job_submit/bank
 JobCompPlugins=jobcomp/bank
 ```
+
+### Help
+For additional reference on usage, refer to [the Docker files](docker).
 
 ## Developing
 I use the [docker-centos7-slurm](https://github.com/giovtorres/docker-centos7-slurm) Docker container as a base, and build the plugins on top of it. 
