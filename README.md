@@ -10,7 +10,7 @@ These plugins are written in [Rust](https://www.rust-lang.org), an efficient and
 
 ## Build Requirements
 - [Rust](https://www.rust-lang.org/) (including [cargo](https://doc.rust-lang.org/cargo/))
-- [Slurm](https://github.com/SchedMD/slurm) header files
+- [Slurm](https://github.com/SchedMD/slurm) header files and source code
 - [Clang](http://clang.llvm.org/get_started.html) (dependency for [rust-bindgen](https://rust-lang.github.io/rust-bindgen/requirements.html))
 
 ## Building
