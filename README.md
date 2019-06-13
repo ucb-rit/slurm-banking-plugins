@@ -75,7 +75,6 @@ Current banking interaction is through two simple calls:
 
 ### Testing with myBRC
 
-#### Build mybrc-rest Docker image from scgup
 ```bash
 # Build mybrc-rest Docker image from scgup
 docker build -f Dockerfile.mybrc-rest -t mybrc-rest
