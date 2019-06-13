@@ -3,6 +3,5 @@ jobs:
   include:
     - stage: build
       script:
-        - git submodule update --init
         - rustup component add rustfmt
         - make
