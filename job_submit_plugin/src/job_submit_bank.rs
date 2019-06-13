@@ -61,7 +61,7 @@ pub extern "C" fn job_submit(
 ) -> u32 {
     log("job_submit invoke");
     let max_cpus: u32 = unsafe { (*job_desc).max_cpus };
-    let time_limit_minutes: u32 = unsafe { (*job_desc).time_limit }; // in minutes
+    let time_limit_minutes: i64 = unsafe { (*job_desc).time_limit } as i64; // in minutes
     let max_nodes: u32 = unsafe { (*job_desc).max_nodes };
     let partition: String = match safe_helpers::deref_cstr(unsafe { (*job_desc).partition }) {
         Some(partition) => partition,
@@ -108,8 +108,6 @@ pub extern "C" fn job_submit(
 
     log(&format!("{:?}", job));
     log(&format!("{:?}", accounting::post_job(job)));
-
-    unsafe { (*job_desc).job_id = 100; }
 
     SLURM_SUCCESS
 }

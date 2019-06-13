@@ -27,7 +27,19 @@ pub fn post_job(job: Job) -> Result<(), String> {
     let configuration = swagger::apis::configuration::Configuration::new(hyper_client);
     let api_client = swagger::apis::client::APIClient::new(configuration);
     let result = core.run(api_client.jobs_api().jobs_create(job));
-    log(&format!("{:?}", result));
+    log(&format!("post_job: {:?}", result));
+    Ok(())
+}
+
+pub fn update_job(job: Job) -> Result<(), String> {
+    let mut core = tokio_core::reactor::Core::new().unwrap();
+    let hyper_client = hyper::client::Client::new(&core.handle());
+    let configuration = swagger::apis::configuration::Configuration::new(hyper_client);
+    let api_client = swagger::apis::client::APIClient::new(configuration);
+
+    let jobslurmid = job.jobslurmid().clone(); 
+    let result = core.run(api_client.jobs_api().jobs_update(&jobslurmid, job));
+    log(&format!("update_job: {:?}", result));
     Ok(())
 }
 
@@ -45,7 +57,7 @@ pub fn deduct_service_units(_account: &str, _user_id: u32, _amount: Decimal) -> 
 pub fn expected_cost(
     partition: &str,
     max_cpus: u32,
-    time_limit_minutes: u32,
+    time_limit_minutes: i64,
     prices: &HashMap<String, String>,
 ) -> Option<Decimal> {
     let max_cpus = Decimal::from(max_cpus);

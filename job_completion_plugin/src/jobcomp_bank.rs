@@ -4,7 +4,9 @@ extern crate lazy_static;
 extern crate config;
 extern crate rust_decimal;
 extern crate slurm_banking;
+extern crate swagger;
 
+use slurm_banking::accounting;
 use slurm_banking::bindings::*;
 use slurm_banking::logging;
 use slurm_banking::safe_helpers;
@@ -64,7 +66,8 @@ pub extern "C" fn init() -> u32 {
         "Plugin initialized using the prices config file from {}",
         PRICES_CONFIG_FILE_PATH
     ));
-    return SLURM_SUCCESS;
+
+    SLURM_SUCCESS
 }
 
 #[no_mangle]
@@ -84,9 +87,50 @@ pub extern "C" fn slurm_jobcomp_log_record(job_ptr: *const job_record) -> u32 {
         None => return ESLURM_INVALID_ACCOUNT,
     };
     let job_id = unsafe { (*job_ptr).job_id };
-    log(&account);
-    log(&format!("job id: {:?}", job_id));
-    return SLURM_SUCCESS;
+    let partition: String = match safe_helpers::deref_cstr(unsafe { (*job_ptr).partition }) {
+        Some(partition) => partition,
+        None => return ESLURM_INVALID_PARTITION_NAME,
+    };
+    let cpu_count = unsafe { (*job_ptr).cpu_cnt };
+    let time_spent = ((unsafe { (*job_ptr).end_time }) - (unsafe { (*job_ptr).start_time })) / 60;
+
+    log(&format!("account: {:?}, job id: {:?}, cpu_count: {:?}, time_spent: {:?}", account, job_id, cpu_count, time_spent));
+
+    let conf = SETTINGS.lock().unwrap();
+    let prices: HashMap<String, String> = conf.get::<HashMap<String, String>>("Prices").unwrap();
+    let expected_cost =
+        match accounting::expected_cost(&partition, cpu_count, time_spent, &prices) {
+            Some(cost) => cost,
+            None => return ESLURM_INTERNAL,
+        };
+
+    let jobslurmid = unsafe { (*job_ptr).job_id };
+    let submitdate = match safe_helpers::deref_cstr(unsafe { (*job_ptr).account }) { // TODO: change to submit date
+        Some(submitdate) => submitdate,
+        None => return ESLURM_INTERNAL
+    };
+    let userid: u32 = unsafe { (*job_ptr).user_id };
+    let account: String = match safe_helpers::deref_cstr(unsafe { (*job_ptr).account }) {
+        Some(account) => account,
+        None => return ESLURM_INVALID_ACCOUNT,
+    };
+    let amount: String = expected_cost.to_string();
+    let job_status: String = "".to_string();
+    let qos: String = (unsafe { (*job_ptr).qos_id }).to_string(); // TODO: change to qos_ptr
+
+    let job = swagger::models::Job::new(
+        jobslurmid.to_string(), 
+        submitdate, 
+        userid.to_string(), 
+        account.clone(),
+        amount, 
+        job_status, 
+        partition, 
+        qos);
+
+    accounting::update_job(job);
+
+    SLURM_SUCCESS
 }
 
 #[no_mangle]
