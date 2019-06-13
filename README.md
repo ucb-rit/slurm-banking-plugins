@@ -16,11 +16,11 @@ These plugins are written in [Rust](https://www.rust-lang.org), an efficient and
 ## Building
 Since the Slurm `jobcomp` plugins need access to the `"src/common/slurm_jobcomp.h"` header, we need access to the Slurm source code `src` directory in order to build (as well as the normal `<slurm/slurm.h>` headers on the `CPATH`). 
 
-**You will have to first run `./configure` on the Slurm source code, otherwise `<slurm/slurm.h>` will not exist.**
+**You will have to first run `./configure` on the Slurm source code, otherwise `<slurm/slurm.h>` will not exist. If you don't run `./configure`, the Makefile will try to do it for you.**
 
-1. Edit the path at the top of the Makefile to point to the Slurm source code directory
+1. Edit the path at the top of the Makefile to point to the Slurm source code directory, or symlink `./slurm` in this repository to point to it.
 2. Once you have all the dependencies, just run `make` :)
-3. After building, you will find the `.so` files in the same directory as the Makefile
+3. After building, you will find the `.so` files in the same directory as the Makefile.
 
 ### NixOS
 `shell.nix` provides the environment for development on [NixOS](https://nixos.org). I run the following:
@@ -28,6 +28,22 @@ Since the Slurm `jobcomp` plugins need access to the `"src/common/slurm_jobcomp.
 ```bash
 nix-shell 
 make
+```
+
+## Usage
+1. Move the `.so` files to `/usr/lib64/slurm`:
+```bash
+make install
+```
+2. Move `prices.toml` to `/etc/slurm/prices.toml` and update the partitions/prices accordingly.
+```bash
+cp prices.toml /etc/slurm/prices.toml
+```
+3. Include the plugins in the `/etc/slurm/slurm.conf`:
+```bash
+# other config options above...
+JobSubmitPlugins=job_submit/bank
+JobCompPlugins=jobcomp/bank
 ```
 
 ## Developing

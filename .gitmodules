@@ -1,0 +1,3 @@
+[submodule "slurm"]
+	path = slurm
+	url = https://github.com/SchedMD/slurm.git
