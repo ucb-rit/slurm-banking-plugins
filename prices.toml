@@ -1,4 +1,6 @@
 [Prices]
+normal = 1
+debug = 0.5
 savio = 0.75
 savio_bigmem = 1.67
 savio2 = 1.00

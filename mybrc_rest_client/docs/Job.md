@@ -9,7 +9,7 @@ Name | Type | Description | Notes
 **enddate** | **String** |  | [optional] [default to null]
 **userid** | **String** |  | [default to null]
 **accountid** | **String** |  | [default to null]
-**amount** | **String** |  | [default to null]
+**amount** | **String** |  | [optional] [default to null]
 **jobstatus** | **String** |  | [default to null]
 **partition** | **String** |  | [default to null]
 **qos** | **String** |  | [default to null]

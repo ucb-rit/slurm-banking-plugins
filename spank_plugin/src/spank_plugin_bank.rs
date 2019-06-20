@@ -42,6 +42,10 @@ fn log(message: &str) {
     logging::safe_spank_info(&format!("{}: {}", PLUGIN_NAME, message));
 }
 
+fn error(message: &str) {
+    logging::safe_spank_error(&format!("{}: {}", PLUGIN_NAME, message));
+}
+
 // Slurm
 #[no_mangle]
 pub extern "C" fn slurm_spank_init(sp: spank_t, ac: c_int, argv: *const *const c_char) -> c_int {
@@ -49,7 +53,11 @@ pub extern "C" fn slurm_spank_init(sp: spank_t, ac: c_int, argv: *const *const c
     unsafe {
         log(&format!("{:?}", *sp));
         let result = spank_get_item(sp, spank_item_S_JOB_ID, &mut job_id as *mut u32); 
-        log(&format!("slurm_spank_init(). Result: {}; Job ID: {}", result, job_id));
+        if result != 0 {
+            // No job ID available in this context
+            return 0
+        }
     }
+    log(&format!("slurm_spank_init(). Result: {}; Job ID: {}", result, job_id));
     0
 }

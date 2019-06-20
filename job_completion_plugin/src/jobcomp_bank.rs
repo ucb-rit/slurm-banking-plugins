@@ -123,12 +123,12 @@ pub extern "C" fn slurm_jobcomp_log_record(job_ptr: *const job_record) -> u32 {
         submitdate, 
         userid.to_string(), 
         account.clone(),
-        amount, 
         job_status, 
         partition, 
-        qos);
+        qos)
+        .with_amount(amount);
 
-    accounting::update_job(job);
+    // accounting::update_job(job);
 
     SLURM_SUCCESS
 }

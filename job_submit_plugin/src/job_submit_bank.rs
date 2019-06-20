@@ -99,15 +99,15 @@ pub extern "C" fn job_submit(
         submitdate, 
         userid.to_string(), 
         account.clone(),
-        amount, 
         job_status, 
         partition, 
-        qos);
+        qos)
+        .with_amount(amount);
 
-    accounting::deduct_service_units(&account, userid, expected_cost);
+    // accounting::deduct_service_units(&account, userid, expected_cost);
 
     log(&format!("{:?}", job));
-    log(&format!("{:?}", accounting::post_job(job)));
+    // log(&format!("{:?}", accounting::post_job(job)));
 
     SLURM_SUCCESS
 }

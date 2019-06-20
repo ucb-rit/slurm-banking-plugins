@@ -17,7 +17,7 @@ Put the package under your project folder and add the following in import:
 
 ## Documentation for API Endpoints
 
-All URIs are relative to *http://localhost:8880/mybrc-rest*
+All URIs are relative to *http://localhost:8181*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
