@@ -48,16 +48,24 @@ fn error(message: &str) {
 
 // Slurm
 #[no_mangle]
-pub extern "C" fn slurm_spank_init(sp: spank_t, ac: c_int, argv: *const *const c_char) -> c_int {
+pub extern "C" fn slurm_spank_init(sp: spank_t, _ac: c_int, _argv: *const *const c_char) -> c_int {
     let mut job_id: u32 = 0;
+    let mut job_buffer_ptr: *mut job_info_msg_t = std::ptr::null_mut();
     unsafe {
         log(&format!("{:?}", *sp));
-        let result = spank_get_item(sp, spank_item_S_JOB_ID, &mut job_id as *mut u32); 
-        if result != 0 {
-            // No job ID available in this context
-            return 0
+        if spank_get_item(sp, spank_item_S_JOB_ID, &mut job_id as *mut u32) != 0 {
+            return 0;
         }
+        log(&format!("got job id: {}", job_id));
+        if slurm_load_job(&mut job_buffer_ptr as *mut *mut job_info_msg_t, job_id, SHOW_ALL as u16) != 0 {
+            return 0;
+        }
+        let partition = safe_helpers::deref_cstr((*((*job_buffer_ptr).job_array)).partition);
+        let qos = safe_helpers::deref_cstr((*((*job_buffer_ptr).job_array)).qos);
+        let account = safe_helpers::deref_cstr((*((*job_buffer_ptr).job_array)).account);
+        log(&format!("Partition: {:?}, QOS: {:?}, Account: {:?}", partition, qos, account));
     }
-    log(&format!("slurm_spank_init(). Result: {}; Job ID: {}", result, job_id));
+    unsafe { slurm_free_job_info_msg(job_buffer_ptr) };
+    log(&format!("slurm_spank_init(). Job ID: {}", job_id));
     0
 }
