@@ -91,44 +91,25 @@ pub extern "C" fn slurm_jobcomp_log_record(job_ptr: *const job_record) -> u32 {
         Some(partition) => partition,
         None => return ESLURM_INVALID_PARTITION_NAME,
     };
+    let qos: String = (unsafe { (*job_ptr).qos_id }).to_string(); // TODO: change to qos_ptr
     let cpu_count = unsafe { (*job_ptr).cpu_cnt };
     let time_spent = ((unsafe { (*job_ptr).end_time }) - (unsafe { (*job_ptr).start_time })) / 60;
 
     log(&format!("account: {:?}, job id: {:?}, cpu_count: {:?}, time_spent: {:?}", account, job_id, cpu_count, time_spent));
 
     let conf = SETTINGS.lock().unwrap();
-    let prices: HashMap<String, String> = conf.get::<HashMap<String, String>>("Prices").unwrap();
     let expected_cost =
-        match accounting::expected_cost(&partition, cpu_count, time_spent, &prices) {
+        match accounting::expected_cost(&partition, &qos, cpu_count, time_spent, &conf) {
             Some(cost) => cost,
             None => return ESLURM_INTERNAL,
         };
 
-    let jobslurmid = unsafe { (*job_ptr).job_id };
-    let submitdate = match safe_helpers::deref_cstr(unsafe { (*job_ptr).account }) { // TODO: change to submit date
-        Some(submitdate) => submitdate,
-        None => return ESLURM_INTERNAL
-    };
-    let userid: u32 = unsafe { (*job_ptr).user_id };
-    let account: String = match safe_helpers::deref_cstr(unsafe { (*job_ptr).account }) {
-        Some(account) => account,
-        None => return ESLURM_INVALID_ACCOUNT,
-    };
-    let amount: String = expected_cost.to_string();
-    let job_status: String = "".to_string();
-    let qos: String = (unsafe { (*job_ptr).qos_id }).to_string(); // TODO: change to qos_ptr
+    let jobslurmid = (unsafe { (*job_ptr).job_id }).to_string();
 
-    let job = swagger::models::Job::new(
-        jobslurmid.to_string(), 
-        submitdate, 
-        userid.to_string(), 
-        account.clone(),
-        job_status, 
-        partition, 
-        qos)
-        .with_amount(amount);
+    let job_update_record = swagger::models::JobUpdate::new(jobslurmid.clone())
+        .with_amount(expected_cost.to_string());
 
-    // accounting::update_job(job);
+    accounting::update_job(&jobslurmid, job_update_record);
 
     SLURM_SUCCESS
 }

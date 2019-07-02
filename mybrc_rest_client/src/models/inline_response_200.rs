@@ -14,87 +14,53 @@ use serde_json::Value;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct InlineResponse200 {
-  #[serde(rename = "count")]
-  count: i32,
-  #[serde(rename = "next")]
-  next: Option<String>,
-  #[serde(rename = "previous")]
-  previous: Option<String>,
-  #[serde(rename = "results")]
-  results: Vec<::models::Account>
+  #[serde(rename = "success")]
+  success: Option<bool>,
+  #[serde(rename = "message")]
+  message: Option<String>
 }
 
 impl InlineResponse200 {
-  pub fn new(count: i32, results: Vec<::models::Account>) -> InlineResponse200 {
+  pub fn new() -> InlineResponse200 {
     InlineResponse200 {
-      count: count,
-      next: None,
-      previous: None,
-      results: results
+      success: None,
+      message: None
     }
   }
 
-  pub fn set_count(&mut self, count: i32) {
-    self.count = count;
+  pub fn set_success(&mut self, success: bool) {
+    self.success = Some(success);
   }
 
-  pub fn with_count(mut self, count: i32) -> InlineResponse200 {
-    self.count = count;
+  pub fn with_success(mut self, success: bool) -> InlineResponse200 {
+    self.success = Some(success);
     self
   }
 
-  pub fn count(&self) -> &i32 {
-    &self.count
+  pub fn success(&self) -> Option<&bool> {
+    self.success.as_ref()
   }
 
-
-  pub fn set_next(&mut self, next: String) {
-    self.next = Some(next);
+  pub fn reset_success(&mut self) {
+    self.success = None;
   }
 
-  pub fn with_next(mut self, next: String) -> InlineResponse200 {
-    self.next = Some(next);
+  pub fn set_message(&mut self, message: String) {
+    self.message = Some(message);
+  }
+
+  pub fn with_message(mut self, message: String) -> InlineResponse200 {
+    self.message = Some(message);
     self
   }
 
-  pub fn next(&self) -> Option<&String> {
-    self.next.as_ref()
+  pub fn message(&self) -> Option<&String> {
+    self.message.as_ref()
   }
 
-  pub fn reset_next(&mut self) {
-    self.next = None;
+  pub fn reset_message(&mut self) {
+    self.message = None;
   }
-
-  pub fn set_previous(&mut self, previous: String) {
-    self.previous = Some(previous);
-  }
-
-  pub fn with_previous(mut self, previous: String) -> InlineResponse200 {
-    self.previous = Some(previous);
-    self
-  }
-
-  pub fn previous(&self) -> Option<&String> {
-    self.previous.as_ref()
-  }
-
-  pub fn reset_previous(&mut self) {
-    self.previous = None;
-  }
-
-  pub fn set_results(&mut self, results: Vec<::models::Account>) {
-    self.results = results;
-  }
-
-  pub fn with_results(mut self, results: Vec<::models::Account>) -> InlineResponse200 {
-    self.results = results;
-    self
-  }
-
-  pub fn results(&self) -> &Vec<::models::Account> {
-    &self.results
-  }
-
 
 }
 

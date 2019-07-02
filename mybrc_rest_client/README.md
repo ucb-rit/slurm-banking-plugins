@@ -17,36 +17,20 @@ Put the package under your project folder and add the following in import:
 
 ## Documentation for API Endpoints
 
-All URIs are relative to *http://localhost:8181*
+All URIs are relative to *http://localhost:8880/mybrc-rest*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
-*AccountsApi* | [**accounts_list**](docs/AccountsApi.md#accounts_list) | **Get** /accounts/ | 
-*AccountsApi* | [**accounts_read**](docs/AccountsApi.md#accounts_read) | **Get** /accounts/{name}/ | 
+*CanSubmitJobApi* | [**can_submit_job_read**](docs/CanSubmitJobApi.md#can_submit_job_read) | **Get** /can_submit_job/{job_cost}/{user_id}/{account_id}/ | 
 *JobsApi* | [**jobs_create**](docs/JobsApi.md#jobs_create) | **Post** /jobs/ | 
-*JobsApi* | [**jobs_delete**](docs/JobsApi.md#jobs_delete) | **Delete** /jobs/{jobslurmid}/ | 
-*JobsApi* | [**jobs_list**](docs/JobsApi.md#jobs_list) | **Get** /jobs/ | 
-*JobsApi* | [**jobs_partial_update**](docs/JobsApi.md#jobs_partial_update) | **Patch** /jobs/{jobslurmid}/ | 
-*JobsApi* | [**jobs_read**](docs/JobsApi.md#jobs_read) | **Get** /jobs/{jobslurmid}/ | 
 *JobsApi* | [**jobs_update**](docs/JobsApi.md#jobs_update) | **Put** /jobs/{jobslurmid}/ | 
-*UseraccountassociationsApi* | [**useraccountassociations_list**](docs/UseraccountassociationsApi.md#useraccountassociations_list) | **Get** /useraccountassociations/ | 
-*UseraccountassociationsApi* | [**useraccountassociations_partial_update**](docs/UseraccountassociationsApi.md#useraccountassociations_partial_update) | **Patch** /useraccountassociations/{id}/ | 
-*UseraccountassociationsApi* | [**useraccountassociations_read**](docs/UseraccountassociationsApi.md#useraccountassociations_read) | **Get** /useraccountassociations/{id}/ | 
-*UseraccountassociationsApi* | [**useraccountassociations_update**](docs/UseraccountassociationsApi.md#useraccountassociations_update) | **Put** /useraccountassociations/{id}/ | 
-*UsersApi* | [**users_list**](docs/UsersApi.md#users_list) | **Get** /users/ | 
-*UsersApi* | [**users_read**](docs/UsersApi.md#users_read) | **Get** /users/{id}/ | 
 
 
 ## Documentation For Models
 
- - [Account](docs/Account.md)
  - [InlineResponse200](docs/InlineResponse200.md)
- - [InlineResponse2001](docs/InlineResponse2001.md)
- - [InlineResponse2002](docs/InlineResponse2002.md)
- - [InlineResponse2003](docs/InlineResponse2003.md)
- - [Job](docs/Job.md)
- - [User](docs/User.md)
- - [UserAccount](docs/UserAccount.md)
+ - [JobCreate](docs/JobCreate.md)
+ - [JobUpdate](docs/JobUpdate.md)
 
 
 ## Documentation For Authorization

@@ -62,54 +62,41 @@ pub extern "C" fn job_submit(
     log("job_submit invoke");
     let max_cpus: u32 = unsafe { (*job_desc).max_cpus };
     let time_limit_minutes: i64 = unsafe { (*job_desc).time_limit } as i64; // in minutes
-    let max_nodes: u32 = unsafe { (*job_desc).max_nodes };
     let partition: String = match safe_helpers::deref_cstr(unsafe { (*job_desc).partition }) {
         Some(partition) => partition,
         None => return ESLURM_INVALID_PARTITION_NAME,
     };
-
-    log(&format!("job_id_str: {:?}", safe_helpers::deref_cstr(unsafe { (*job_desc).job_id_str })));
+    let qos: String = match safe_helpers::deref_cstr(unsafe { (*job_desc).qos }) {
+        Some(qos) => qos,
+        None => return ESLURM_INVALID_QOS
+    };
+    log(&format!("got some strings: {:?} {:?}", partition, qos));
 
     let conf = SETTINGS.lock().unwrap();
-    let prices: HashMap<String, String> = conf.get::<HashMap<String, String>>("Prices").unwrap();
+
+    // Calculate the expected cost of the job
     let expected_cost =
-        match accounting::expected_cost(&partition, max_cpus, time_limit_minutes, &prices) {
+        match accounting::expected_cost(&partition, &qos, max_cpus, time_limit_minutes, &conf) {
             Some(cost) => cost,
             None => return ESLURM_INTERNAL,
         };
 
     log(&format!("expected cost: {:?}", expected_cost));
 
-    let jobslurmid = unsafe { (*job_desc).job_id };
-    let submitdate = Utc::now().to_rfc3339();
     let userid: u32 = unsafe { (*job_desc).user_id };
     let account: String = match safe_helpers::deref_cstr(unsafe { (*job_desc).account }) {
         Some(account) => account,
         None => return ESLURM_INVALID_ACCOUNT,
     };
-    let amount: String = expected_cost.to_string();
-    let job_status: String = "".to_string();
-    let qos: String = match safe_helpers::deref_cstr(unsafe { (*job_desc).qos }) {
-        Some(qos) => qos,
-        None => return ESLURM_INVALID_QOS
-    };
 
-    let job = swagger::models::Job::new(
-        jobslurmid.to_string(), 
-        submitdate, 
-        userid.to_string(), 
-        account.clone(),
-        job_status, 
-        partition, 
-        qos)
-        .with_amount(amount);
+    // Check if the account has sufficient funds for the job
+    let has_funds = accounting::check_sufficient_funds(expected_cost, &userid.to_string(), &account);
 
-    // accounting::deduct_service_units(&account, userid, expected_cost);
-
-    log(&format!("{:?}", job));
-    // log(&format!("{:?}", accounting::post_job(job)));
-
-    SLURM_SUCCESS
+    // Return success iff there are enough funds
+    match has_funds {
+        true => SLURM_SUCCESS,
+        false => ESLURM_INTERNAL
+    }
 }
 
 #[no_mangle]

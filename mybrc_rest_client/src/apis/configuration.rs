@@ -31,7 +31,7 @@ pub struct ApiKey {
 impl<C: hyper::client::Connect> Configuration<C> {
   pub fn new(client: hyper::client::Client<C>) -> Configuration<C> {
     Configuration {
-      base_path: "http://localhost:8181".to_owned(),
+      base_path: "http://localhost:8880/mybrc-rest".to_owned(),
       user_agent: Some("Swagger-Codegen/v1/rust".to_owned()),
       client: client,
       basic_auth: None,
