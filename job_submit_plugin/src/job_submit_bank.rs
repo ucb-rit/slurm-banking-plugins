@@ -92,7 +92,7 @@ pub extern "C" fn job_submit(
     // Check if the account has sufficient funds for the job
     let has_funds = accounting::check_sufficient_funds(expected_cost, &userid.to_string(), &account);
 
-    // Return success iff there are enough funds
+    // Return success if there are enough funds
     match has_funds {
         true => SLURM_SUCCESS,
         false => ESLURM_INTERNAL

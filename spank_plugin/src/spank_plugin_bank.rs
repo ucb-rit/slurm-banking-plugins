@@ -4,6 +4,7 @@ extern crate lazy_static;
 extern crate config;
 extern crate rust_decimal;
 extern crate slurm_banking;
+extern crate swagger;
 
 use slurm_banking::accounting;
 use slurm_banking::bindings::*;
@@ -60,11 +61,28 @@ pub extern "C" fn slurm_spank_init(sp: spank_t, _ac: c_int, _argv: *const *const
         if slurm_load_job(&mut job_buffer_ptr as *mut *mut job_info_msg_t, job_id, SHOW_ALL as u16) != 0 {
             return 0;
         }
-        let partition = safe_helpers::deref_cstr((*((*job_buffer_ptr).job_array)).partition);
-        let qos = safe_helpers::deref_cstr((*((*job_buffer_ptr).job_array)).qos);
-        let account = safe_helpers::deref_cstr((*((*job_buffer_ptr).job_array)).account);
-        log(&format!("Partition: {:?}, QOS: {:?}, Account: {:?}", partition, qos, account));
     }
+    let partition = safe_helpers::deref_cstr(unsafe { (*((*job_buffer_ptr).job_array)).partition }).unwrap();
+    let qos = safe_helpers::deref_cstr(unsafe { (*((*job_buffer_ptr).job_array)).qos }).unwrap();
+    let account = safe_helpers::deref_cstr(unsafe { (*((*job_buffer_ptr).job_array)).account }).unwrap();
+    let max_cpus = unsafe { (*((*job_buffer_ptr).job_array)).max_cpus };
+    let time_limit: i64 = unsafe { (*((*job_buffer_ptr).job_array)).time_limit } as i64;
+    log(&format!("Partition: {:?}, QOS: {:?}, Account: {:?}, Max CPUs: {:?}, Time limit: {:?}", 
+        partition, qos, account, max_cpus, time_limit));
+
+    let conf = SETTINGS.lock().unwrap();
+    let expected_cost =
+        match accounting::expected_cost(&partition, &qos, max_cpus, time_limit, &conf) {
+            Some(cost) => cost,
+            None => return 0,
+        };
+
+
+    let job_create_record = swagger::models::JobCreate::new(job_id.to_string())
+        .with_amount(expected_cost.to_string());
+
+    accounting::create_job(job_create_record);
+
     unsafe { slurm_free_job_info_msg(job_buffer_ptr) };
     log(&format!("slurm_spank_init(). Job ID: {}", job_id));
     0
