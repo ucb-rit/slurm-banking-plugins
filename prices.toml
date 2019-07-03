@@ -1,6 +1,11 @@
+[Enable]
+enable_job_submit_plugin = true     # Requires Slurm restart
+enable_spank_plugin = true          # Does not require Slurm restart
+enable_job_completion_plugin = true # Requires Slurm restart
+
 # All partitions must be listed here.
-# If a job requests to use a partition that
-# is not listed here, it will be rejected.
+# If a job requests to use a partition that is not listed here, 
+#  it will be rejected.
 [PartitionPrice]
 normal = 1
 debug = 0.5
@@ -17,13 +22,11 @@ savio3_bigmem = 2.67
 savio3_xlmem = 1.00
 savio3_gpu = 1.00
 
-# If the QoS is not in this list, the
-# default multiplier is 1.
+# If the QoS is not in this list, the default multiplier is 1.
 [QosMultiplier]
 normal = 1 
 lowprio = 0
 
-# Provide the base path to the
-# myBRC API
+# Provide the base path to the myBRC API
 [API]
 url = "http://localhost:5000"

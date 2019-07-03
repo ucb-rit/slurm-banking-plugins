@@ -70,7 +70,15 @@ pub fn check_sufficient_funds(job_cost: Decimal, user_id: &str, account_id: &str
     let job_cost_str = job_cost.to_string();
     let result = core.run(api_client.can_submit_job_api().can_submit_job_read(&job_cost_str, user_id, account_id));
     log(&format!("{:?}", result));
-    true
+    let result = match result {
+        Ok(response) => response,
+        Err(_) => return true // Return true if API inaccessible 
+    };
+    return true;
+    // match result.success() {
+    //     Some(value) => value.clone(),
+    //     None => false // Got a response from the API, but not containing the success field
+    // }
 }
 
 pub fn create_job(job_create_record: swagger::models::Job) -> Result<(), String> {
@@ -80,6 +88,7 @@ pub fn create_job(job_create_record: swagger::models::Job) -> Result<(), String>
     let api_client = swagger::apis::client::APIClient::new(configuration);
     log("create_job: api client created");
     let result = core.run(api_client.jobs_api().jobs_create(job_create_record));
+    log(&format!("create_job response: {:?}", result));
     Ok(())
 }
 
@@ -90,5 +99,6 @@ pub fn update_job(jobslurmid: &str, job_update_record: swagger::models::Job) -> 
     let api_client = swagger::apis::client::APIClient::new(configuration);
     log("update_job: api client created");
     let result = core.run(api_client.jobs_api().jobs_update(jobslurmid, job_update_record));
+    log(&format!("update_job response: {:?}", result));
     Ok(())
 }

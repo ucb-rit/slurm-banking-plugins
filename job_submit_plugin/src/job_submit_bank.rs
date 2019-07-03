@@ -14,13 +14,17 @@ use slurm_banking::safe_helpers;
 use config::Config;
 use chrono::prelude::Utc;
 use std::collections::HashMap;
-use std::os::raw::c_char;
+use std::os::raw::{c_char, c_int};
 use std::sync::Mutex;
 
 static PLUGIN_NAME: &str = "job_submit_bank";
 
 lazy_static! {
-    static ref SETTINGS: Mutex<Config> = Mutex::new(Config::default());
+    static ref SETTINGS: Mutex<Config> = {
+        let mut conf = Config::default();
+        slurm_banking::prices_config::load_config_from_file(&mut conf).unwrap();
+        Mutex::new(conf)
+    };
 }
 
 // Static strings reference: https://stackoverflow.com/a/33883281
@@ -45,12 +49,8 @@ fn log(message: &str) {
 
 // Slurm
 #[no_mangle]
-pub extern "C" fn init() -> i32 {
-    let mut conf = SETTINGS.lock().unwrap();
-    match slurm_banking::prices_config::load_config_from_file(&mut conf) {
-        Ok(()) => SLURM_SUCCESS as i32,
-        Err(_) => SLURM_ERROR
-    }
+pub extern "C" fn init() -> c_int {
+    SLURM_SUCCESS as c_int
 }
 
 #[no_mangle]

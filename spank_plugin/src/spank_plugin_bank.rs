@@ -20,7 +20,11 @@ use std::sync::Mutex;
 static PLUGIN_NAME: &str = "spank_bank";
 
 lazy_static! {
-    static ref SETTINGS: Mutex<Config> = Mutex::new(Config::default());
+    static ref SETTINGS: Mutex<Config> = {
+        let mut conf = Config::default();
+        slurm_banking::prices_config::load_config_from_file(&mut conf).unwrap();
+        Mutex::new(conf)
+    };
 }
 
 // Static strings reference: https://stackoverflow.com/a/33883281
@@ -50,6 +54,16 @@ fn error(message: &str) {
 // Slurm
 #[no_mangle]
 pub extern "C" fn slurm_spank_init(sp: spank_t, _ac: c_int, _argv: *const *const c_char) -> c_int {
+    let conf = SETTINGS.lock().unwrap();
+    let plugin_enable_config = match conf.get::<HashMap<String, bool>>("Enable") {
+        Ok(v) => v,
+        Err(_) => return 0 
+    };
+    let enabled = plugin_enable_config.get("enable_spank_plugin").unwrap_or(&false);
+    if !enabled {
+        return 0
+    }
+
     let mut job_id: u32 = 0;
     let mut job_buffer_ptr: *mut job_info_msg_t = std::ptr::null_mut();
     unsafe {
@@ -70,7 +84,6 @@ pub extern "C" fn slurm_spank_init(sp: spank_t, _ac: c_int, _argv: *const *const
     log(&format!("Partition: {:?}, QOS: {:?}, Account: {:?}, Max CPUs: {:?}, Time limit: {:?}", 
         partition, qos, account, max_cpus, time_limit));
 
-    let conf = SETTINGS.lock().unwrap();
     let expected_cost =
         match accounting::expected_cost(&partition, &qos, max_cpus, time_limit, &conf) {
             Some(cost) => cost,
