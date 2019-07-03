@@ -13,7 +13,7 @@
 use serde_json::Value;
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct JobCreate {
+pub struct Job {
   #[serde(rename = "jobslurmid")]
   jobslurmid: String,
   #[serde(rename = "submitdate")]
@@ -23,11 +23,11 @@ pub struct JobCreate {
   #[serde(rename = "enddate")]
   enddate: Option<String>,
   #[serde(rename = "userid")]
-  userid: Option<String>,
+  userid: String,
   #[serde(rename = "accountid")]
-  accountid: Option<String>,
+  accountid: String,
   #[serde(rename = "amount")]
-  amount: Option<String>,
+  amount: String,
   #[serde(rename = "jobstatus")]
   jobstatus: Option<String>,
   #[serde(rename = "partition")]
@@ -36,16 +36,16 @@ pub struct JobCreate {
   qos: Option<String>
 }
 
-impl JobCreate {
-  pub fn new(jobslurmid: String) -> JobCreate {
-    JobCreate {
+impl Job {
+  pub fn new(jobslurmid: String, userid: String, accountid: String, amount: String) -> Job {
+    Job {
       jobslurmid: jobslurmid,
       submitdate: None,
       startdate: None,
       enddate: None,
-      userid: None,
-      accountid: None,
-      amount: None,
+      userid: userid,
+      accountid: accountid,
+      amount: amount,
       jobstatus: None,
       partition: None,
       qos: None
@@ -56,7 +56,7 @@ impl JobCreate {
     self.jobslurmid = jobslurmid;
   }
 
-  pub fn with_jobslurmid(mut self, jobslurmid: String) -> JobCreate {
+  pub fn with_jobslurmid(mut self, jobslurmid: String) -> Job {
     self.jobslurmid = jobslurmid;
     self
   }
@@ -70,7 +70,7 @@ impl JobCreate {
     self.submitdate = Some(submitdate);
   }
 
-  pub fn with_submitdate(mut self, submitdate: String) -> JobCreate {
+  pub fn with_submitdate(mut self, submitdate: String) -> Job {
     self.submitdate = Some(submitdate);
     self
   }
@@ -87,7 +87,7 @@ impl JobCreate {
     self.startdate = Some(startdate);
   }
 
-  pub fn with_startdate(mut self, startdate: String) -> JobCreate {
+  pub fn with_startdate(mut self, startdate: String) -> Job {
     self.startdate = Some(startdate);
     self
   }
@@ -104,7 +104,7 @@ impl JobCreate {
     self.enddate = Some(enddate);
   }
 
-  pub fn with_enddate(mut self, enddate: String) -> JobCreate {
+  pub fn with_enddate(mut self, enddate: String) -> Job {
     self.enddate = Some(enddate);
     self
   }
@@ -118,61 +118,52 @@ impl JobCreate {
   }
 
   pub fn set_userid(&mut self, userid: String) {
-    self.userid = Some(userid);
+    self.userid = userid;
   }
 
-  pub fn with_userid(mut self, userid: String) -> JobCreate {
-    self.userid = Some(userid);
+  pub fn with_userid(mut self, userid: String) -> Job {
+    self.userid = userid;
     self
   }
 
-  pub fn userid(&self) -> Option<&String> {
-    self.userid.as_ref()
+  pub fn userid(&self) -> &String {
+    &self.userid
   }
 
-  pub fn reset_userid(&mut self) {
-    self.userid = None;
-  }
 
   pub fn set_accountid(&mut self, accountid: String) {
-    self.accountid = Some(accountid);
+    self.accountid = accountid;
   }
 
-  pub fn with_accountid(mut self, accountid: String) -> JobCreate {
-    self.accountid = Some(accountid);
+  pub fn with_accountid(mut self, accountid: String) -> Job {
+    self.accountid = accountid;
     self
   }
 
-  pub fn accountid(&self) -> Option<&String> {
-    self.accountid.as_ref()
+  pub fn accountid(&self) -> &String {
+    &self.accountid
   }
 
-  pub fn reset_accountid(&mut self) {
-    self.accountid = None;
-  }
 
   pub fn set_amount(&mut self, amount: String) {
-    self.amount = Some(amount);
+    self.amount = amount;
   }
 
-  pub fn with_amount(mut self, amount: String) -> JobCreate {
-    self.amount = Some(amount);
+  pub fn with_amount(mut self, amount: String) -> Job {
+    self.amount = amount;
     self
   }
 
-  pub fn amount(&self) -> Option<&String> {
-    self.amount.as_ref()
+  pub fn amount(&self) -> &String {
+    &self.amount
   }
 
-  pub fn reset_amount(&mut self) {
-    self.amount = None;
-  }
 
   pub fn set_jobstatus(&mut self, jobstatus: String) {
     self.jobstatus = Some(jobstatus);
   }
 
-  pub fn with_jobstatus(mut self, jobstatus: String) -> JobCreate {
+  pub fn with_jobstatus(mut self, jobstatus: String) -> Job {
     self.jobstatus = Some(jobstatus);
     self
   }
@@ -189,7 +180,7 @@ impl JobCreate {
     self.partition = Some(partition);
   }
 
-  pub fn with_partition(mut self, partition: String) -> JobCreate {
+  pub fn with_partition(mut self, partition: String) -> Job {
     self.partition = Some(partition);
     self
   }
@@ -206,7 +197,7 @@ impl JobCreate {
     self.qos = Some(qos);
   }
 
-  pub fn with_qos(mut self, qos: String) -> JobCreate {
+  pub fn with_qos(mut self, qos: String) -> Job {
     self.qos = Some(qos);
     self
   }

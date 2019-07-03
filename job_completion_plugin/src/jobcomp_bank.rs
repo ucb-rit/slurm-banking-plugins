@@ -95,7 +95,8 @@ pub extern "C" fn slurm_jobcomp_log_record(job_ptr: *const job_record) -> u32 {
     let cpu_count = unsafe { (*job_ptr).cpu_cnt };
     let time_spent = ((unsafe { (*job_ptr).end_time }) - (unsafe { (*job_ptr).start_time })) / 60;
 
-    log(&format!("account: {:?}, job id: {:?}, cpu_count: {:?}, time_spent: {:?}", account, job_id, cpu_count, time_spent));
+    log(&format!("account: {:?}, job id: {:?}, cpu_count: {:?}, time_spent: {:?}", 
+        account, job_id, cpu_count, time_spent));
 
     let conf = SETTINGS.lock().unwrap();
     let expected_cost =
@@ -105,10 +106,10 @@ pub extern "C" fn slurm_jobcomp_log_record(job_ptr: *const job_record) -> u32 {
         };
 
     let jobslurmid = (unsafe { (*job_ptr).job_id }).to_string();
+    let user_id = (unsafe { (*job_ptr).user_id}).to_string();
 
-    let job_update_record = swagger::models::JobUpdate::new(jobslurmid.clone())
-        .with_amount(expected_cost.to_string());
-
+    let job_update_record = swagger::models::Job::new(
+        jobslurmid.clone(), user_id, account, expected_cost.to_string());
     accounting::update_job(&jobslurmid, job_update_record);
 
     SLURM_SUCCESS

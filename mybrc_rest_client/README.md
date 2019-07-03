@@ -29,8 +29,7 @@ Class | Method | HTTP request | Description
 ## Documentation For Models
 
  - [InlineResponse200](docs/InlineResponse200.md)
- - [JobCreate](docs/JobCreate.md)
- - [JobUpdate](docs/JobUpdate.md)
+ - [Job](docs/Job.md)
 
 
 ## Documentation For Authorization

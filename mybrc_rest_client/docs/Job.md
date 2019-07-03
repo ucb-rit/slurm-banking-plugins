@@ -1,4 +1,4 @@
-# JobCreate
+# Job
 
 ## Properties
 Name | Type | Description | Notes
@@ -7,9 +7,9 @@ Name | Type | Description | Notes
 **submitdate** | **String** |  | [optional] [default to null]
 **startdate** | **String** |  | [optional] [default to null]
 **enddate** | **String** |  | [optional] [default to null]
-**userid** | **String** |  | [optional] [default to null]
-**accountid** | **String** |  | [optional] [default to null]
-**amount** | **String** |  | [optional] [default to null]
+**userid** | **String** |  | [default to null]
+**accountid** | **String** |  | [default to null]
+**amount** | **String** |  | [default to null]
 **jobstatus** | **String** |  | [optional] [default to null]
 **partition** | **String** |  | [optional] [default to null]
 **qos** | **String** |  | [optional] [default to null]

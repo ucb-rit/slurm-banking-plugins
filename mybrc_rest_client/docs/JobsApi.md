@@ -9,7 +9,7 @@ Method | HTTP request | Description
 
 
 # **jobs_create**
-> ::models::JobCreate jobs_create(ctx, data)
+> ::models::Job jobs_create(ctx, data)
 
 
 Creates a new Job identified by the given Slurm ID.
@@ -19,11 +19,11 @@ Creates a new Job identified by the given Slurm ID.
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context containing the authentication | nil if no authentication
-  **data** | [**JobCreate**](JobCreate.md)|  | 
+  **data** | [**Job**](Job.md)|  | 
 
 ### Return type
 
-[**::models::JobCreate**](JobCreate.md)
+[**::models::Job**](Job.md)
 
 ### Authorization
 
@@ -37,7 +37,7 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **jobs_update**
-> ::models::JobUpdate jobs_update(ctx, jobslurmid, data)
+> ::models::Job jobs_update(ctx, jobslurmid, data)
 
 
 Updates all fields of the Job identified by the given Slurm ID.
@@ -48,11 +48,11 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context containing the authentication | nil if no authentication
   **jobslurmid** | **String**| A unique value identifying this job. | 
-  **data** | [**JobUpdate**](JobUpdate.md)|  | 
+  **data** | [**Job**](Job.md)|  | 
 
 ### Return type
 
-[**::models::JobUpdate**](JobUpdate.md)
+[**::models::Job**](Job.md)
 
 ### Authorization
 

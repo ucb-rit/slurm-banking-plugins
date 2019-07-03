@@ -35,13 +35,13 @@ impl<C: hyper::client::Connect> JobsApiClient<C> {
 }
 
 pub trait JobsApi {
-    fn jobs_create(&self, data: ::models::JobCreate) -> Box<Future<Item = ::models::JobCreate, Error = Error<serde_json::Value>>>;
-    fn jobs_update(&self, jobslurmid: &str, data: ::models::JobUpdate) -> Box<Future<Item = ::models::JobUpdate, Error = Error<serde_json::Value>>>;
+    fn jobs_create(&self, data: ::models::Job) -> Box<Future<Item = ::models::Job, Error = Error<serde_json::Value>>>;
+    fn jobs_update(&self, jobslurmid: &str, data: ::models::Job) -> Box<Future<Item = ::models::Job, Error = Error<serde_json::Value>>>;
 }
 
 
 impl<C: hyper::client::Connect>JobsApi for JobsApiClient<C> {
-    fn jobs_create(&self, data: ::models::JobCreate) -> Box<Future<Item = ::models::JobCreate, Error = Error<serde_json::Value>>> {
+    fn jobs_create(&self, data: ::models::Job) -> Box<Future<Item = ::models::Job, Error = Error<serde_json::Value>>> {
         let configuration: &configuration::Configuration<C> = self.configuration.borrow();
 
         let mut auth_headers = HashMap::<String, String>::new();
@@ -106,13 +106,13 @@ impl<C: hyper::client::Connect>JobsApi for JobsApiClient<C> {
                 }
             })
             .and_then(|body| {
-                let parsed: Result<::models::JobCreate, _> = serde_json::from_slice(&body);
+                let parsed: Result<::models::Job, _> = serde_json::from_slice(&body);
                 parsed.map_err(|e| Error::from(e))
             })
         )
     }
 
-    fn jobs_update(&self, jobslurmid: &str, data: ::models::JobUpdate) -> Box<Future<Item = ::models::JobUpdate, Error = Error<serde_json::Value>>> {
+    fn jobs_update(&self, jobslurmid: &str, data: ::models::Job) -> Box<Future<Item = ::models::Job, Error = Error<serde_json::Value>>> {
         let configuration: &configuration::Configuration<C> = self.configuration.borrow();
 
         let mut auth_headers = HashMap::<String, String>::new();
@@ -177,7 +177,7 @@ impl<C: hyper::client::Connect>JobsApi for JobsApiClient<C> {
                 }
             })
             .and_then(|body| {
-                let parsed: Result<::models::JobUpdate, _> = serde_json::from_slice(&body);
+                let parsed: Result<::models::Job, _> = serde_json::from_slice(&body);
                 parsed.map_err(|e| Error::from(e))
             })
         )

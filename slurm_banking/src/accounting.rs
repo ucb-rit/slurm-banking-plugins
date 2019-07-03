@@ -73,7 +73,7 @@ pub fn check_sufficient_funds(job_cost: Decimal, user_id: &str, account_id: &str
     true
 }
 
-pub fn create_job(job_create_record: swagger::models::JobCreate) -> Result<(), String> {
+pub fn create_job(job_create_record: swagger::models::Job) -> Result<(), String> {
     let mut core = tokio_core::reactor::Core::new().unwrap();
     let hyper_client = hyper::client::Client::new(&core.handle());
     let configuration = swagger::apis::configuration::Configuration::new(hyper_client);
@@ -83,7 +83,7 @@ pub fn create_job(job_create_record: swagger::models::JobCreate) -> Result<(), S
     Ok(())
 }
 
-pub fn update_job(jobslurmid: &str, job_update_record: swagger::models::JobUpdate) -> Result<(), String> {
+pub fn update_job(jobslurmid: &str, job_update_record: swagger::models::Job) -> Result<(), String> {
     let mut core = tokio_core::reactor::Core::new().unwrap();
     let hyper_client = hyper::client::Client::new(&core.handle());
     let configuration = swagger::apis::configuration::Configuration::new(hyper_client);

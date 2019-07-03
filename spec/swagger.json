@@ -77,12 +77,12 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/JobCreate'
+            $ref: '#/definitions/Job'
       responses:
         '201':
           description: ''
           schema:
-            $ref: '#/definitions/JobCreate'
+            $ref: '#/definitions/Job'
       tags:
         - jobs
     parameters: []
@@ -95,12 +95,12 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/JobUpdate'
+            $ref: '#/definitions/Job'
       responses:
         '200':
           description: ''
           schema:
-            $ref: '#/definitions/JobUpdate'
+            $ref: '#/definitions/Job'
       tags:
         - jobs
     parameters:
@@ -110,9 +110,12 @@ paths:
         required: true
         type: string
 definitions:
-  JobCreate:
+  Job:
     required:
       - jobslurmid
+      - userid
+      - accountid
+      - amount
     type: object
     properties:
       jobslurmid:
@@ -146,53 +149,6 @@ definitions:
         title: Amount
         type: string
         format: decimal
-        x-nullable: true
-      jobstatus:
-        title: Jobstatus
-        type: string
-      partition:
-        title: Partition
-        type: string
-      qos:
-        title: Qos
-        type: string
-  JobUpdate:
-    required:
-      - jobslurmid
-    type: object
-    properties:
-      jobslurmid:
-        title: Jobslurmid
-        type: string
-        maxLength: 150
-        minLength: 1
-      submitdate:
-        title: Submitdate
-        type: string
-        format: date-time
-        x-nullable: true
-      startdate:
-        title: Startdate
-        type: string
-        format: date-time
-        x-nullable: true
-      enddate:
-        title: Enddate
-        type: string
-        format: date-time
-        x-nullable: true
-      userid:
-        title: Userid
-        type: string
-        pattern: ^[0-9]+$
-      accountid:
-        title: Accountid
-        type: string
-      amount:
-        title: Amount
-        type: string
-        format: decimal
-        x-nullable: true
       jobstatus:
         title: Jobstatus
         type: string
