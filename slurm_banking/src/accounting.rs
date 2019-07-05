@@ -61,7 +61,7 @@ pub fn expected_cost(
         .round_dp_with_strategy(2, RoundingStrategy::RoundHalfUp))
 }
 
-pub fn check_sufficient_funds(job_cost: Decimal, user_id: &str, account_id: &str) -> bool {
+pub fn check_sufficient_funds(job_cost: Decimal, user_id: &str, account_id: &str) -> Result<bool, String> {
     let mut core = tokio_core::reactor::Core::new().unwrap();
     let hyper_client = hyper::client::Client::new(&core.handle());
     let configuration = swagger::apis::configuration::Configuration::new(hyper_client);
@@ -72,9 +72,9 @@ pub fn check_sufficient_funds(job_cost: Decimal, user_id: &str, account_id: &str
     log(&format!("{:?}", result));
     let result = match result {
         Ok(response) => response,
-        Err(_) => return true // Return true if API inaccessible 
+        Err(_) => return Err("API check for sufficient funds is inaccessible.".to_string())
     };
-    return true;
+    Ok(true)
     // match result.success() {
     //     Some(value) => value.clone(),
     //     None => false // Got a response from the API, but not containing the success field
