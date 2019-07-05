@@ -20,7 +20,11 @@ static PRICES_CONFIG_FILE_PATH: &str = "/etc/slurm/prices";
 static PLUGIN_NAME: &str = "jobcomp_bank";
 
 lazy_static! {
-    static ref SETTINGS: Mutex<Config> = Mutex::new(Config::default());
+    static ref SETTINGS: Mutex<Config> = {
+        let mut conf = Config::default();
+        slurm_banking::prices_config::load_config_from_file(&mut conf).unwrap();
+        Mutex::new(conf)
+    };
 }
 
 // Static strings reference: https://stackoverflow.com/a/33883281
@@ -46,38 +50,17 @@ fn log(message: &str) {
 // Slurm
 #[no_mangle]
 pub extern "C" fn init() -> u32 {
-    let mut conf = SETTINGS.lock().unwrap();
-    log(&format!(
-        "Looking for config file at {}",
-        PRICES_CONFIG_FILE_PATH
-    ));
-    match conf.merge(config::File::with_name(PRICES_CONFIG_FILE_PATH)) {
-        Ok(_) => {}
-        Err(_) => {
-            log("Could not find config file");
-            return ESLURM_INTERNAL;
-        }
-    };
-    log(&format!(
-        "Using url {:?}",
-        conf.get::<HashMap<String, String>>("Prices")
-    ));
-    log(&format!(
-        "Plugin initialized using the prices config file from {}",
-        PRICES_CONFIG_FILE_PATH
-    ));
-
     SLURM_SUCCESS
 }
 
 #[no_mangle]
 pub extern "C" fn fini() -> u32 {
-    return SLURM_SUCCESS;
+    SLURM_SUCCESS
 }
 
 #[no_mangle]
 pub extern "C" fn slurm_jobcomp_set_location(_location: *const c_char) -> u32 {
-    return SLURM_SUCCESS;
+    SLURM_SUCCESS
 }
 
 #[no_mangle]
@@ -109,7 +92,10 @@ pub extern "C" fn slurm_jobcomp_log_record(job_ptr: *const job_record) -> u32 {
     let user_id = (unsafe { (*job_ptr).user_id}).to_string();
 
     let job_update_record = swagger::models::Job::new(
-        jobslurmid.clone(), user_id, account, expected_cost.to_string());
+        jobslurmid.clone(), user_id, account, expected_cost.to_string())
+        .with_partition(partition)
+        .with_qos(qos);
+
     accounting::update_job(&jobslurmid, job_update_record);
 
     SLURM_SUCCESS
