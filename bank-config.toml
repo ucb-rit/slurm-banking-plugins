@@ -27,6 +27,9 @@ savio3_gpu = 1.00
 normal = 1 
 lowprio = 0
 
-# Provide the base path to the myBRC API
+# Provide the base path to the myBRC API WITHOUT the trailing /
+# For example,
+#   BAD:  http://localhost:8080/
+#   GOOD: http://localhost:8080
 [API]
-url = "http://localhost:5000"
+url = "http://mybrc-rest:8181"

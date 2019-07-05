@@ -115,7 +115,8 @@ pub extern "C" fn slurm_jobcomp_log_record(job_ptr: *const job_record) -> u32 {
         .with_partition(partition)
         .with_qos(qos);
 
-    accounting::update_job(&jobslurmid, job_update_record);
+    let base_path = slurm_banking::prices_config::get_base_path(&conf);
+    accounting::update_job(base_path, &jobslurmid, job_update_record);
 
     SLURM_SUCCESS
 }

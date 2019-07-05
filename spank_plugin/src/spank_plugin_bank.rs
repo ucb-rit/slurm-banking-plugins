@@ -99,7 +99,8 @@ pub extern "C" fn slurm_spank_init(sp: spank_t, _ac: c_int, _argv: *const *const
         .with_partition(partition)
         .with_qos(qos);
 
-    accounting::create_job(job_create_record);
+    let base_path = slurm_banking::prices_config::get_base_path(&conf);
+    accounting::create_job(base_path, job_create_record);
 
     unsafe { slurm_free_job_info_msg(job_buffer_ptr) };
     log(&format!("slurm_spank_init(). Job ID: {}", job_id));

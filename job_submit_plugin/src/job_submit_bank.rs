@@ -105,7 +105,8 @@ pub extern "C" fn job_submit(
     expected_cost, userid, account, partition, qos, time_limit_minutes, max_cpus));
 
     // Check if the account has sufficient funds for the job
-    let has_funds = match accounting::check_sufficient_funds(expected_cost, &userid.to_string(), &account) {
+    let base_path = slurm_banking::prices_config::get_base_path(&conf);
+    let has_funds = match accounting::check_sufficient_funds(base_path, expected_cost, &userid.to_string(), &account) {
         Ok(result) => result,
         Err(err) => {
             log(&format!("API connection error on check_sufficient_funds. Job specifications are: \

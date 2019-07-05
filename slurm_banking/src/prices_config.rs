@@ -1,6 +1,7 @@
 extern crate config;
 
 use config::{Config, File};
+use std::collections::HashMap;
 use super::logging::safe_info;
 
 /// The price config file path, without the file extension
@@ -9,6 +10,15 @@ static PRICES_CONFIG_FILE_PATH: &str = "/etc/slurm/bank-config";
 
 fn log(message: &str) {
     safe_info(&("slurm_banking_lib: ".to_owned() + message))
+}
+
+pub fn get_base_path(conf: &Config) -> String {
+    let default_value = "http://localhost:8080".to_string();
+    let api_conf = match conf.get::<HashMap<String, String>>("API") {
+        Ok(api_conf) => api_conf,
+        Err(_) => return default_value
+    };
+    api_conf.get("url").unwrap_or(&default_value).clone()
 }
 
 pub fn load_config_from_file(conf: &mut Config) -> Result<(), config::ConfigError> {

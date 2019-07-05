@@ -4,11 +4,14 @@ extern crate swagger;
 extern crate tokio_core;
 
 use config::Config;
-use futures::future::Future;
+use futures::future::{Either, Future};
 use rust_decimal::{Decimal, RoundingStrategy};
 use std::collections::HashMap;
 use std::str::FromStr;
+use std::time::Duration;
 use super::logging::safe_info;
+
+static REQUEST_TIMEOUT_MS: u64 = 3 * 1000;
 
 fn log(message: &str) {
     safe_info(&("slurm_banking_lib: ".to_owned() + message))
@@ -58,18 +61,34 @@ pub fn expected_cost(
         .round_dp_with_strategy(2, RoundingStrategy::RoundHalfUp))
 }
 
-pub fn check_sufficient_funds(job_cost: Decimal, user_id: &str, account_id: &str) -> Result<bool, String> {
+pub fn check_sufficient_funds(base_path: String, job_cost: Decimal, user_id: &str, account_id: &str) -> Result<bool, String> {
     let mut core = tokio_core::reactor::Core::new().unwrap();
+    let timeout = tokio_core::reactor::Timeout::new(Duration::from_millis(REQUEST_TIMEOUT_MS), &core.handle()).unwrap();
+
     let hyper_client = hyper::client::Client::new(&core.handle());
-    let configuration = swagger::apis::configuration::Configuration::new(hyper_client);
+    let mut configuration = swagger::apis::configuration::Configuration::new(hyper_client);
+    configuration.base_path = base_path;
     let api_client = swagger::apis::client::APIClient::new(configuration);
     log("check_sufficient_funds: api client created");
     let job_cost_str = job_cost.to_string();
-    let result = core.run(api_client.can_submit_job_api().can_submit_job_read(&job_cost_str, user_id, account_id));
+
+    // Reference (timeouts): https://stackoverflow.com/a/45314194
+    let work = api_client
+        .can_submit_job_api()
+        .can_submit_job_read(&job_cost_str, user_id, account_id)
+        .select2(timeout)
+        .then(|res| match res {
+            Ok(Either::A((result, _timeout))) => Ok(result),
+            Ok(Either::B((_timeout, _result))) => Err("Timed out"),
+            Err(Either::A((_err, _timeout))) => Err("Request error"),
+            Err(Either::B((_timeout_err, _result))) => Err("Timed out")
+        });
+
+    let result = core.run(work);
     log(&format!("{:?}", result));
     let result = match result {
         Ok(response) => response,
-        Err(_) => return Err("API check for sufficient funds is inaccessible.".to_string())
+        Err(err) => return Err(err.to_string())
     };
     match result.success() {
         Some(value) => Ok(*value),
@@ -77,24 +96,56 @@ pub fn check_sufficient_funds(job_cost: Decimal, user_id: &str, account_id: &str
     }
 }
 
-pub fn create_job(job_create_record: swagger::models::Job) -> Result<(), String> {
+pub fn create_job(base_path: String, job_create_record: swagger::models::Job) -> Result<(), String> {
     let mut core = tokio_core::reactor::Core::new().unwrap();
+    let timeout = tokio_core::reactor::Timeout::new(Duration::from_millis(REQUEST_TIMEOUT_MS), &core.handle()).unwrap();
+
     let hyper_client = hyper::client::Client::new(&core.handle());
-    let configuration = swagger::apis::configuration::Configuration::new(hyper_client);
+    let mut configuration = swagger::apis::configuration::Configuration::new(hyper_client);
+    configuration.base_path = base_path;
     let api_client = swagger::apis::client::APIClient::new(configuration);
     log("create_job: api client created");
-    let result = core.run(api_client.jobs_api().jobs_create(job_create_record));
+
+    // Reference (timeouts): https://stackoverflow.com/a/45314194
+    let work = api_client
+        .jobs_api()
+        .jobs_create(job_create_record)
+        .select2(timeout)
+        .then(|res| match res {
+            Ok(Either::A((result, _timeout))) => Ok(result),
+            Ok(Either::B((_timeout, _result))) => Err("Timed out"),
+            Err(Either::A((_err, _timeout))) => Err("Request error"),
+            Err(Either::B((_timeout_err, _result))) => Err("Timed out")
+        });
+
+    let result = core.run(work);
     log(&format!("create_job response: {:?}", result));
     Ok(())
 }
 
-pub fn update_job(jobslurmid: &str, job_update_record: swagger::models::Job) -> Result<(), String> {
+pub fn update_job(base_path: String, jobslurmid: &str, job_update_record: swagger::models::Job) -> Result<(), String> {
     let mut core = tokio_core::reactor::Core::new().unwrap();
+    let timeout = tokio_core::reactor::Timeout::new(Duration::from_millis(REQUEST_TIMEOUT_MS), &core.handle()).unwrap();
+
     let hyper_client = hyper::client::Client::new(&core.handle());
-    let configuration = swagger::apis::configuration::Configuration::new(hyper_client);
+    let mut configuration = swagger::apis::configuration::Configuration::new(hyper_client);
+    configuration.base_path = base_path;
     let api_client = swagger::apis::client::APIClient::new(configuration);
     log("update_job: api client created");
-    let result = core.run(api_client.jobs_api().jobs_update(jobslurmid, job_update_record));
+
+    // Reference (timeouts): https://stackoverflow.com/a/45314194
+    let work = api_client
+        .jobs_api()
+        .jobs_update(jobslurmid, job_update_record)
+        .select2(timeout)
+        .then(|res| match res {
+            Ok(Either::A((result, _timeout))) => Ok(result),
+            Ok(Either::B((_timeout, _result))) => Err("Timed out"),
+            Err(Either::A((_err, _timeout))) => Err("Request error"),
+            Err(Either::B((_timeout_err, _result))) => Err("Timed out")
+        });
+
+    let result = core.run(work);
     log(&format!("update_job response: {:?}", result));
     Ok(())
 }
