@@ -16,7 +16,6 @@ use std::collections::HashMap;
 use std::os::raw::c_char;
 use std::sync::Mutex;
 
-static PRICES_CONFIG_FILE_PATH: &str = "/etc/slurm/prices";
 static PLUGIN_NAME: &str = "jobcomp_bank";
 
 lazy_static! {
@@ -104,6 +103,8 @@ pub extern "C" fn slurm_jobcomp_log_record(job_ptr: *const job_record) -> u32 {
 
     let jobslurmid = (unsafe { (*job_ptr).job_id }).to_string();
     let user_id = (unsafe { (*job_ptr).user_id}).to_string();
+
+    // We could read the job state, but it is always COMPLETING
     // let job_state = (unsafe { (*job_ptr).job_state });
     // let job_state_ptr = unsafe { job_state_string(job_state) };
     // let job_state_str = safe_helpers::deref_cstr(job_state_ptr).unwrap();
@@ -115,8 +116,6 @@ pub extern "C" fn slurm_jobcomp_log_record(job_ptr: *const job_record) -> u32 {
         .with_qos(qos);
 
     accounting::update_job(&jobslurmid, job_update_record);
-
-    // unsafe { free(job_state_ptr as *mut std::ffi::c_void); }
 
     SLURM_SUCCESS
 }

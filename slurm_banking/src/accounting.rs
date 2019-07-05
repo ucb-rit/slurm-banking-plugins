@@ -46,17 +46,14 @@ pub fn expected_cost(
     let max_cpus = Decimal::from(max_cpus);
     let time_limit_minutes = Decimal::from(time_limit_minutes);
     let time_limit_hours = time_limit_minutes / Decimal::new(60, 0);
-    log(&format!("values: {:?} {:?} {:?}", max_cpus, time_limit_minutes, time_limit_hours));
     let hourly_price = match price_per_cpu_hour(partition, conf) {
         Some(hourly_price) => hourly_price,
         None => return None
     };
-    log(&format!("hourly price: {:?}", hourly_price));
     let qos_multiplier = match qos_multiplier(qos, conf) {
         Some(qos_multiplier) => qos_multiplier,
         None => Decimal::from(1)
     };
-    log(&format!("qos_multiplier: {:?}", qos_multiplier));
     Some((hourly_price * max_cpus * time_limit_hours * qos_multiplier)
         .round_dp_with_strategy(2, RoundingStrategy::RoundHalfUp))
 }
@@ -74,11 +71,10 @@ pub fn check_sufficient_funds(job_cost: Decimal, user_id: &str, account_id: &str
         Ok(response) => response,
         Err(_) => return Err("API check for sufficient funds is inaccessible.".to_string())
     };
-    Ok(true)
-    // match result.success() {
-    //     Some(value) => value.clone(),
-    //     None => false // Got a response from the API, but not containing the success field
-    // }
+    match result.success() {
+        Some(value) => Ok(*value),
+        None => Ok(false) // Got a response from the API, but not containing the success field
+    }
 }
 
 pub fn create_job(job_create_record: swagger::models::Job) -> Result<(), String> {

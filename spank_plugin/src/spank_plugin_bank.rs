@@ -54,6 +54,18 @@ fn error(message: &str) {
 // Slurm
 #[no_mangle]
 pub extern "C" fn slurm_spank_init(sp: spank_t, _ac: c_int, _argv: *const *const c_char) -> c_int {
+    let mut job_id: u32 = 0;
+    let mut job_buffer_ptr: *mut job_info_msg_t = std::ptr::null_mut();
+    unsafe {
+        if spank_get_item(sp, spank_item_S_JOB_ID, &mut job_id as *mut u32) != 0 {
+            return 0;
+        }
+        if slurm_load_job(&mut job_buffer_ptr as *mut *mut job_info_msg_t, job_id, SHOW_ALL as u16) != 0 {
+            return 0;
+        }
+    }
+
+    // BEGIN: Check if this plugin should be enabled
     let conf = SETTINGS.lock().unwrap();
     let plugin_enable_config = match conf.get::<HashMap<String, bool>>("Enable") {
         Ok(v) => v,
@@ -63,19 +75,8 @@ pub extern "C" fn slurm_spank_init(sp: spank_t, _ac: c_int, _argv: *const *const
     if !enabled {
         return 0
     }
+    // END: Check if this plugin should be enabled
 
-    let mut job_id: u32 = 0;
-    let mut job_buffer_ptr: *mut job_info_msg_t = std::ptr::null_mut();
-    unsafe {
-        log(&format!("{:?}", *sp));
-        if spank_get_item(sp, spank_item_S_JOB_ID, &mut job_id as *mut u32) != 0 {
-            return 0;
-        }
-        log(&format!("got job id: {}", job_id));
-        if slurm_load_job(&mut job_buffer_ptr as *mut *mut job_info_msg_t, job_id, SHOW_ALL as u16) != 0 {
-            return 0;
-        }
-    }
     let partition = safe_helpers::deref_cstr(unsafe { (*((*job_buffer_ptr).job_array)).partition }).unwrap();
     let qos = safe_helpers::deref_cstr(unsafe { (*((*job_buffer_ptr).job_array)).qos }).unwrap();
     let account = safe_helpers::deref_cstr(unsafe { (*((*job_buffer_ptr).job_array)).account }).unwrap();

@@ -59,7 +59,6 @@ pub extern "C" fn job_submit(
     submit_uid: u32,
     _error_msg: *mut *const c_char,
 ) -> u32 {
-    log("job_submit invoke");
     // BEGIN: Check if this plugin should be enabled
     let conf = SETTINGS.lock().unwrap();
     let plugin_enable_config = match conf.get::<HashMap<String, bool>>("Enable") {
@@ -72,6 +71,12 @@ pub extern "C" fn job_submit(
     }
     // END: Check if this plugin should be enabled
 
+    let userid: u32 = unsafe { (*job_desc).user_id };
+    let account: String = match safe_helpers::deref_cstr(unsafe { (*job_desc).account }) {
+        Some(account) => account,
+        None => return ESLURM_INVALID_ACCOUNT,
+    };
+
     // let max_cpus: u32 = unsafe { (*job_desc).max_cpus };
     let max_cpus: u32 = ((unsafe { (*job_desc).cpus_per_task }) as u32) * (unsafe { (*job_desc).num_tasks });
     let time_limit_minutes: i64 = unsafe { (*job_desc).time_limit } as i64; // in minutes
@@ -83,7 +88,10 @@ pub extern "C" fn job_submit(
         Some(qos) => qos,
         None => return ESLURM_INVALID_QOS
     };
-    log(&format!("got some strings: {:?} {:?}", partition, qos));
+    
+    log(&format!("Processing request from user_id {:?} with account {:?}: \
+    partition: {:?}, qos: {:?}, time_limit_minutes: {:?}, max_cpus: {:?}",
+    userid, account, partition, qos, time_limit_minutes, max_cpus));
 
     // Calculate the expected cost of the job
     let expected_cost =
@@ -92,13 +100,9 @@ pub extern "C" fn job_submit(
             None => return ESLURM_INTERNAL,
         };
 
-    log(&format!("expected cost: {:?}", expected_cost));
-
-    let userid: u32 = unsafe { (*job_desc).user_id };
-    let account: String = match safe_helpers::deref_cstr(unsafe { (*job_desc).account }) {
-        Some(account) => account,
-        None => return ESLURM_INVALID_ACCOUNT,
-    };
+    log(&format!("Expected cost is {:?} SU for user_id {:?} with account {:?}: \
+    partition: {:?}, qos: {:?}, time_limit_minutes: {:?}, max_cpus: {:?}",
+    expected_cost, userid, account, partition, qos, time_limit_minutes, max_cpus));
 
     // Check if the account has sufficient funds for the job
     let has_funds = match accounting::check_sufficient_funds(expected_cost, &userid.to_string(), &account) {
@@ -114,7 +118,8 @@ pub extern "C" fn job_submit(
     // Return success if there are enough funds
     match has_funds {
         true => SLURM_SUCCESS,
-        false => ESLURM_ACCESS_DENIED
+        false => SLURM_SUCCESS
+        // false => ESLURM_ACCESS_DENIED
     }
 }
 
