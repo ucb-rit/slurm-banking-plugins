@@ -90,13 +90,19 @@ pub extern "C" fn slurm_jobcomp_log_record(job_ptr: *const job_record) -> u32 {
 
     let jobslurmid = (unsafe { (*job_ptr).job_id }).to_string();
     let user_id = (unsafe { (*job_ptr).user_id}).to_string();
+    // let job_state = (unsafe { (*job_ptr).job_state });
+    // let job_state_ptr = unsafe { job_state_string(job_state) };
+    // let job_state_str = safe_helpers::deref_cstr(job_state_ptr).unwrap();
 
     let job_update_record = swagger::models::Job::new(
         jobslurmid.clone(), user_id, account, expected_cost.to_string())
+        .with_jobstatus("COMPLETING".to_string())
         .with_partition(partition)
         .with_qos(qos);
 
     accounting::update_job(&jobslurmid, job_update_record);
+
+    // unsafe { free(job_state_ptr as *mut std::ffi::c_void); }
 
     SLURM_SUCCESS
 }
