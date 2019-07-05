@@ -90,12 +90,20 @@ pub extern "C" fn job_submit(
     };
 
     // Check if the account has sufficient funds for the job
-    let has_funds = accounting::check_sufficient_funds(expected_cost, &userid.to_string(), &account);
-
+    let has_funds = match accounting::check_sufficient_funds(expected_cost, &userid.to_string(), &account) {
+        Ok(result) => result,
+        Err(err) => {
+            log(&format!("API connection error on check_sufficient_funds. Job specifications are: \
+            user_id: {:?}, account: {:?}, partition: {:?}, qos: {:?}, time_limit_minutes: {:?}, max_cpus: {:?}",
+            userid, account, partition, qos, time_limit_minutes, max_cpus));
+            true
+        }
+    };
+    
     // Return success if there are enough funds
     match has_funds {
         true => SLURM_SUCCESS,
-        false => ESLURM_INTERNAL
+        false => ESLURM_ACCESS_DENIED
     }
 }
 
