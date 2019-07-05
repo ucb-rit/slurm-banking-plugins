@@ -74,7 +74,10 @@ pub extern "C" fn slurm_jobcomp_log_record(job_ptr: *const job_record) -> u32 {
         Some(partition) => partition,
         None => return ESLURM_INVALID_PARTITION_NAME,
     };
-    let qos: String = (unsafe { (*job_ptr).qos_id }).to_string(); // TODO: change to qos_ptr
+    let qos: String = match safe_helpers::deref_cstr(unsafe { (*(*job_ptr).qos_ptr).name }) {
+        Some(qos) => qos,
+        None => return ESLURM_INVALID_QOS
+    };
     let cpu_count = unsafe { (*job_ptr).cpu_cnt };
     let time_spent = ((unsafe { (*job_ptr).end_time }) - (unsafe { (*job_ptr).start_time })) / 60;
 
