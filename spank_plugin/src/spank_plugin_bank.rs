@@ -11,8 +11,8 @@ use slurm_banking::bindings::*;
 use slurm_banking::logging;
 use slurm_banking::safe_helpers;
 
+use chrono::prelude::*;
 use config::Config;
-use chrono::prelude::Utc;
 use std::collections::HashMap;
 use std::os::raw::{c_char, c_int};
 use std::sync::Mutex;
@@ -45,10 +45,6 @@ pub static plugin_version: u32 = SLURM_VERSION_NUMBER;
 
 fn log(message: &str) {
     logging::safe_spank_info(&format!("{}: {}", PLUGIN_NAME, message));
-}
-
-fn error(message: &str) {
-    logging::safe_spank_error(&format!("{}: {}", PLUGIN_NAME, message));
 }
 
 // Slurm
@@ -93,14 +89,19 @@ pub extern "C" fn slurm_spank_init(sp: spank_t, _ac: c_int, _argv: *const *const
 
     let user_id = unsafe { (*((*job_buffer_ptr).job_array)).user_id };
 
+    let start_timestamp = unsafe { (*((*job_buffer_ptr).job_array)).start_time };
+    let start_timestamp_str = DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(start_timestamp, 0), Utc).to_rfc3339();
+
     let job_create_record = swagger::models::Job::new(
         job_id.to_string(), user_id.to_string(), account, expected_cost.to_string())
         .with_jobstatus("RUNNING".to_string())
         .with_partition(partition)
-        .with_qos(qos);
+        .with_qos(qos)
+        .with_startdate(start_timestamp_str);
 
+    log(&format!("Creating job wih info: {:?}", job_create_record));
     let base_path = slurm_banking::prices_config::get_base_path(&conf);
-    accounting::create_job(base_path, job_create_record);
+    let _ = accounting::create_job(base_path, job_create_record);
 
     unsafe { slurm_free_job_info_msg(job_buffer_ptr) };
     log(&format!("slurm_spank_init(). Job ID: {}", job_id));

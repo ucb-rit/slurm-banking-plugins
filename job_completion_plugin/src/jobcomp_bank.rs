@@ -1,6 +1,7 @@
 #[macro_use]
 extern crate lazy_static;
 
+extern crate chrono;
 extern crate config;
 extern crate rust_decimal;
 extern crate slurm_banking;
@@ -11,6 +12,7 @@ use slurm_banking::bindings::*;
 use slurm_banking::logging;
 use slurm_banking::safe_helpers;
 
+use chrono::prelude::*;
 use config::Config;
 use std::collections::HashMap;
 use std::os::raw::c_char;
@@ -104,6 +106,12 @@ pub extern "C" fn slurm_jobcomp_log_record(job_ptr: *const job_record) -> u32 {
     let jobslurmid = (unsafe { (*job_ptr).job_id }).to_string();
     let user_id = (unsafe { (*job_ptr).user_id}).to_string();
 
+    let start_timestamp = unsafe { (*job_ptr).start_time };
+    let start_timestamp_str = DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(start_timestamp, 0), Utc).to_rfc3339();
+
+    let end_timestamp = unsafe { (*job_ptr).end_time };
+    let end_timestamp_str = DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(end_timestamp, 0), Utc).to_rfc3339();
+
     // We could read the job state, but it is always COMPLETING
     // let job_state = (unsafe { (*job_ptr).job_state });
     // let job_state_ptr = unsafe { job_state_string(job_state) };
@@ -113,10 +121,13 @@ pub extern "C" fn slurm_jobcomp_log_record(job_ptr: *const job_record) -> u32 {
         jobslurmid.clone(), user_id, account, expected_cost.to_string())
         .with_jobstatus("COMPLETING".to_string())
         .with_partition(partition)
-        .with_qos(qos);
+        .with_qos(qos)
+        .with_startdate(start_timestamp_str)
+        .with_enddate(end_timestamp_str);
 
+    log(&format!("Updating job with info: {:?}", job_update_record));
     let base_path = slurm_banking::prices_config::get_base_path(&conf);
-    accounting::update_job(base_path, &jobslurmid, job_update_record);
+    let _ = accounting::update_job(base_path, &jobslurmid, job_update_record);
 
     SLURM_SUCCESS
 }

@@ -12,7 +12,6 @@ use slurm_banking::logging;
 use slurm_banking::safe_helpers;
 
 use config::Config;
-use chrono::prelude::Utc;
 use std::collections::HashMap;
 use std::os::raw::{c_char, c_int};
 use std::sync::Mutex;
@@ -56,7 +55,7 @@ pub extern "C" fn init() -> c_int {
 #[no_mangle]
 pub extern "C" fn job_submit(
     job_desc: *mut job_descriptor,
-    submit_uid: u32,
+    _submit_uid: u32,
     _error_msg: *mut *const c_char,
 ) -> u32 {
     // BEGIN: Check if this plugin should be enabled
@@ -108,7 +107,7 @@ pub extern "C" fn job_submit(
     let base_path = slurm_banking::prices_config::get_base_path(&conf);
     let has_funds = match accounting::check_sufficient_funds(base_path, expected_cost, &userid.to_string(), &account) {
         Ok(result) => result,
-        Err(err) => {
+        Err(_err) => {
             log(&format!("API connection error on check_sufficient_funds. Job specifications are: \
             user_id: {:?}, account: {:?}, partition: {:?}, qos: {:?}, time_limit_minutes: {:?}, max_cpus: {:?}",
             userid, account, partition, qos, time_limit_minutes, max_cpus));
