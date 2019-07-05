@@ -93,7 +93,10 @@ pub extern "C" fn slurm_spank_init(sp: spank_t, _ac: c_int, _argv: *const *const
     let user_id = unsafe { (*((*job_buffer_ptr).job_array)).user_id };
 
     let job_create_record = swagger::models::Job::new(
-        job_id.to_string(), user_id.to_string(), account, expected_cost.to_string());
+        job_id.to_string(), user_id.to_string(), account, expected_cost.to_string())
+        .with_jobstatus("RUNNING".to_string())
+        .with_partition(partition)
+        .with_qos(qos);
 
     accounting::create_job(job_create_record);
 
