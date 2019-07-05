@@ -60,7 +60,20 @@ pub extern "C" fn job_submit(
     _error_msg: *mut *const c_char,
 ) -> u32 {
     log("job_submit invoke");
-    let max_cpus: u32 = unsafe { (*job_desc).max_cpus };
+    // BEGIN: Check if this plugin should be enabled
+    let conf = SETTINGS.lock().unwrap();
+    let plugin_enable_config = match conf.get::<HashMap<String, bool>>("Enable") {
+        Ok(v) => v,
+        Err(_) => return SLURM_SUCCESS 
+    };
+    let enabled = plugin_enable_config.get("enable_job_submit_plugin").unwrap_or(&false);
+    if !enabled {
+        return SLURM_SUCCESS 
+    }
+    // END: Check if this plugin should be enabled
+
+    // let max_cpus: u32 = unsafe { (*job_desc).max_cpus };
+    let max_cpus: u32 = ((unsafe { (*job_desc).cpus_per_task }) as u32) * (unsafe { (*job_desc).num_tasks });
     let time_limit_minutes: i64 = unsafe { (*job_desc).time_limit } as i64; // in minutes
     let partition: String = match safe_helpers::deref_cstr(unsafe { (*job_desc).partition }) {
         Some(partition) => partition,
@@ -71,8 +84,6 @@ pub extern "C" fn job_submit(
         None => return ESLURM_INVALID_QOS
     };
     log(&format!("got some strings: {:?} {:?}", partition, qos));
-
-    let conf = SETTINGS.lock().unwrap();
 
     // Calculate the expected cost of the job
     let expected_cost =

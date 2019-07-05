@@ -65,6 +65,18 @@ pub extern "C" fn slurm_jobcomp_set_location(_location: *const c_char) -> u32 {
 
 #[no_mangle]
 pub extern "C" fn slurm_jobcomp_log_record(job_ptr: *const job_record) -> u32 {
+    // BEGIN: Check if this plugin should be enabled
+    let conf = SETTINGS.lock().unwrap();
+    let plugin_enable_config = match conf.get::<HashMap<String, bool>>("Enable") {
+        Ok(v) => v,
+        Err(_) => return 0 
+    };
+    let enabled = plugin_enable_config.get("enable_job_complete_plugin").unwrap_or(&false);
+    if !enabled {
+        return 0
+    }
+    // END: Check if this plugin should be enabled
+
     let account: String = match safe_helpers::deref_cstr(unsafe { (*job_ptr).account }) {
         Some(account) => account,
         None => return ESLURM_INVALID_ACCOUNT,
@@ -84,7 +96,6 @@ pub extern "C" fn slurm_jobcomp_log_record(job_ptr: *const job_record) -> u32 {
     log(&format!("account: {:?}, job id: {:?}, cpu_count: {:?}, time_spent: {:?}", 
         account, job_id, cpu_count, time_spent));
 
-    let conf = SETTINGS.lock().unwrap();
     let expected_cost =
         match accounting::expected_cost(&partition, &qos, cpu_count, time_spent, &conf) {
             Some(cost) => cost,
