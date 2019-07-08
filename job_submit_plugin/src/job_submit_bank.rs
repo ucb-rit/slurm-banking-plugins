@@ -79,6 +79,7 @@ pub extern "C" fn job_submit(
     // let max_cpus: u32 = unsafe { (*job_desc).max_cpus };
     let max_cpus: u32 = ((unsafe { (*job_desc).cpus_per_task }) as u32) * (unsafe { (*job_desc).num_tasks });
     let time_limit_minutes: i64 = unsafe { (*job_desc).time_limit } as i64; // in minutes
+    let time_limit_seconds = time_limit_minutes * 60;
     let partition: String = match safe_helpers::deref_cstr(unsafe { (*job_desc).partition }) {
         Some(partition) => partition,
         None => return ESLURM_INVALID_PARTITION_NAME,
@@ -90,11 +91,11 @@ pub extern "C" fn job_submit(
     
     log(&format!("Processing request from user_id {:?} with account {:?}: \
     partition: {:?}, qos: {:?}, time_limit_minutes: {:?}, max_cpus: {:?}",
-    userid, account, partition, qos, time_limit_minutes, max_cpus));
+    userid, account, partition, qos, time_limit_seconds, max_cpus));
 
     // Calculate the expected cost of the job
     let expected_cost =
-        match accounting::expected_cost(&partition, &qos, max_cpus, time_limit_minutes, &conf) {
+        match accounting::expected_cost(&partition, &qos, max_cpus, time_limit_seconds, &conf) {
             Some(cost) => cost,
             None => return ESLURM_INTERNAL,
         };

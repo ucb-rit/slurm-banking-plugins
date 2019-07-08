@@ -43,12 +43,12 @@ pub fn expected_cost(
     partition: &str,
     qos: &str,
     max_cpus: u32,
-    time_limit_minutes: i64,
+    time_limit_seconds: i64,
     conf: &Config
 ) -> Option<Decimal> {
     let max_cpus = Decimal::from(max_cpus);
-    let time_limit_minutes = Decimal::from(time_limit_minutes);
-    let time_limit_hours = time_limit_minutes / Decimal::new(60, 0);
+    let time_limit_seconds = Decimal::from(time_limit_seconds);
+    let time_limit_hours = time_limit_seconds / Decimal::new(60 * 60, 0);
     let hourly_price = match price_per_cpu_hour(partition, conf) {
         Some(hourly_price) => hourly_price,
         None => return None

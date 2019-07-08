@@ -92,7 +92,7 @@ pub extern "C" fn slurm_jobcomp_log_record(job_ptr: *const job_record) -> u32 {
         None => return ESLURM_INVALID_QOS
     };
     let cpu_count = unsafe { (*job_ptr).cpu_cnt };
-    let time_spent = ((unsafe { (*job_ptr).end_time }) - (unsafe { (*job_ptr).start_time })) / 60;
+    let time_spent = (unsafe { (*job_ptr).end_time }) - (unsafe { (*job_ptr).start_time }); // in seconds
 
     log(&format!("account: {:?}, job id: {:?}, cpu_count: {:?}, time_spent: {:?}", 
         account, job_id, cpu_count, time_spent));
