@@ -76,7 +76,7 @@ pub extern "C" fn slurm_spank_init(sp: spank_t, _ac: c_int, _argv: *const *const
     let partition = safe_helpers::deref_cstr(unsafe { (*((*job_buffer_ptr).job_array)).partition }).unwrap();
     let qos = safe_helpers::deref_cstr(unsafe { (*((*job_buffer_ptr).job_array)).qos }).unwrap();
     let account = safe_helpers::deref_cstr(unsafe { (*((*job_buffer_ptr).job_array)).account }).unwrap();
-    let max_cpus = unsafe { (*((*job_buffer_ptr).job_array)).max_cpus };
+    let max_cpus = unsafe { (*((*job_buffer_ptr).job_array)).cpus_per_task as u32 * (*((*job_buffer_ptr).job_array)).num_tasks };
     let time_limit: i64 = unsafe { (*((*job_buffer_ptr).job_array)).time_limit } as i64;
     log(&format!("Partition: {:?}, QOS: {:?}, Account: {:?}, Max CPUs: {:?}, Time limit: {:?}", 
         partition, qos, account, max_cpus, time_limit));
