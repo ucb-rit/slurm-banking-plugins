@@ -6,11 +6,15 @@ __Currently in development - Not ready for use__
 
 Slurm banking plugins provide allocation management to Slurm. The plugins deduct service units for completed and running jobs and prevent jobs from running if there are insufficient service units available. The plugins interact with a REST API (provided by myBRC), documented in the [spec/swagger.json](spec/swagger.json). The following three plugins are used:
 
-- [job_submit_plugin](job_submit_plugin): Estimate maximum job cost based on submission parameters, and reject job if the API reports that the user/account has insufficient service units available.
-- [spank_plugin](spank_plugin): Report job and estimated cost to the API.
-- [job_completion_plugin](job_completion_plugin): Modify job in API to reflect actual usage.
+- [job_submit_plugin](job_submit_plugin) (job submission stage): Estimate maximum job cost based on submission parameters, and reject job if the API reports that the user/account has insufficient service units available.
+- [spank_plugin](spank_plugin) (job running stage): Report job and estimated cost to the API.
+- [job_completion_plugin](job_completion_plugin) (job completing stage): Modify job in API to reflect actual usage.
 
 These plugins are written in [Rust](https://www.rust-lang.org), an efficient and memory-safe programming language. It uses [rust-bindgen](https://github.com/rust-lang/rust-bindgen) to automatically generate the Rust foreign function interface (FFI) bindings based on the Slurm C header files.
+
+## Limitations
+
+- Since the spank plugin cannot cancel a job, the user could overdraw their service unit allocation if they had enough service units at the time of submission, but not enough service units at the time the job starts running, since the units are only actually deducted from the balance when the job starts running.
 
 ## Build Requirements
 - [Rust](https://www.rust-lang.org/) (including [cargo](https://doc.rust-lang.org/cargo/))
