@@ -56,9 +56,15 @@ make install
 ```
 2. Move `prices.toml` to `/etc/slurm/prices.toml` and update the partitions/prices accordingly.
 ```bash
-cp prices.toml /etc/slurm/prices.toml
+cp bank-config.toml /etc/slurm/bank-config.toml
 ```
-3. Include the plugins in the `/etc/slurm/slurm.conf`:
+3. Include the spank plugin in `/etc/slurm/plugstack.conf` and the others in `/etc/slurm/slurm.conf`:
+
+```bash
+cp plugstack.conf /etc/slurm/.
+```
+
+### /etc/slurm/slurm.conf
 ```bash
 # other config options above...
 JobSubmitPlugins=job_submit/bank
