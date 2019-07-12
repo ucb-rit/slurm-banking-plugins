@@ -29,6 +29,7 @@ Class | Method | HTTP request | Description
 ## Documentation For Models
 
  - [InlineResponse200](docs/InlineResponse200.md)
+ - [InlineResponse400](docs/InlineResponse400.md)
  - [Job](docs/Job.md)
 
 

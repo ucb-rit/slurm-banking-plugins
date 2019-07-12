@@ -11,7 +11,7 @@ use std::str::FromStr;
 use std::time::Duration;
 use super::logging::safe_info;
 
-static REQUEST_TIMEOUT_MS: u64 = 3 * 1000;
+static REQUEST_TIMEOUT_MS: u64 = 10 * 1000;
 
 fn log(message: &str) {
     safe_info(&("slurm_banking_lib: ".to_owned() + message))
@@ -80,7 +80,10 @@ pub fn check_sufficient_funds(base_path: String, job_cost: Decimal, user_id: &st
         .then(|res| match res {
             Ok(Either::A((result, _timeout))) => Ok(result),
             Ok(Either::B((_timeout, _result))) => Err("Timed out"),
-            Err(Either::A((_err, _timeout))) => Err("Request error"),
+            Err(Either::A((err, _timeout))) => {
+                log(&format!("{:?}", err));
+                Err("Request error")
+            },
             Err(Either::B((_timeout_err, _result))) => Err("Timed out")
         });
 
@@ -114,7 +117,10 @@ pub fn create_job(base_path: String, job_create_record: swagger::models::Job) ->
         .then(|res| match res {
             Ok(Either::A((result, _timeout))) => Ok(result),
             Ok(Either::B((_timeout, _result))) => Err("Timed out"),
-            Err(Either::A((_err, _timeout))) => Err("Request error"),
+            Err(Either::A((err, _timeout))) => {
+                log(&format!("{:?}", err));
+                Err("Request error")
+            },
             Err(Either::B((_timeout_err, _result))) => Err("Timed out")
         });
 

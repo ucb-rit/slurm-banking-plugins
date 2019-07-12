@@ -43,13 +43,24 @@ paths:
       responses:
         '200':
           description: A mapping from "success" to whether or not the job can be submitted
-            and a mapping from "message" to additional information, including error
-            messages.
+            and a mapping from "message" to reasoning.
           schema:
             type: object
             properties:
               success:
                 type: boolean
+              message:
+                type: string
+                x-nullable: true
+        '400':
+          description: A mapping from "success" to False and a mapping from "message"
+            to an error message.
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                default: false
               message:
                 type: string
                 x-nullable: true
@@ -152,9 +163,15 @@ definitions:
       jobstatus:
         title: Jobstatus
         type: string
+        maxLength: 50
+        x-nullable: true
       partition:
         title: Partition
         type: string
+        maxLength: 50
+        x-nullable: true
       qos:
         title: Qos
         type: string
+        maxLength: 50
+        x-nullable: true

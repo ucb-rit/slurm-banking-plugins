@@ -6,13 +6,13 @@ all: jobcomp_bank.so job_submit_bank.so spank_bank.so
 
 slurm/slurm/slurm.h:
 	cd $(SLURM_SOURCE_CODE_DIR) && ./configure
-jobcomp_bank.so: slurm/slurm/slurm.h mybrc_rest_client job_completion_plugin/**/*
+jobcomp_bank.so: slurm/slurm/slurm.h job_completion_plugin/**/*
 	CPATH=$(CPATH):$(SLURM_SOURCE_CODE_DIR) SLURM_SOURCE_CODE_DIR=$(SLURM_SOURCE_CODE_DIR) $(MAKE) -C job_completion_plugin all
 	cp job_completion_plugin/*.so .
-job_submit_bank.so: slurm/slurm/slurm.h mybrc_rest_client job_submit_plugin/**/*
+job_submit_bank.so: slurm/slurm/slurm.h job_submit_plugin/**/*
 	CPATH=$(CPATH):$(SLURM_SOURCE_CODE_DIR) SLURM_SOURCE_CODE_DIR=$(SLURM_SOURCE_CODE_DIR) $(MAKE) -C job_submit_plugin all
 	cp job_submit_plugin/*.so .
-spank_bank.so: slurm/slurm/slurm.h mybrc_rest_client spank_plugin/**/*
+spank_bank.so: slurm/slurm/slurm.h spank_plugin/**/*
 	CPATH=$(CPATH):$(SLURM_SOURCE_CODE_DIR) SLURM_SOURCE_CODE_DIR=$(SLURM_SOURCE_CODE_DIR) $(MAKE) -C spank_plugin all
 	cp spank_plugin/*.so .
 mybrc_rest_client: spec/swagger.json
