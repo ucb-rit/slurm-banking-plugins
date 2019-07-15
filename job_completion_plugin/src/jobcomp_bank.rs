@@ -116,6 +116,9 @@ pub extern "C" fn slurm_jobcomp_log_record(job_ptr: *const job_record) -> u32 {
     let end_timestamp = unsafe { (*job_ptr).end_time };
     let end_timestamp_str = DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(end_timestamp, 0), Utc).to_rfc3339();
 
+    let submit_timestamp = unsafe { (*(*job_ptr).details).submit_time };
+    let submit_timestamp_str = DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(submit_timestamp, 0), Utc).to_rfc3339();
+
     // We could read the job state, but it is always COMPLETING
     // let job_state = (unsafe { (*job_ptr).job_state });
     // let job_state_ptr = unsafe { job_state_string(job_state) };
@@ -126,6 +129,7 @@ pub extern "C" fn slurm_jobcomp_log_record(job_ptr: *const job_record) -> u32 {
         .with_jobstatus("COMPLETING".to_string())
         .with_partition(partition)
         .with_qos(qos)
+        .with_submitdate(submit_timestamp_str)
         .with_startdate(start_timestamp_str)
         .with_enddate(end_timestamp_str);
 
