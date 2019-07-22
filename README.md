@@ -39,7 +39,7 @@ rmdir slurm && ln -s /path/to/slurm/source slurm # Point to slurm source
 make
 make install
 vim /etc/slurm/slurm.conf # Edit slurm.conf
-cp prices.toml /etc/slurm/prices.toml
+cp bank-config.toml /etc/slurm/bank-config.toml
 ```
 
 ### NixOS
@@ -94,10 +94,6 @@ docker run --rm -v $(shell pwd):/local swaggerapi/swagger-codegen-cli generate \
   -l rust \
   -o /local/mybrc_rest_client
 ```
-
-Current banking interaction is through two simple calls:
-- `POST` to `/jobs/{slurmjobid}` will create a job and update the usage if the usage is within the allocated amount
-- `PUT` to `/jobs/{slurmjobid}` will create/update a job no matter what, and update the usage even if that means the account is overdrawn
 
 ### Testing with myBRC
 
