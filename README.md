@@ -72,7 +72,7 @@ cp plugstack.conf /etc/slurm/.
 ```bash
 # other config options above...
 JobSubmitPlugins=job_submit/bank
-JobCompPlugins=jobcomp/bank
+JobCompType=jobcomp/bank
 ```
 
 ### Help
