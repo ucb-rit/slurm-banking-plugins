@@ -24,7 +24,7 @@ These plugins are written in [Rust](https://www.rust-lang.org), an efficient and
 ## Building
 Since the Slurm `jobcomp` plugins need access to the `"src/common/slurm_jobcomp.h"` header, we need access to the Slurm source code `src` directory in order to build (as well as the normal `<slurm/slurm.h>` headers on the `CPATH`). 
 
-**You will have to first run `./configure` on the Slurm source code, otherwise `<slurm/slurm.h>` will not exist. If you don't run `./configure`, the Makefile will try to do it for you.**
+You will have to first run `./configure` on the Slurm source code, otherwise `<slurm/slurm.h>` will not exist. If you don't run `./configure`, the Makefile will try to do it for you.
 
 1. Edit the path at the top of the Makefile to point to the Slurm source code directory, or symlink `./slurm` in this repository to point to it.
 2. Once you have all the dependencies, just run `make` :)
@@ -41,6 +41,8 @@ make install
 vim /etc/slurm/slurm.conf # Edit slurm.conf
 cp bank-config.toml /etc/slurm/bank-config.toml
 ```
+
+**When adding the `.so` binaries to the nodes with Warewulf, you must use `wwsh file import` instead of `wwsh file new`. Make sure the format in `wwsh file print` is listed as `binary`.**
 
 ### NixOS
 `shell.nix` provides the environment for development on [NixOS](https://nixos.org). I run the following:
