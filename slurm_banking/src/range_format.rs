@@ -52,16 +52,6 @@ impl<T: Clone> Iterator for CartesianProduct<T> {
     }
 }
 
-fn cartesian_product<T: Clone>(xs: Vec<T>, ys: Vec<T>) -> Vec<(T, T)> {
-    let mut result = Vec::new();
-    for x in xs {
-        for y in &ys {
-            result.push((x.clone(), y.clone()));
-        }
-    }
-    result
-}
-
 fn expand_node_single_group(group: &str) -> Vec<String> {
     // "n00[01-20].savio[0-1]"
 
