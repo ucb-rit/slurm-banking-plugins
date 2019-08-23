@@ -32,6 +32,7 @@ docker-dev: docker/**/* **/*
 	docker run \
 		-v $(shell pwd)/job_submit_plugin/src:/slurm-banking-plugins/job_submit_plugin/src \
 		-v $(shell pwd)/job_completion_plugin/src:/slurm-banking-plugins/job_completion_plugin/src \
+		-v $(shell pwd)/spank_plugin/src:/slurm-banking-plugins/spank_plugin/src \
 		-v $(shell pwd)/slurm_banking/src:/slurm-banking-plugins/slurm_banking/src \
 		-it -h ernie slurm-banking-plugins-dev
 	
