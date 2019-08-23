@@ -119,7 +119,8 @@ pub extern "C" fn slurm_jobcomp_log_record(job_ptr: *const job_record) -> u32 {
     let submit_timestamp_str = DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(submit_timestamp, 0), Utc).to_rfc3339();
 
     let nodes_raw = unsafe { (*job_ptr).nodes };
-    let nodes = safe_helpers::deref_cstr(nodes_raw);
+    let nodes = slurm_banking::range_format::expand_node_hostnames(
+        &safe_helpers::deref_cstr(nodes_raw).unwrap_or("".to_string()));
 
     log_with_jobid(&jobslurmid, &format!("Account: {:?}, Partition: {:?}, QoS: {:?}, CPUs: {:?}, Nodes: {:?}",
         account, partition, qos, cpu_count, nodes));

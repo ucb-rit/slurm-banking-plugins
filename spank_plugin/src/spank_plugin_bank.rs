@@ -101,7 +101,8 @@ pub extern "C" fn slurm_spank_init(sp: spank_t, _ac: c_int, _argv: *const *const
 
     let num_cpus = unsafe { (*((*job_buffer_ptr).job_array)).num_cpus };
     let nodes_raw = unsafe { (*((*job_buffer_ptr)).job_array).nodes };
-    let nodes = safe_helpers::deref_cstr(nodes_raw);
+    let nodes = slurm_banking::range_format::expand_node_hostnames(
+        &safe_helpers::deref_cstr(nodes_raw).unwrap_or("".to_string()));
     log(&format!("num_cpus: {:?}", num_cpus));
     log(&format!("Nodes: {:?}", nodes));
 
