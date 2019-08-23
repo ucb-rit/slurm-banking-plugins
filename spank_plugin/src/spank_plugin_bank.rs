@@ -22,7 +22,10 @@ static PLUGIN_NAME: &str = "spank_bank";
 lazy_static! {
     static ref SETTINGS: Mutex<Config> = {
         let mut conf = Config::default();
-        slurm_banking::prices_config::load_config_from_file(&mut conf).unwrap();
+        match slurm_banking::prices_config::load_config_from_file(&mut conf) {
+            Ok(_) => {},
+            Err(_) => {}
+        };
         Mutex::new(conf)
     };
 }
@@ -49,15 +52,15 @@ fn log(message: &str) {
 
 // Slurm
 #[no_mangle]
-pub extern "C" fn slurm_spank_init(sp: spank_t, _ac: c_int, _argv: *const *const c_char) -> c_int {
+pub extern "C" fn slurm_spank_init(sp: spank_t, _ac: c_int, _argv: *const *const c_char) -> u32 {
     let mut job_id: u32 = 0;
     let mut job_buffer_ptr: *mut job_info_msg_t = std::ptr::null_mut();
     unsafe {
         if spank_get_item(sp, spank_item_S_JOB_ID, &mut job_id as *mut u32) != 0 {
-            return 0;
+            return SLURM_SUCCESS;
         }
         if slurm_load_job(&mut job_buffer_ptr as *mut *mut job_info_msg_t, job_id, SHOW_ALL as u16) != 0 {
-            return 0;
+            return SLURM_SUCCESS;
         }
     }
 
@@ -65,11 +68,11 @@ pub extern "C" fn slurm_spank_init(sp: spank_t, _ac: c_int, _argv: *const *const
     let conf = SETTINGS.lock().unwrap();
     let plugin_enable_config = match conf.get::<HashMap<String, bool>>("Enable") {
         Ok(v) => v,
-        Err(_) => return 0 
+        Err(_) => return SLURM_SUCCESS 
     };
     let enabled = plugin_enable_config.get("enable_spank_plugin").unwrap_or(&false);
     if !enabled {
-        return 0
+        return SLURM_SUCCESS 
     }
     // END: Check if this plugin should be enabled
 
@@ -106,5 +109,5 @@ pub extern "C" fn slurm_spank_init(sp: spank_t, _ac: c_int, _argv: *const *const
 
     unsafe { slurm_free_job_info_msg(job_buffer_ptr) };
     log(&format!("slurm_spank_init(). Job ID: {}", job_id));
-    0
+    SLURM_SUCCESS
 }

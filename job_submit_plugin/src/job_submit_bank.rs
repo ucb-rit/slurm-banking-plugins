@@ -21,7 +21,10 @@ static PLUGIN_NAME: &str = "job_submit_bank";
 lazy_static! {
     static ref SETTINGS: Mutex<Config> = {
         let mut conf = Config::default();
-        slurm_banking::prices_config::load_config_from_file(&mut conf).unwrap();
+        match slurm_banking::prices_config::load_config_from_file(&mut conf) {
+            Ok(_) => {},
+            Err(_) => {}
+        };
         Mutex::new(conf)
     };
 }

@@ -20,13 +20,16 @@ use std::sync::Mutex;
 
 static PLUGIN_NAME: &str = "jobcomp_bank";
 
-// lazy_static! {
-//     static ref SETTINGS: Mutex<Config> = {
-//         let mut conf = Config::default();
-//         slurm_banking::prices_config::load_config_from_file(&mut conf).unwrap();
-//         Mutex::new(conf)
-//     };
-// }
+lazy_static! {
+    static ref SETTINGS: Mutex<Config> = {
+        let mut conf = Config::default();
+        match slurm_banking::prices_config::load_config_from_file(&mut conf) {
+            Ok(_) => {},
+            Err(_) => {}
+        };
+        Mutex::new(conf)
+    };
+}
 
 // Static strings reference: https://stackoverflow.com/a/33883281
 #[repr(C)]
@@ -48,6 +51,10 @@ fn log(message: &str) {
     logging::safe_info(&format!("{}: {}", PLUGIN_NAME, message));
 }
 
+fn log_with_jobid(jobid: &str, message: &str) {
+    log(&format!("Job {}: {}", jobid, message));
+}
+
 // Slurm
 #[no_mangle]
 pub extern "C" fn init() -> u32 {
@@ -67,15 +74,11 @@ pub extern "C" fn slurm_jobcomp_set_location(_location: *const c_char) -> u32 {
 #[no_mangle]
 pub extern "C" fn slurm_jobcomp_log_record(job_ptr: *const job_record) -> u32 {
     // BEGIN: Check if this plugin should be enabled
-    let mut conf = Config::default();
-    slurm_banking::prices_config::load_config_from_file(&mut conf).unwrap();
-
-    // let conf = SETTINGS.lock().unwrap();
+    let conf = SETTINGS.lock().unwrap();
     let plugin_enable_config = match conf.get::<HashMap<String, bool>>("Enable") {
         Ok(v) => v,
         Err(_) => return 0 
     };
-
     let enabled = plugin_enable_config.get("enable_job_complete_plugin").unwrap_or(&false);
     if !enabled {
         return 0
@@ -86,7 +89,6 @@ pub extern "C" fn slurm_jobcomp_log_record(job_ptr: *const job_record) -> u32 {
         Some(account) => account,
         None => return ESLURM_INVALID_ACCOUNT,
     };
-    let job_id = unsafe { (*job_ptr).job_id };
     let partition: String = match safe_helpers::deref_cstr(unsafe { (*job_ptr).partition }) {
         Some(partition) => partition,
         None => return ESLURM_INVALID_PARTITION_NAME,
@@ -97,9 +99,6 @@ pub extern "C" fn slurm_jobcomp_log_record(job_ptr: *const job_record) -> u32 {
     };
     let cpu_count = unsafe { (*job_ptr).cpu_cnt };
     let time_spent = (unsafe { (*job_ptr).end_time }) - (unsafe { (*job_ptr).start_time }); // in seconds
-
-    log(&format!("account: {:?}, job id: {:?}, cpu_count: {:?}, time_spent: {:?}", 
-        account, job_id, cpu_count, time_spent));
 
     let expected_cost =
         match accounting::expected_cost(&partition, &qos, cpu_count, time_spent, &conf) {
@@ -119,6 +118,18 @@ pub extern "C" fn slurm_jobcomp_log_record(job_ptr: *const job_record) -> u32 {
     let submit_timestamp = unsafe { (*(*job_ptr).details).submit_time };
     let submit_timestamp_str = DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(submit_timestamp, 0), Utc).to_rfc3339();
 
+    let node_cnt = unsafe { (*job_ptr).node_cnt };
+    let nodes_raw = unsafe { std::slice::from_raw_parts((*job_ptr).nodes, node_cnt as usize) };
+    let mut nodes = Vec::new();
+    for node_raw in nodes_raw {
+        match safe_helpers::deref_cstr(node_raw) {
+            Some(node) => nodes.push(node),
+            None => {}
+        }
+    }
+
+    log_with_jobid(&jobslurmid, &format!("Nodes: {:?}", nodes));
+
     // We could read the job state, but it is always COMPLETING
     // let job_state = (unsafe { (*job_ptr).job_state });
     // let job_state_ptr = unsafe { job_state_string(job_state) };
@@ -133,7 +144,7 @@ pub extern "C" fn slurm_jobcomp_log_record(job_ptr: *const job_record) -> u32 {
         .with_startdate(start_timestamp_str)
         .with_enddate(end_timestamp_str);
 
-    log(&format!("Updating job with info: {:?}", job_update_record));
+    log_with_jobid(&jobslurmid, &format!("Updating job with info: {:?}", job_update_record));
     let base_path = slurm_banking::prices_config::get_base_path(&conf);
     let _ = accounting::update_job(base_path, &jobslurmid, job_update_record);
 
