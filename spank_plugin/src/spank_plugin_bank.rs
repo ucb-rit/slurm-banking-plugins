@@ -99,10 +99,9 @@ pub extern "C" fn slurm_spank_init(sp: spank_t, _ac: c_int, _argv: *const *const
     let submit_timestamp = unsafe { (*((*job_buffer_ptr).job_array)).start_time };
     let submit_timestamp_str = DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(submit_timestamp, 0), Utc).to_rfc3339();
 
-    let node_cnt = unsafe { (*((*job_buffer_ptr).job_array)).num_nodes };
     let num_cpus = unsafe { (*((*job_buffer_ptr).job_array)).num_cpus };
     let nodes_raw = unsafe { (*((*job_buffer_ptr)).job_array).nodes };
-    let nodes = safe_helpers::deref_cstr_array(nodes_raw, node_cnt as usize);
+    let nodes = safe_helpers::deref_cstr(nodes_raw);
     log(&format!("num_cpus: {:?}", num_cpus));
     log(&format!("Nodes: {:?}", nodes));
 
