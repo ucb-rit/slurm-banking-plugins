@@ -88,7 +88,7 @@ pub extern "C" fn slurm_spank_init(sp: spank_t, _ac: c_int, _argv: *const *const
     let expected_cost =
         match accounting::expected_cost(&partition, &qos, max_cpus, time_limit_seconds, &conf) {
             Some(cost) => cost,
-            None => return 0,
+            None => return SLURM_SUCCESS,
         };
 
     let user_id = unsafe { (*((*job_buffer_ptr).job_array)).user_id };
@@ -96,12 +96,23 @@ pub extern "C" fn slurm_spank_init(sp: spank_t, _ac: c_int, _argv: *const *const
     let start_timestamp = unsafe { (*((*job_buffer_ptr).job_array)).start_time };
     let start_timestamp_str = DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(start_timestamp, 0), Utc).to_rfc3339();
 
+    let submit_timestamp = unsafe { (*((*job_buffer_ptr).job_array)).start_time };
+    let submit_timestamp_str = DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(submit_timestamp, 0), Utc).to_rfc3339();
+
+    let node_cnt = unsafe { (*((*job_buffer_ptr).job_array)).num_nodes };
+    let num_cpus = unsafe { (*((*job_buffer_ptr).job_array)).num_cpus };
+    let nodes_raw = unsafe { (*((*job_buffer_ptr)).job_array).nodes };
+    let nodes = safe_helpers::deref_cstr_array(nodes_raw, node_cnt as usize);
+    log(&format!("num_cpus: {:?}", num_cpus));
+    log(&format!("Nodes: {:?}", nodes));
+
     let job_create_record = swagger::models::Job::new(
         job_id.to_string(), user_id.to_string(), account, expected_cost.to_string())
         .with_jobstatus("RUNNING".to_string())
         .with_partition(partition)
         .with_qos(qos)
-        .with_startdate(start_timestamp_str);
+        .with_startdate(start_timestamp_str)
+        .with_submitdate(submit_timestamp_str);
 
     log(&format!("Creating job wih info: {:?}", job_create_record));
     let base_path = slurm_banking::prices_config::get_base_path(&conf);
