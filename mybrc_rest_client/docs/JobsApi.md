@@ -1,6 +1,6 @@
 # \JobsApi
 
-All URIs are relative to *http://localhost:8880/mybrc-rest*
+All URIs are relative to *http://scgup-dev.lbl.gov:8888/mybrc-rest*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
@@ -47,7 +47,7 @@ Updates all fields of the Job identified by the given Slurm ID.
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context containing the authentication | nil if no authentication
-  **jobslurmid** | **String**| A unique value identifying this job. | 
+  **jobslurmid** | **String**|  | 
   **data** | [**Job**](Job.md)|  | 
 
 ### Return type

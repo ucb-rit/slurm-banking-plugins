@@ -33,7 +33,19 @@ pub struct Job {
   #[serde(rename = "partition")]
   partition: Option<String>,
   #[serde(rename = "qos")]
-  qos: Option<String>
+  qos: Option<String>,
+  #[serde(rename = "nodes")]
+  nodes: Option<Vec<::models::Node>>,
+  #[serde(rename = "num_cpus")]
+  num_cpus: Option<i32>,
+  #[serde(rename = "num_req_nodes")]
+  num_req_nodes: Option<i32>,
+  #[serde(rename = "num_alloc_nodes")]
+  num_alloc_nodes: Option<i32>,
+  #[serde(rename = "raw_time")]
+  raw_time: Option<f32>,
+  #[serde(rename = "cpu_time")]
+  cpu_time: Option<f32>
 }
 
 impl Job {
@@ -48,7 +60,13 @@ impl Job {
       amount: amount,
       jobstatus: None,
       partition: None,
-      qos: None
+      qos: None,
+      nodes: None,
+      num_cpus: None,
+      num_req_nodes: None,
+      num_alloc_nodes: None,
+      raw_time: None,
+      cpu_time: None
     }
   }
 
@@ -208,6 +226,108 @@ impl Job {
 
   pub fn reset_qos(&mut self) {
     self.qos = None;
+  }
+
+  pub fn set_nodes(&mut self, nodes: Vec<::models::Node>) {
+    self.nodes = Some(nodes);
+  }
+
+  pub fn with_nodes(mut self, nodes: Vec<::models::Node>) -> Job {
+    self.nodes = Some(nodes);
+    self
+  }
+
+  pub fn nodes(&self) -> Option<&Vec<::models::Node>> {
+    self.nodes.as_ref()
+  }
+
+  pub fn reset_nodes(&mut self) {
+    self.nodes = None;
+  }
+
+  pub fn set_num_cpus(&mut self, num_cpus: i32) {
+    self.num_cpus = Some(num_cpus);
+  }
+
+  pub fn with_num_cpus(mut self, num_cpus: i32) -> Job {
+    self.num_cpus = Some(num_cpus);
+    self
+  }
+
+  pub fn num_cpus(&self) -> Option<&i32> {
+    self.num_cpus.as_ref()
+  }
+
+  pub fn reset_num_cpus(&mut self) {
+    self.num_cpus = None;
+  }
+
+  pub fn set_num_req_nodes(&mut self, num_req_nodes: i32) {
+    self.num_req_nodes = Some(num_req_nodes);
+  }
+
+  pub fn with_num_req_nodes(mut self, num_req_nodes: i32) -> Job {
+    self.num_req_nodes = Some(num_req_nodes);
+    self
+  }
+
+  pub fn num_req_nodes(&self) -> Option<&i32> {
+    self.num_req_nodes.as_ref()
+  }
+
+  pub fn reset_num_req_nodes(&mut self) {
+    self.num_req_nodes = None;
+  }
+
+  pub fn set_num_alloc_nodes(&mut self, num_alloc_nodes: i32) {
+    self.num_alloc_nodes = Some(num_alloc_nodes);
+  }
+
+  pub fn with_num_alloc_nodes(mut self, num_alloc_nodes: i32) -> Job {
+    self.num_alloc_nodes = Some(num_alloc_nodes);
+    self
+  }
+
+  pub fn num_alloc_nodes(&self) -> Option<&i32> {
+    self.num_alloc_nodes.as_ref()
+  }
+
+  pub fn reset_num_alloc_nodes(&mut self) {
+    self.num_alloc_nodes = None;
+  }
+
+  pub fn set_raw_time(&mut self, raw_time: f32) {
+    self.raw_time = Some(raw_time);
+  }
+
+  pub fn with_raw_time(mut self, raw_time: f32) -> Job {
+    self.raw_time = Some(raw_time);
+    self
+  }
+
+  pub fn raw_time(&self) -> Option<&f32> {
+    self.raw_time.as_ref()
+  }
+
+  pub fn reset_raw_time(&mut self) {
+    self.raw_time = None;
+  }
+
+  pub fn set_cpu_time(&mut self, cpu_time: f32) {
+    self.cpu_time = Some(cpu_time);
+  }
+
+  pub fn with_cpu_time(mut self, cpu_time: f32) -> Job {
+    self.cpu_time = Some(cpu_time);
+    self
+  }
+
+  pub fn cpu_time(&self) -> Option<&f32> {
+    self.cpu_time.as_ref()
+  }
+
+  pub fn reset_cpu_time(&mut self) {
+    self.cpu_time = None;
   }
 
 }

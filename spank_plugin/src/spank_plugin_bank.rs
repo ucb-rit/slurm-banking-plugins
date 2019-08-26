@@ -104,7 +104,10 @@ pub extern "C" fn slurm_spank_init(sp: spank_t, _ac: c_int, _argv: *const *const
     let num_cpus = unsafe { (*((*job_buffer_ptr).job_array)).num_cpus };
     let nodes_raw = unsafe { (*((*job_buffer_ptr)).job_array).nodes };
     let nodes = slurm_banking::range_format::expand_node_hostnames(
-        &safe_helpers::deref_cstr(nodes_raw).unwrap_or("".to_string()));
+        &safe_helpers::deref_cstr(nodes_raw).unwrap_or("".to_string()))
+        .into_iter()
+        .map(|name| swagger::models::Node::new(name))
+        .collect();
     log(&format!("num_cpus: {:?}", num_cpus));
     log(&format!("Nodes: {:?}", nodes));
 
@@ -114,7 +117,8 @@ pub extern "C" fn slurm_spank_init(sp: spank_t, _ac: c_int, _argv: *const *const
         .with_partition(partition)
         .with_qos(qos)
         .with_startdate(start_timestamp_str)
-        .with_submitdate(submit_timestamp_str);
+        .with_submitdate(submit_timestamp_str)
+        .with_nodes(nodes);
 
     log(&format!("Creating job wih info: {:?}", job_create_record));
     let base_path = slurm_banking::prices_config::get_base_path(&conf);

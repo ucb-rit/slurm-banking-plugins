@@ -1,6 +1,6 @@
 # \CanSubmitJobApi
 
-All URIs are relative to *http://localhost:8880/mybrc-rest*
+All URIs are relative to *http://scgup-dev.lbl.gov:8888/mybrc-rest*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
