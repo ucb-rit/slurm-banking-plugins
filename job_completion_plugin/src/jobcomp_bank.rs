@@ -118,7 +118,7 @@ pub extern "C" fn slurm_jobcomp_log_record(job_ptr: *const job_record) -> u32 {
     let submit_timestamp = unsafe { (*(*job_ptr).details).submit_time };
     let submit_timestamp_str = DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(submit_timestamp, 0), Utc).to_rfc3339();
 
-    let nodes_raw = unsafe { (*job_ptr).sched_nodes };
+    let nodes_raw = unsafe { (*job_ptr).nodes };
     let nodes = slurm_banking::range_format::expand_node_hostnames(
         &safe_helpers::deref_cstr(nodes_raw).unwrap_or("".to_string()))
         .into_iter()
