@@ -16,14 +16,14 @@ fn parse_range(range: &str) -> Vec<String> {
 }
 
 struct CartesianProduct<T: Clone> {
-    xs: Box<Iterator<Item = T>>,
+    xs: Box<dyn Iterator<Item = T>>,
     ys: Box<Vec<T>>,
     curr_x: Option<T>,
     ys_idx: usize
 }
 
 impl<T: Clone> CartesianProduct<T> {
-    fn new(mut xs: Box<Iterator<Item = T>>, ys: Box<Iterator<Item = T>>) -> CartesianProduct<T>{
+    fn new(mut xs: Box<dyn Iterator<Item = T>>, ys: Box<dyn Iterator<Item = T>>) -> CartesianProduct<T>{
         let curr_x = xs.next();
         CartesianProduct {
             xs: xs,
