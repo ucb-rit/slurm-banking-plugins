@@ -147,7 +147,10 @@ pub fn update_job(base_path: String, jobslurmid: &str, job_update_record: swagge
         .then(|res| match res {
             Ok(Either::A((result, _timeout))) => Ok(result),
             Ok(Either::B((_timeout, _result))) => Err("Timed out"),
-            Err(Either::A((_err, _timeout))) => Err("Request error"),
+            Err(Either::A((err, _timeout))) => {
+                log(&format!("{:?}", err));
+                Err("Request error")
+            },
             Err(Either::B((_timeout_err, _result))) => Err("Timed out")
         });
 

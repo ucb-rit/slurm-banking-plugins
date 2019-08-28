@@ -133,6 +133,10 @@ pub extern "C" fn slurm_jobcomp_log_record(job_ptr: *const job_record) -> u32 {
     // let job_state_ptr = unsafe { job_state_string(job_state) };
     // let job_state_str = safe_helpers::deref_cstr(job_state_ptr).unwrap();
 
+    let num_alloc_nodes = unsafe { (*job_ptr).total_nodes };
+    let raw_time_hr = (end_timestamp - start_timestamp) as f32 / 60.0 / 60.0;
+    let cpu_time = cpu_count as f32 * raw_time_hr;
+
     let job_update_record = swagger::models::Job::new(
         jobslurmid.clone(), user_id, account, expected_cost.to_string())
         .with_jobstatus("COMPLETING".to_string())
@@ -141,7 +145,11 @@ pub extern "C" fn slurm_jobcomp_log_record(job_ptr: *const job_record) -> u32 {
         .with_submitdate(submit_timestamp_str)
         .with_startdate(start_timestamp_str)
         .with_enddate(end_timestamp_str)
-        .with_nodes(nodes);
+        .with_nodes(nodes)
+        .with_num_cpus(cpu_count as i32)
+        .with_num_alloc_nodes(num_alloc_nodes as i32)
+        .with_raw_time(raw_time_hr)
+        .with_cpu_time(cpu_time);
 
     log_with_jobid(&jobslurmid, &format!("Updating job with info: {:?}", job_update_record));
     let base_path = slurm_banking::prices_config::get_base_path(&conf);
