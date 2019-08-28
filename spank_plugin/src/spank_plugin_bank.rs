@@ -81,10 +81,12 @@ pub extern "C" fn slurm_spank_init(sp: spank_t, _ac: c_int, _argv: *const *const
     let account = safe_helpers::deref_cstr(unsafe { (*((*job_buffer_ptr).job_array)).account }).unwrap();
     let num_cpus = unsafe { (*((*job_buffer_ptr).job_array)).num_cpus };
     let max_cpus = unsafe { (*((*job_buffer_ptr).job_array)).max_cpus };
+    let num_nodes = unsafe { (*((*job_buffer_ptr).job_array)).num_nodes };
+    let max_nodes = unsafe { (*((*job_buffer_ptr).job_array)).max_nodes };
     let time_limit_minutes: i64 = unsafe { (*((*job_buffer_ptr).job_array)).time_limit } as i64; // in minutes
     let time_limit_seconds = time_limit_minutes * 60;
-    log(&format!("Partition: {:?}, QOS: {:?}, Account: {:?}, Num CPUs: {:?}, Max CPUs: {:?}, Time limit: {:?}", 
-        partition, qos, account, num_cpus, max_cpus, time_limit_seconds));
+    log(&format!("Partition: {:?}, QOS: {:?}, Account: {:?}, Num CPUs: {:?}, Max CPUs: {:?}, Time limit: {:?}, Num nodes: {:?}, Max nodes: {:?}", 
+        partition, qos, account, num_cpus, max_cpus, time_limit_seconds, num_nodes, max_nodes));
 
     let expected_cost =
         match accounting::expected_cost(&partition, &qos, num_cpus, time_limit_seconds, &conf) {
