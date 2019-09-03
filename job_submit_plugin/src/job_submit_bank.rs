@@ -79,8 +79,19 @@ pub extern "C" fn job_submit(
         None => return ESLURM_INVALID_ACCOUNT,
     };
 
-    // let max_cpus: u32 = unsafe { (*job_desc).max_cpus };
-    let max_cpus: u32 = ((unsafe { (*job_desc).cpus_per_task }) as u32) * (unsafe { (*job_desc).num_tasks });
+    let x_max_cpus: u32 = unsafe { (*job_desc).max_cpus };
+    let cpus_per_task = unsafe { (*job_desc).cpus_per_task };
+    let num_tasks = unsafe { (*job_desc).num_tasks };
+    // When not specified, cpus_per_task=65534, num_tasks=4294967294
+    let max_cpus: u32 = if cpus_per_task == 65534 || num_tasks == 4294967294 {
+        // TODO: In this calculation, assume 0 CPUs if unspecified
+        // In the future, this should look at the partition and charge according to the default
+        0 
+    } else {
+        ((unsafe { (*job_desc).cpus_per_task }) as u32) * (unsafe { (*job_desc).num_tasks })
+    };
+    log(&format!("cpus_per_task: {:?}, num_tasks: {:?}, x_max_cpus: {:?}", cpus_per_task, num_tasks, x_max_cpus));
+
     let time_limit_minutes: i64 = unsafe { (*job_desc).time_limit } as i64; // in minutes
     let time_limit_seconds = time_limit_minutes * 60;
     let partition: String = match safe_helpers::deref_cstr(unsafe { (*job_desc).partition }) {
