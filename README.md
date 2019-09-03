@@ -60,7 +60,7 @@ For additional reference on building, check [the build on travis-ci](https://tra
 ```bash
 make install
 ```
-2. Move `prices.toml` to `/etc/slurm/prices.toml` and update the partitions/prices accordingly.
+2. Move `bank-config.toml` to `/etc/slurm/bank-config.toml` and update the partitions/prices accordingly.
 ```bash
 cp bank-config.toml /etc/slurm/bank-config.toml
 ```
