@@ -19,17 +19,20 @@ struct CartesianProduct<T: Clone> {
     xs: Box<dyn Iterator<Item = T>>,
     ys: Box<Vec<T>>,
     curr_x: Option<T>,
-    ys_idx: usize
+    ys_idx: usize,
 }
 
 impl<T: Clone> CartesianProduct<T> {
-    fn new(mut xs: Box<dyn Iterator<Item = T>>, ys: Box<dyn Iterator<Item = T>>) -> CartesianProduct<T>{
+    fn new(
+        mut xs: Box<dyn Iterator<Item = T>>,
+        ys: Box<dyn Iterator<Item = T>>,
+    ) -> CartesianProduct<T> {
         let curr_x = xs.next();
         CartesianProduct {
             xs: xs,
             curr_x: curr_x,
             ys: Box::new(ys.collect()),
-            ys_idx: 0
+            ys_idx: 0,
         }
     }
 }
@@ -46,8 +49,8 @@ impl<T: Clone> Iterator for CartesianProduct<T> {
                 let result = (x.clone(), self.ys.get(self.ys_idx).unwrap().clone());
                 self.ys_idx = self.ys_idx + 1;
                 Some(result)
-            },
-            None => None
+            }
+            None => None,
         }
     }
 }
@@ -73,7 +76,11 @@ fn expand_node_single_group(group: &str) -> Vec<String> {
         } else {
             // it's a range
             let range = parse_range(val);
-            results = CartesianProduct::new(Box::new(results.into_iter()), Box::new(range.into_iter())).into_iter().map(|(x,y)| x + &y).collect();
+            results =
+                CartesianProduct::new(Box::new(results.into_iter()), Box::new(range.into_iter()))
+                    .into_iter()
+                    .map(|(x, y)| x + &y)
+                    .collect();
         }
     }
     results

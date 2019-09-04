@@ -22,7 +22,7 @@ lazy_static! {
     static ref SETTINGS: Mutex<Config> = {
         let mut conf = Config::default();
         match slurm_banking::prices_config::load_config_from_file(&mut conf) {
-            Ok(_) => {},
+            Ok(_) => {}
             Err(_) => {}
         };
         Mutex::new(conf)
@@ -65,11 +65,13 @@ pub extern "C" fn job_submit(
     let conf = SETTINGS.lock().unwrap();
     let plugin_enable_config = match conf.get::<HashMap<String, bool>>("Enable") {
         Ok(v) => v,
-        Err(_) => return SLURM_SUCCESS 
+        Err(_) => return SLURM_SUCCESS,
     };
-    let enabled = plugin_enable_config.get("enable_job_submit_plugin").unwrap_or(&false);
+    let enabled = plugin_enable_config
+        .get("enable_job_submit_plugin")
+        .unwrap_or(&false);
     if !enabled {
-        return SLURM_SUCCESS 
+        return SLURM_SUCCESS;
     }
     // END: Check if this plugin should be enabled
 
@@ -79,18 +81,16 @@ pub extern "C" fn job_submit(
         None => return ESLURM_INVALID_ACCOUNT,
     };
 
-    let x_max_cpus: u32 = unsafe { (*job_desc).max_cpus };
     let cpus_per_task = unsafe { (*job_desc).cpus_per_task };
     let num_tasks = unsafe { (*job_desc).num_tasks };
     // When not specified, cpus_per_task=65534, num_tasks=4294967294
     let max_cpus: u32 = if cpus_per_task == 65534 || num_tasks == 4294967294 {
         // TODO: In this calculation, assume 0 CPUs if unspecified
         // In the future, this should look at the partition and charge according to the default
-        0 
+        0
     } else {
         ((unsafe { (*job_desc).cpus_per_task }) as u32) * (unsafe { (*job_desc).num_tasks })
     };
-    log(&format!("cpus_per_task: {:?}, num_tasks: {:?}, x_max_cpus: {:?}", cpus_per_task, num_tasks, x_max_cpus));
 
     let time_limit_minutes: i64 = unsafe { (*job_desc).time_limit } as i64; // in minutes
     let time_limit_seconds = time_limit_minutes * 60;
@@ -100,12 +100,14 @@ pub extern "C" fn job_submit(
     };
     let qos: String = match safe_helpers::deref_cstr(unsafe { (*job_desc).qos }) {
         Some(qos) => qos,
-        None => return ESLURM_INVALID_QOS
+        None => return ESLURM_INVALID_QOS,
     };
-    
-    log(&format!("Processing request from user_id {:?} with account {:?}: \
-    partition: {:?}, qos: {:?}, time_limit_minutes: {:?}, max_cpus: {:?}",
-    userid, account, partition, qos, time_limit_seconds, max_cpus));
+
+    log(&format!(
+        "Processing request from user_id {:?} with account {:?}: \
+         partition: {:?}, qos: {:?}, time_limit_minutes: {:?}, max_cpus: {:?}",
+        userid, account, partition, qos, time_limit_seconds, max_cpus
+    ));
 
     // Calculate the expected cost of the job
     let expected_cost =
@@ -114,13 +116,20 @@ pub extern "C" fn job_submit(
             None => return ESLURM_INTERNAL,
         };
 
-    log(&format!("Expected cost is {:?} SU for user_id {:?} with account {:?}: \
-    partition: {:?}, qos: {:?}, time_limit_minutes: {:?}, max_cpus: {:?}",
-    expected_cost, userid, account, partition, qos, time_limit_minutes, max_cpus));
+    log(&format!(
+        "Expected cost is {:?} SU for user_id {:?} with account {:?}: \
+         partition: {:?}, qos: {:?}, time_limit_minutes: {:?}, max_cpus: {:?}",
+        expected_cost, userid, account, partition, qos, time_limit_minutes, max_cpus
+    ));
 
     // Check if the account has sufficient funds for the job
     let base_path = slurm_banking::prices_config::get_base_path(&conf);
-    let has_funds = match accounting::check_sufficient_funds(base_path, expected_cost, &userid.to_string(), &account) {
+    let has_funds = match accounting::check_sufficient_funds(
+        base_path,
+        expected_cost,
+        &userid.to_string(),
+        &account,
+    ) {
         Ok(result) => result,
         Err(_err) => {
             log(&format!("API connection error on check_sufficient_funds. Job specifications are: \
@@ -129,11 +138,11 @@ pub extern "C" fn job_submit(
             true
         }
     };
-    
+
     // Return success if there are enough funds
     match has_funds {
         true => SLURM_SUCCESS,
-        false => ESLURM_ACCESS_DENIED
+        false => ESLURM_ACCESS_DENIED,
     }
 }
 

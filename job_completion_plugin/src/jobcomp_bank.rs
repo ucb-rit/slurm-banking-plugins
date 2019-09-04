@@ -24,7 +24,7 @@ lazy_static! {
     static ref SETTINGS: Mutex<Config> = {
         let mut conf = Config::default();
         match slurm_banking::prices_config::load_config_from_file(&mut conf) {
-            Ok(_) => {},
+            Ok(_) => {}
             Err(_) => {}
         };
         Mutex::new(conf)
@@ -77,11 +77,13 @@ pub extern "C" fn slurm_jobcomp_log_record(job_ptr: *const job_record) -> u32 {
     let conf = SETTINGS.lock().unwrap();
     let plugin_enable_config = match conf.get::<HashMap<String, bool>>("Enable") {
         Ok(v) => v,
-        Err(_) => return 0 
+        Err(_) => return 0,
     };
-    let enabled = plugin_enable_config.get("enable_job_complete_plugin").unwrap_or(&false);
+    let enabled = plugin_enable_config
+        .get("enable_job_complete_plugin")
+        .unwrap_or(&false);
     if !enabled {
-        return 0
+        return 0;
     }
     // END: Check if this plugin should be enabled
 
@@ -95,7 +97,7 @@ pub extern "C" fn slurm_jobcomp_log_record(job_ptr: *const job_record) -> u32 {
     };
     let qos: String = match safe_helpers::deref_cstr(unsafe { (*(*job_ptr).qos_ptr).name }) {
         Some(qos) => qos,
-        None => return ESLURM_INVALID_QOS
+        None => return ESLURM_INVALID_QOS,
     };
     let cpu_count = unsafe { (*job_ptr).total_cpus };
     let time_spent = (unsafe { (*job_ptr).end_time }) - (unsafe { (*job_ptr).start_time }); // in seconds
@@ -107,26 +109,38 @@ pub extern "C" fn slurm_jobcomp_log_record(job_ptr: *const job_record) -> u32 {
         };
 
     let jobslurmid = (unsafe { (*job_ptr).job_id }).to_string();
-    let user_id = (unsafe { (*job_ptr).user_id}).to_string();
+    let user_id = (unsafe { (*job_ptr).user_id }).to_string();
 
     let start_timestamp = unsafe { (*job_ptr).start_time };
-    let start_timestamp_str = DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(start_timestamp, 0), Utc).to_rfc3339();
+    let start_timestamp_str =
+        DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(start_timestamp, 0), Utc)
+            .to_rfc3339();
 
     let end_timestamp = unsafe { (*job_ptr).end_time };
-    let end_timestamp_str = DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(end_timestamp, 0), Utc).to_rfc3339();
+    let end_timestamp_str =
+        DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(end_timestamp, 0), Utc)
+            .to_rfc3339();
 
     let submit_timestamp = unsafe { (*(*job_ptr).details).submit_time };
-    let submit_timestamp_str = DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(submit_timestamp, 0), Utc).to_rfc3339();
+    let submit_timestamp_str =
+        DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(submit_timestamp, 0), Utc)
+            .to_rfc3339();
 
     let nodes_raw = unsafe { (*job_ptr).nodes };
     let nodes = slurm_banking::range_format::expand_node_hostnames(
-        &safe_helpers::deref_cstr(nodes_raw).unwrap_or("".to_string()))
-        .into_iter()
-        .map(|name| swagger::models::Node::new(name))
-        .collect();
+        &safe_helpers::deref_cstr(nodes_raw).unwrap_or("".to_string()),
+    )
+    .into_iter()
+    .map(|name| swagger::models::Node::new(name))
+    .collect();
 
-    log_with_jobid(&jobslurmid, &format!("Account: {:?}, Partition: {:?}, QoS: {:?}, CPUs: {:?}, Nodes: {:?}",
-        account, partition, qos, cpu_count, nodes));
+    log_with_jobid(
+        &jobslurmid,
+        &format!(
+            "Account: {:?}, Partition: {:?}, QoS: {:?}, CPUs: {:?}, Nodes: {:?}",
+            account, partition, qos, cpu_count, nodes
+        ),
+    );
 
     // We could read the job state, but it is always COMPLETING
     // let job_state = (unsafe { (*job_ptr).job_state });
@@ -139,21 +153,28 @@ pub extern "C" fn slurm_jobcomp_log_record(job_ptr: *const job_record) -> u32 {
     let cpu_time = cpu_count as f32 * raw_time_hr;
 
     let job_update_record = swagger::models::Job::new(
-        jobslurmid.clone(), user_id, account, expected_cost.to_string())
-        .with_jobstatus("COMPLETING".to_string())
-        .with_partition(partition)
-        .with_qos(qos)
-        .with_submitdate(submit_timestamp_str)
-        .with_startdate(start_timestamp_str)
-        .with_enddate(end_timestamp_str)
-        .with_nodes(nodes)
-        .with_num_cpus(cpu_count as i32)
-        .with_num_req_nodes(num_req_nodes as i32)
-        .with_num_alloc_nodes(num_alloc_nodes as i32)
-        .with_raw_time(raw_time_hr)
-        .with_cpu_time(cpu_time);
+        jobslurmid.clone(),
+        user_id,
+        account,
+        expected_cost.to_string(),
+    )
+    .with_jobstatus("COMPLETING".to_string())
+    .with_partition(partition)
+    .with_qos(qos)
+    .with_submitdate(submit_timestamp_str)
+    .with_startdate(start_timestamp_str)
+    .with_enddate(end_timestamp_str)
+    .with_nodes(nodes)
+    .with_num_cpus(cpu_count as i32)
+    .with_num_req_nodes(num_req_nodes as i32)
+    .with_num_alloc_nodes(num_alloc_nodes as i32)
+    .with_raw_time(raw_time_hr)
+    .with_cpu_time(cpu_time);
 
-    log_with_jobid(&jobslurmid, &format!("Updating job with info: {:?}", job_update_record));
+    log_with_jobid(
+        &jobslurmid,
+        &format!("Updating job with info: {:?}", job_update_record),
+    );
     let base_path = slurm_banking::prices_config::get_base_path(&conf);
     let _ = accounting::update_job(base_path, &jobslurmid, job_update_record);
 

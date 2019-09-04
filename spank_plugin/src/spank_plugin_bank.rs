@@ -23,7 +23,7 @@ lazy_static! {
     static ref SETTINGS: Mutex<Config> = {
         let mut conf = Config::default();
         match slurm_banking::prices_config::load_config_from_file(&mut conf) {
-            Ok(_) => {},
+            Ok(_) => {}
             Err(_) => {}
         };
         Mutex::new(conf)
@@ -59,7 +59,12 @@ pub extern "C" fn slurm_spank_init(sp: spank_t, _ac: c_int, _argv: *const *const
         if spank_get_item(sp, spank_item_S_JOB_ID, &mut job_id as *mut u32) != 0 {
             return SLURM_SUCCESS;
         }
-        if slurm_load_job(&mut job_buffer_ptr as *mut *mut job_info_msg_t, job_id, SHOW_ALL as u16) != 0 {
+        if slurm_load_job(
+            &mut job_buffer_ptr as *mut *mut job_info_msg_t,
+            job_id,
+            SHOW_ALL as u16,
+        ) != 0
+        {
             return SLURM_SUCCESS;
         }
     }
@@ -68,17 +73,21 @@ pub extern "C" fn slurm_spank_init(sp: spank_t, _ac: c_int, _argv: *const *const
     let conf = SETTINGS.lock().unwrap();
     let plugin_enable_config = match conf.get::<HashMap<String, bool>>("Enable") {
         Ok(v) => v,
-        Err(_) => return SLURM_SUCCESS 
+        Err(_) => return SLURM_SUCCESS,
     };
-    let enabled = plugin_enable_config.get("enable_spank_plugin").unwrap_or(&false);
+    let enabled = plugin_enable_config
+        .get("enable_spank_plugin")
+        .unwrap_or(&false);
     if !enabled {
-        return SLURM_SUCCESS 
+        return SLURM_SUCCESS;
     }
     // END: Check if this plugin should be enabled
 
-    let partition = safe_helpers::deref_cstr(unsafe { (*((*job_buffer_ptr).job_array)).partition }).unwrap();
+    let partition =
+        safe_helpers::deref_cstr(unsafe { (*((*job_buffer_ptr).job_array)).partition }).unwrap();
     let qos = safe_helpers::deref_cstr(unsafe { (*((*job_buffer_ptr).job_array)).qos }).unwrap();
-    let account = safe_helpers::deref_cstr(unsafe { (*((*job_buffer_ptr).job_array)).account }).unwrap();
+    let account =
+        safe_helpers::deref_cstr(unsafe { (*((*job_buffer_ptr).job_array)).account }).unwrap();
     let num_cpus = unsafe { (*((*job_buffer_ptr).job_array)).num_cpus };
     let max_cpus = unsafe { (*((*job_buffer_ptr).job_array)).max_cpus };
     let num_nodes = unsafe { (*((*job_buffer_ptr).job_array)).num_nodes };
@@ -97,29 +106,38 @@ pub extern "C" fn slurm_spank_init(sp: spank_t, _ac: c_int, _argv: *const *const
     let user_id = unsafe { (*((*job_buffer_ptr).job_array)).user_id };
 
     let start_timestamp = unsafe { (*((*job_buffer_ptr).job_array)).start_time };
-    let start_timestamp_str = DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(start_timestamp, 0), Utc).to_rfc3339();
+    let start_timestamp_str =
+        DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(start_timestamp, 0), Utc)
+            .to_rfc3339();
 
     let submit_timestamp = unsafe { (*((*job_buffer_ptr).job_array)).start_time };
-    let submit_timestamp_str = DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(submit_timestamp, 0), Utc).to_rfc3339();
+    let submit_timestamp_str =
+        DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(submit_timestamp, 0), Utc)
+            .to_rfc3339();
 
-    let nodes_raw = unsafe { (*((*job_buffer_ptr)).job_array).nodes };
+    let nodes_raw = unsafe { (*(*job_buffer_ptr).job_array).nodes };
     let nodes = slurm_banking::range_format::expand_node_hostnames(
-        &safe_helpers::deref_cstr(nodes_raw).unwrap_or("".to_string()))
-        .into_iter()
-        .map(|name| swagger::models::Node::new(name))
-        .collect();
+        &safe_helpers::deref_cstr(nodes_raw).unwrap_or("".to_string()),
+    )
+    .into_iter()
+    .map(|name| swagger::models::Node::new(name))
+    .collect();
     log(&format!("Nodes: {:?}", nodes));
 
     let job_create_record = swagger::models::Job::new(
-        job_id.to_string(), user_id.to_string(), account, expected_cost.to_string())
-        .with_jobstatus("RUNNING".to_string())
-        .with_partition(partition)
-        .with_qos(qos)
-        .with_startdate(start_timestamp_str)
-        .with_submitdate(submit_timestamp_str)
-        .with_nodes(nodes)
-        .with_num_cpus(num_cpus as i32)
-        .with_num_alloc_nodes(num_nodes as i32);
+        job_id.to_string(),
+        user_id.to_string(),
+        account,
+        expected_cost.to_string(),
+    )
+    .with_jobstatus("RUNNING".to_string())
+    .with_partition(partition)
+    .with_qos(qos)
+    .with_startdate(start_timestamp_str)
+    .with_submitdate(submit_timestamp_str)
+    .with_nodes(nodes)
+    .with_num_cpus(num_cpus as i32)
+    .with_num_alloc_nodes(num_nodes as i32);
 
     log(&format!("Creating job wih info: {:?}", job_create_record));
     let base_path = slurm_banking::prices_config::get_base_path(&conf);
