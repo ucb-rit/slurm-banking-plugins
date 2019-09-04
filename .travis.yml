@@ -5,3 +5,8 @@ jobs:
     - stage: build
       script:
         - make
+    - stage: test
+      before_script:
+        - rustup component add rustfmt
+      script:
+        - make test

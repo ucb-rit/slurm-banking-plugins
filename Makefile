@@ -21,6 +21,13 @@ mybrc_rest_client: spec/swagger.json
 		-l rust \
 		-o /local/mybrc_rest_client
 
+.PHONY: test
+test:
+	pushd job_completion_plugin && cargo fmt --all -- --check && popd
+	pushd job_submit_plugin && cargo fmt --all -- --check && popd
+	pushd spank_plugin && cargo fmt --all -- --check && popd
+	pushd slurm_banking && cargo fmt --all -- --check && popd
+
 .PHONY: docker
 docker: docker/**/* **/*
 	docker build -f docker/build/Dockerfile -t slurm-banking-plugins .
