@@ -23,10 +23,10 @@ mybrc_rest_client: spec/swagger.json
 
 .PHONY: test
 test:
-	pushd job_completion_plugin && cargo fmt --all -- --check && popd
-	pushd job_submit_plugin && cargo fmt --all -- --check && popd
-	pushd spank_plugin && cargo fmt --all -- --check && popd
-	pushd slurm_banking && cargo fmt --all -- --check && popd
+	cd job_completion_plugin && cargo fmt --all -- --check && cd ..
+	cd job_submit_plugin && cargo fmt --all -- --check && cd .. 
+	cd spank_plugin && cargo fmt --all -- --check && cd .. 
+	cd slurm_banking && cargo fmt --all -- --check && cd .. 
 
 .PHONY: docker
 docker: docker/**/* **/*
