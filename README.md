@@ -1,6 +1,8 @@
 # Slurm Banking Plugins
 
 [![Travis Build Status](https://travis-ci.org/ucb-rit/slurm-banking-plugins.svg?branch=master)](https://travis-ci.org/ucb-rit/slurm-banking-plugins)
+![GitHub Top Language](https://img.shields.io/github/languages/top/ucb-rit/slurm-banking-plugins)
+![GitHub Repo Size](https://img.shields.io/github/repo-size/ucb-rit/slurm-banking-plugins)
 
 __Currently in development - Not ready for use__
 
