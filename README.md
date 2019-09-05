@@ -79,7 +79,7 @@ JobCompType=jobcomp/bank
 ```
 
 ### Help/Debugging
-- The plugins log errors to the slurmd (spank plugin), and slurmctld (job submit and job completion plugins) logs. You can filter for their output by grepping for `\_bank`.
+- The plugins log errors to the slurmd (spank plugin) and slurmctld (job submit and job completion plugins) logs. You can filter for their output by grepping for `_bank`.
 - For a working example installation, refer to [the Docker files](docker).
 
 ## Developing
