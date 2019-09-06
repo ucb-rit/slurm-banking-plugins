@@ -17,7 +17,7 @@ use std::collections::HashMap;
 use std::os::raw::{c_char, c_int};
 use std::sync::Mutex;
 
-static PLUGIN_NAME: &str = "spank_bank";
+static PLUGIN_NAME: &str = "spank_slurm_banking";
 
 lazy_static! {
     static ref SETTINGS: Mutex<Config> = {

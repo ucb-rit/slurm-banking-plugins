@@ -41,7 +41,7 @@ unsafe impl Sync for StaticCString {}
 pub static plugin_name: StaticCString = StaticCString(b"Slurm bank completion\0" as *const u8);
 
 #[no_mangle]
-pub static plugin_type: StaticCString = StaticCString(b"jobcomp/bank\0" as *const u8);
+pub static plugin_type: StaticCString = StaticCString(b"jobcomp/slurm_banking\0" as *const u8);
 
 #[no_mangle]
 pub static plugin_version: u32 = SLURM_VERSION_NUMBER;
