@@ -142,10 +142,9 @@ pub extern "C" fn slurm_jobcomp_log_record(job_ptr: *const job_record) -> u32 {
         ),
     );
 
-    // We could read the job state, but it is always COMPLETING
-    // let job_state = (unsafe { (*job_ptr).job_state });
-    // let job_state_ptr = unsafe { job_state_string(job_state) };
-    // let job_state_str = safe_helpers::deref_cstr(job_state_ptr).unwrap();
+    let job_state = (unsafe { (*job_ptr).job_state });
+    let job_state_ptr = unsafe { job_state_string(job_state) };
+    let job_state_str = safe_helpers::deref_cstr(job_state_ptr).unwrap();
 
     let num_req_nodes = unsafe { (*(*job_ptr).details).min_nodes };
     let num_alloc_nodes = unsafe { (*job_ptr).total_nodes };
@@ -158,7 +157,7 @@ pub extern "C" fn slurm_jobcomp_log_record(job_ptr: *const job_record) -> u32 {
         account,
         expected_cost.to_string(),
     )
-    .with_jobstatus("COMPLETING".to_string())
+    .with_jobstatus(job_state_str)
     .with_partition(partition)
     .with_qos(qos)
     .with_submitdate(submit_timestamp_str)
