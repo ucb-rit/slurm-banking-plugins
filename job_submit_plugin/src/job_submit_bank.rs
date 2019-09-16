@@ -142,7 +142,7 @@ pub extern "C" fn job_submit(
     // Return success if there are enough funds
     match has_funds {
         true => SLURM_SUCCESS,
-        false => ESLURM_ACCESS_DENIED,
+        false => ESLURM_ACCOUNTING_POLICY,
     }
 }
 
