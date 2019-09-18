@@ -1,7 +1,5 @@
-#+TITLE: Slurm Banking Plugins README
+#+TITLE: Slurm Banking Plugins 
 #+OPTIONS: ^:nil
-
-* Slurm Banking Plugins
 
 [[https://travis-ci.org/ucb-rit/slurm-banking-plugins.svg?branch=master][https://travis-ci.org/ucb-rit/slurm-banking-plugins]]
 [[https://img.shields.io/github/languages/top/ucb-rit/slurm-banking-plugins]]
@@ -48,7 +46,7 @@ vim /etc/slurm/plugstack.conf # Edit plugstack.conf to enable the spank plugin
 cp bank-config.toml /etc/slurm/bank-config.toml
 #+END_SRC
 
-*When adding the ~.so~ binaries to the nodes with Warewulf, you must use ~wwsh file import~ instead of ~wwsh file new~. Make sure the format in ~wwsh file print~ is listed as binary.*
+*When adding the .so binaries to the nodes with Warewulf, you must use "wwsh file import" instead of "wwsh file new". Make sure the format in "wwsh file print" is listed as binary.*
 
 *** NixOS
 ~shell.nix~ provides the environment for development on [[https://nixos.org][NixOS]]. I run the following:
