@@ -18,7 +18,7 @@ These plugins are written in [[https://www.rust-lang.org][Rust]] to help with sa
 ** Limitations
 
 - Since the spank plugin cannot cancel a job, the user could overdraw their service unit allocation if they had enough service units at the time of submission, but not enough service units at the time the job starts running, since the units are only actually deducted from the balance when the job starts running.
-- If `--ntasks` or `--cpus-per-task` are unspecified, the job completion plugin will assume the value is 0 and will always allow the job, as long as the balance is non-negative. This can be improved in the future by checking whether the requested partition is exclusive and how many CPUs each node has, and then using that information to estimate the number of CPUs that will be used.
+- If ~--ntasks~ or ~--cpus-per-task~ are unspecified, the job completion plugin will assume the value is 0 and will always allow the job, as long as the balance is non-negative. This can be improved in the future by checking whether the requested partition is exclusive and how many CPUs each node has, and then using that information to estimate the number of CPUs that will be used.
 - If the myBRC API is offline (or returns errors), the submit plugin will let the job go through.
 
 ** Build Requirements
@@ -48,7 +48,7 @@ vim /etc/slurm/plugstack.conf # Edit plugstack.conf to enable the spank plugin
 cp bank-config.toml /etc/slurm/bank-config.toml
 #+END_SRC
 
-**When adding the ~.so~ binaries to the nodes with Warewulf, you must use ~wwsh file import~ instead of ~wwsh file new~. Make sure the format in ~wwsh file print~ is listed as binary.**
+*When adding the ~.so~ binaries to the nodes with Warewulf, you must use ~wwsh file import~ instead of ~wwsh file new~. Make sure the format in ~wwsh file print~ is listed as binary.*
 
 *** NixOS
 ~shell.nix~ provides the environment for development on [[https://nixos.org][NixOS]]. I run the following:
