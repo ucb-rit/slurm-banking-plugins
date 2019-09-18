@@ -1,9 +1,7 @@
 #+TITLE: Slurm Banking Plugins 
 #+OPTIONS: ^:nil
 
-#+HTML: <a href="https://travis-ci.org/ucb-rit/slurm-banking-plugins"><img src="https://travis-ci.org/ucb-rit/slurm-banking-plugins.svg?branch=master"></a>
-#+HTML: <img src="https://img.shields.io/github/languages/top/ucb-rit/slurm-banking-plugins">
-#+HTML: <img src="https://img.shields.io/github/repo-size/ucb-rit/slurm-banking-plugins">
+#+HTML: <a href="https://travis-ci.org/ucb-rit/slurm-banking-plugins"><img src="https://travis-ci.org/ucb-rit/slurm-banking-plugins.svg?branch=master"></a> <img src="https://img.shields.io/github/languages/top/ucb-rit/slurm-banking-plugins"> <img src="https://img.shields.io/github/repo-size/ucb-rit/slurm-banking-plugins">
 
 Slurm banking plugins provide allocation management to Slurm. The plugins deduct service units for completed and running jobs and prevent jobs from running if there are insufficient service units available. The plugins interact with a REST API (provided by myBRC), documented in the [[./spec/swagger.json][spec/swagger.json]]. The following three plugins are used:
 
