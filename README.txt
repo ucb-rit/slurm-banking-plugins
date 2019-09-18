@@ -7,38 +7,47 @@
 Table of Contents
 _________________
 
-1. Limitations
-2. Build Requirements
-3. Building
+1. Introduction
+2. Limitations
+3. Build Requirements
+4. Building
 .. 1. On Savio
 .. 2. NixOS
 .. 3. Help
-4. Usage
+5. Usage
 .. 1. /etc/slurm/slurm.conf
 .. 2. Help/Debugging
-5. Developing
+6. Developing
 .. 1. Project Structure
 .. 2. myBRC API Codegen
 .. 3. Testing with myBRC
 
 
-Slurm banking plugins provide allocation management to Slurm. The
-plugins deduct service units for completed and running jobs and prevent
-jobs from running if there are insufficient service units available. The
-plugins interact with a REST API (provided by myBRC), documented in the
-[spec/swagger.json]. The following three plugins are used:
 
-- [job_submit_plugin] (job submission stage): Estimate maximum job cost
-  based on submission parameters, and reject job if the API reports that
-  the user/account has insufficient service units available.
-- [spank_plugin] (job running stage): Report job and estimated cost to
-  the API.
-- [job_completion_plugin] (job completing stage): Modify job in API to
-  reflect actual usage.
 
-These plugins are written in [Rust] to help with safety. It uses
-[rust-bindgen] to automatically generate the Rust foreign function
-interface (FFI) bindings based on the Slurm C header files.
+
+1 Introduction
+==============
+
+  Slurm banking plugins provide allocation management to Slurm. The
+  plugins deduct service units for completed and running jobs and
+  prevent jobs from running if there are insufficient service units
+  available. The plugins interact with a REST API (provided by myBRC),
+  documented in the [spec/swagger.json]. The following three plugins are
+  used:
+
+  - [job_submit_plugin] (job submission stage): Estimate maximum job
+    cost based on submission parameters, and reject job if the API
+    reports that the user/account has insufficient service units
+    available.
+  - [spank_plugin] (job running stage): Report job and estimated cost to
+    the API.
+  - [job_completion_plugin] (job completing stage): Modify job in API to
+    reflect actual usage.
+
+  These plugins are written in [Rust] to help with safety. It uses
+  [rust-bindgen] to automatically generate the Rust foreign function
+  interface (FFI) bindings based on the Slurm C header files.
 
 
 [spec/swagger.json] <./spec/swagger.json>
@@ -54,7 +63,7 @@ interface (FFI) bindings based on the Slurm C header files.
 [rust-bindgen] <https://github.com/rust-lang/rust-bindgen>
 
 
-1 Limitations
+2 Limitations
 =============
 
   - Since the spank plugin cannot cancel a job, the user could overdraw
@@ -72,7 +81,7 @@ interface (FFI) bindings based on the Slurm C header files.
     will let the job go through.
 
 
-2 Build Requirements
+3 Build Requirements
 ====================
 
   - [Rust] (including [cargo])
@@ -92,7 +101,7 @@ interface (FFI) bindings based on the Slurm C header files.
 <https://rust-lang.github.io/rust-bindgen/requirements.html>
 
 
-3 Building
+4 Building
 ==========
 
   Since the Slurm `jobcomp' plugins need access to the
@@ -112,7 +121,7 @@ interface (FFI) bindings based on the Slurm C header files.
      as the Makefile.
 
 
-3.1 On Savio
+4.1 On Savio
 ~~~~~~~~~~~~
 
   ,----
@@ -132,7 +141,7 @@ interface (FFI) bindings based on the Slurm C header files.
    in "wwsh file print" is listed as binary.*
 
 
-3.2 NixOS
+4.2 NixOS
 ~~~~~~~~~
 
   `shell.nix' provides the environment for development on [NixOS]. I run
@@ -147,14 +156,14 @@ interface (FFI) bindings based on the Slurm C header files.
 [NixOS] <https://nixos.org>
 
 
-3.3 Help
+4.3 Help
 ~~~~~~~~
 
   For additional reference on building, check [the build on
   travis-ci](<https://travis-ci.org/ucb-rit/slurm-banking-plugins>).
 
 
-4 Usage
+5 Usage
 =======
 
   1. Move the `.so' files to `/usr/lib64/slurm' and `/etc/slurm/spank':
@@ -175,7 +184,7 @@ interface (FFI) bindings based on the Slurm C header files.
   `----
 
 
-4.1 /etc/slurm/slurm.conf
+5.1 /etc/slurm/slurm.conf
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
   ,----
@@ -185,7 +194,7 @@ interface (FFI) bindings based on the Slurm C header files.
   `----
 
 
-4.2 Help/Debugging
+5.2 Help/Debugging
 ~~~~~~~~~~~~~~~~~~
 
   - The plugins log errors to the slurmd (spank plugin) and slurmctld
@@ -197,7 +206,7 @@ interface (FFI) bindings based on the Slurm C header files.
 [the Docker files] <./docker>
 
 
-5 Developing
+6 Developing
 ============
 
   I use the [docker-centos7-slurm] Docker container as a base, and build
@@ -215,7 +224,7 @@ interface (FFI) bindings based on the Slurm C header files.
 [docker-centos7-slurm]
 <https://github.com/giovtorres/docker-centos7-slurm>
 
-5.1 Project Structure
+6.1 Project Structure
 ~~~~~~~~~~~~~~~~~~~~~
 
   Each plugin is its own Rust project: [job_completion_plugin],
@@ -237,7 +246,7 @@ interface (FFI) bindings based on the Slurm C header files.
 [mybrc_rest_client] <./mybrc_rest_client>
 
 
-5.2 myBRC API Codegen
+6.2 myBRC API Codegen
 ~~~~~~~~~~~~~~~~~~~~~
 
   I use [swagger-codegen] to generate a library to abstract away access
@@ -266,7 +275,7 @@ interface (FFI) bindings based on the Slurm C header files.
 [spec/swagger.json] <./spec/swagger.json>
 
 
-5.3 Testing with myBRC
+6.3 Testing with myBRC
 ~~~~~~~~~~~~~~~~~~~~~~
 
   ,----
