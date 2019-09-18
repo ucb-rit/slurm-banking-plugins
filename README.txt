@@ -98,7 +98,7 @@ interface (FFI) bindings based on the Slurm C header files.
   Since the Slurm `jobcomp' plugins need access to the
   `"src/common/slurm_jobcomp.h"' header, we need access to the Slurm
   source code `src' directory in order to build (as well as the normal
-  `<slurm/slurm.h>` headers on the `CPATH`).
+  `<slurm/slurm.h>' headers on the `CPATH').
 
   You will have to first run `./configure' on the Slurm source code,
   otherwise `<slurm/slurm.h>' will not exist. If you don't run
@@ -128,7 +128,7 @@ interface (FFI) bindings based on the Slurm C header files.
   `----
 
   *When adding the .so binaries to the nodes with Warewulf, you must use
-   "wwsh file import" instead of "wwsh file new". Make sure the format
+   `wwsh file import' instead of `wwsh file new'. Make sure the format
    in "wwsh file print" is listed as binary.*
 
 
