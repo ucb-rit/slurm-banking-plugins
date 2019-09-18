@@ -23,7 +23,7 @@ These plugins are written in [[https://www.rust-lang.org][Rust]] to help with sa
 - [[http://clang.llvm.org/get_started.html][Clang]] (dependency for [[https://rust-lang.github.io/rust-bindgen/requirements.html][rust-bindgen]])
 
 ** Building
-Since the Slurm ~jobcomp~ plugins need access to the ="src/common/slurm_jobcomp.h"= header, we need access to the Slurm source code ~src~ directory in order to build (as well as the normal ~<slurm/slurm.h>~ headers on the ~CPATH~). 
+Since the Slurm ~jobcomp~ plugins need access to the ~src/common/slurm_jobcomp.h~ header, we need access to the Slurm source code ~src~ directory in order to build (as well as the normal ~<slurm/slurm.h>~ headers on the ~CPATH~). 
 
 You will have to first run ~./configure~ on the Slurm source code, otherwise ~<slurm/slurm.h>~ will not exist. If you don't run ~./configure~, the Makefile will try to do it for you.
 
@@ -44,7 +44,7 @@ vim /etc/slurm/plugstack.conf # Edit plugstack.conf to enable the spank plugin
 cp bank-config.toml /etc/slurm/bank-config.toml
 #+END_SRC
 
-*When adding the .so binaries to the nodes with Warewulf, you must use =wwsh file import= instead of =wwsh file new=. Make sure the format in "wwsh file print" is listed as binary.*
+*When adding the .so binaries to the nodes with Warewulf, you must use "wwsh file import" instead of "wwsh file new". Make sure the format in "wwsh file print" is listed as binary.*
 
 *** NixOS
 ~shell.nix~ provides the environment for development on [[https://nixos.org][NixOS]]. I run the following:
