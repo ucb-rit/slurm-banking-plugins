@@ -55,7 +55,7 @@ make
 #+END_SRC
 
 *** Help
-For additional reference on building, check [the build on travis-ci](https://travis-ci.org/ucb-rit/slurm-banking-plugins).
+For additional reference on building, check [[https://travis-ci.org/ucb-rit/slurm-banking-plugins][the build on travis-ci]].
 
 ** Usage
 1. Move the ~.so~ files to ~/usr/lib64/slurm~ and ~/etc/slurm/spank~:

@@ -159,8 +159,11 @@ _________________
 4.3 Help
 ~~~~~~~~
 
-  For additional reference on building, check [the build on
-  travis-ci](<https://travis-ci.org/ucb-rit/slurm-banking-plugins>).
+  For additional reference on building, check [the build on travis-ci].
+
+
+[the build on travis-ci]
+<https://travis-ci.org/ucb-rit/slurm-banking-plugins>
 
 
 5 Usage
