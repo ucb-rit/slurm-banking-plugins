@@ -142,7 +142,7 @@ pub extern "C" fn slurm_jobcomp_log_record(job_ptr: *const job_record) -> u32 {
         ),
     );
 
-    let job_state = (unsafe { (*job_ptr).job_state });
+    let job_state = unsafe { (*job_ptr).job_state };
     let job_state_ptr = unsafe { job_state_string(job_state) };
     let job_state_str = safe_helpers::deref_cstr(job_state_ptr).unwrap();
 

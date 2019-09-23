@@ -1,3 +1,4 @@
+.EXPORT_ALL_VARIABLES:
 SLURM_SOURCE_CODE_DIR=$(shell pwd)/slurm
 PLUGIN_INSTALL_PREFIX=/usr/lib64/slurm
 SPANK_PLUGIN_INSTALL_PREFIX=/etc/slurm/spank
@@ -23,10 +24,10 @@ mybrc_rest_client: spec/swagger.json
 
 .PHONY: test
 test:
-	cd job_completion_plugin && cargo fmt --all -- --check && cd ..
-	cd job_submit_plugin && cargo fmt --all -- --check && cd ..
-	cd spank_plugin && cargo fmt --all -- --check && cd ..
-	cd slurm_banking && cargo fmt --all -- --check && cd ..
+	cd job_completion_plugin && cargo fmt --all -- --check && cargo test && cd ..
+	cd job_submit_plugin && cargo fmt --all -- --check && cargo test && cd ..
+	cd spank_plugin && cargo fmt --all -- --check && cargo test && cd ..
+	cd slurm_banking && cargo fmt --all -- --check && cargo test && cd ..
 
 .PHONY: docker
 docker: docker/**/* **/*
