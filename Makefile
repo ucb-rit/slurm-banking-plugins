@@ -23,7 +23,7 @@ mybrc_rest_client: spec/swagger.json
 		-o /local/mybrc_rest_client
 
 .PHONY: test
-test:
+test: slurm/slurm/slurm.h
 	cd job_completion_plugin && cargo fmt --all -- --check && cargo test && cd ..
 	cd job_submit_plugin && cargo fmt --all -- --check && cargo test && cd ..
 	cd spank_plugin && cargo fmt --all -- --check && cargo test && cd ..
