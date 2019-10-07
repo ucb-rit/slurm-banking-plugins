@@ -1,0 +1,36 @@
+[Enable]
+enable_job_submit_plugin = true     # Requires Slurm restart
+enable_spank_plugin = true          # Does not require Slurm restart
+enable_job_complete_plugin = true   # Requires Slurm restart
+
+# All partitions must be listed here.
+# If a job requests to use a partition that is not listed here, 
+#  it will be rejected.
+[PartitionPrice]
+normal = 1
+debug = 0.5
+savio = 0.75
+savio_bigmem = 1.67
+savio2 = 1.00
+savio2_bigmem = 1.20
+savio2_gpu = 2.67
+savio2_1080ti = 1.67
+savio2_htc = 1.20
+savio2_knl = 0.40
+savio3 = 1.00
+savio3_bigmem = 2.67
+savio3_xlmem = 1.00
+savio3_gpu = 1.00
+
+# If the QoS is not in this list, the default multiplier is 1.
+[QosMultiplier]
+normal = 1 
+lowprio = 0
+
+# Provide the base path to the myBRC API WITHOUT the trailing /
+# For example,
+#   BAD:  url = "http://localhost:8080/"
+#   GOOD: url = "http://localhost:8080"
+[API]
+url = "https://scgup-dev.lbl.gov/mybrc-rest"
+token = "Token 0123456789"
