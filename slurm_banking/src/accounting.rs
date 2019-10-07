@@ -90,7 +90,7 @@ pub fn check_sufficient_funds(
     // Reference (timeouts): https://stackoverflow.com/a/45314194
     let work = api_client
         .can_submit_job_api()
-        .can_submit_job_read(&job_cost_str, &auth_token, user_id, account_id)
+        .can_submit_job_read(&job_cost_str, user_id, account_id, &auth_token)
         .select2(timeout)
         .then(|res| match res {
             Ok(Either::A((result, _timeout))) => Ok(result),
