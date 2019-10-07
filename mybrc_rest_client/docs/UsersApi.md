@@ -1,6 +1,6 @@
 # \UsersApi
 
-All URIs are relative to *http://scgup-dev.lbl.gov:8888/mybrc-rest*
+All URIs are relative to *https://scgup-dev.lbl.gov/mybrc-rest*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
@@ -8,7 +8,7 @@ Method | HTTP request | Description
 
 
 # **users_list**
-> ::models::InlineResponse2002 users_list(ctx, optional)
+> ::models::InlineResponse2003 users_list(ctx, optional)
 
 
 A ViewSet for the SCGUser model.
@@ -29,7 +29,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**::models::InlineResponse2002**](inline_response_200_2.md)
+[**::models::InlineResponse2003**](inline_response_200_3.md)
 
 ### Authorization
 

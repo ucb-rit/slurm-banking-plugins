@@ -21,11 +21,11 @@ pub struct InlineResponse2002 {
   #[serde(rename = "previous")]
   previous: Option<String>,
   #[serde(rename = "results")]
-  results: Vec<::models::ScgUser>
+  results: Vec<::models::Partition>
 }
 
 impl InlineResponse2002 {
-  pub fn new(count: i32, results: Vec<::models::ScgUser>) -> InlineResponse2002 {
+  pub fn new(count: i32, results: Vec<::models::Partition>) -> InlineResponse2002 {
     InlineResponse2002 {
       count: count,
       next: None,
@@ -82,16 +82,16 @@ impl InlineResponse2002 {
     self.previous = None;
   }
 
-  pub fn set_results(&mut self, results: Vec<::models::ScgUser>) {
+  pub fn set_results(&mut self, results: Vec<::models::Partition>) {
     self.results = results;
   }
 
-  pub fn with_results(mut self, results: Vec<::models::ScgUser>) -> InlineResponse2002 {
+  pub fn with_results(mut self, results: Vec<::models::Partition>) -> InlineResponse2002 {
     self.results = results;
     self
   }
 
-  pub fn results(&self) -> &Vec<::models::ScgUser> {
+  pub fn results(&self) -> &Vec<::models::Partition> {
     &self.results
   }
 

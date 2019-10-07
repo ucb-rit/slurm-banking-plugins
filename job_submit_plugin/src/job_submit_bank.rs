@@ -59,7 +59,7 @@ pub extern "C" fn init() -> c_int {
 pub extern "C" fn job_submit(
     job_desc: *mut job_descriptor,
     _submit_uid: u32,
-    _error_msg: *mut *const c_char,
+    error_msg: *mut *const c_char,
 ) -> u32 {
     // BEGIN: Check if this plugin should be enabled
     let conf = SETTINGS.lock().unwrap();
@@ -75,6 +75,11 @@ pub extern "C" fn job_submit(
     }
     // END: Check if this plugin should be enabled
 
+    /*
+    unsafe {
+        *error_msg = xstrdup(std::ffi::CString::new("hello").unwrap().as_ptr())
+    }
+    */
     let userid: u32 = unsafe { (*job_desc).user_id };
     let account: String = match safe_helpers::deref_cstr(unsafe { (*job_desc).account }) {
         Some(account) => account,
@@ -124,8 +129,10 @@ pub extern "C" fn job_submit(
 
     // Check if the account has sufficient funds for the job
     let base_path = slurm_banking::prices_config::get_base_path(&conf);
+    let auth_token = slurm_banking::prices_config::get_auth_token(&conf);
     let has_funds = match accounting::check_sufficient_funds(
         base_path,
+        &auth_token,
         expected_cost,
         &userid.to_string(),
         &account,

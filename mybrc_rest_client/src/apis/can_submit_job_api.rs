@@ -35,12 +35,12 @@ impl<C: hyper::client::Connect> CanSubmitJobApiClient<C> {
 }
 
 pub trait CanSubmitJobApi {
-    fn can_submit_job_read(&self, job_cost: &str, user_id: &str, account_id: &str) -> Box<Future<Item = ::models::InlineResponse200, Error = Error<serde_json::Value>>>;
+    fn can_submit_job_read(&self, job_cost: &str, user_id: &str, account_id: &str, authorization: &str) -> Box<Future<Item = ::models::InlineResponse200, Error = Error<serde_json::Value>>>;
 }
 
 
 impl<C: hyper::client::Connect>CanSubmitJobApi for CanSubmitJobApiClient<C> {
-    fn can_submit_job_read(&self, job_cost: &str, user_id: &str, account_id: &str) -> Box<Future<Item = ::models::InlineResponse200, Error = Error<serde_json::Value>>> {
+    fn can_submit_job_read(&self, job_cost: &str, user_id: &str, account_id: &str, authorization: &str) -> Box<Future<Item = ::models::InlineResponse200, Error = Error<serde_json::Value>>> {
         let configuration: &configuration::Configuration<C> = self.configuration.borrow();
 
         let mut auth_headers = HashMap::<String, String>::new();
@@ -77,6 +77,10 @@ impl<C: hyper::client::Connect>CanSubmitJobApi for CanSubmitJobApiClient<C> {
             req.headers_mut().set(UserAgent::new(Cow::Owned(user_agent.clone())));
         }
 
+        {
+            let mut headers = req.headers_mut();
+            headers.set_raw("Authorization", authorization);
+        }
 
         for (key, val) in auth_headers {
             req.headers_mut().set_raw(key, val);

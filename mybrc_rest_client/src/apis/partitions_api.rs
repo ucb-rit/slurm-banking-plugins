@@ -35,12 +35,12 @@ impl<C: hyper::client::Connect> PartitionsApiClient<C> {
 }
 
 pub trait PartitionsApi {
-    fn partitions_list(&self, page: i32) -> Box<Future<Item = ::models::InlineResponse2001, Error = Error<serde_json::Value>>>;
+    fn partitions_list(&self, page: i32) -> Box<Future<Item = ::models::InlineResponse2002, Error = Error<serde_json::Value>>>;
 }
 
 
 impl<C: hyper::client::Connect>PartitionsApi for PartitionsApiClient<C> {
-    fn partitions_list(&self, page: i32) -> Box<Future<Item = ::models::InlineResponse2001, Error = Error<serde_json::Value>>> {
+    fn partitions_list(&self, page: i32) -> Box<Future<Item = ::models::InlineResponse2002, Error = Error<serde_json::Value>>> {
         let configuration: &configuration::Configuration<C> = self.configuration.borrow();
 
         let mut auth_headers = HashMap::<String, String>::new();
@@ -102,7 +102,7 @@ impl<C: hyper::client::Connect>PartitionsApi for PartitionsApiClient<C> {
                 }
             })
             .and_then(|body| {
-                let parsed: Result<::models::InlineResponse2001, _> = serde_json::from_slice(&body);
+                let parsed: Result<::models::InlineResponse2002, _> = serde_json::from_slice(&body);
                 parsed.map_err(|e| Error::from(e))
             })
         )

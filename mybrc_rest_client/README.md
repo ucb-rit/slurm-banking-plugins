@@ -17,25 +17,26 @@ Put the package under your project folder and add the following in import:
 
 ## Documentation for API Endpoints
 
-All URIs are relative to *http://scgup-dev.lbl.gov:8888/mybrc-rest*
+All URIs are relative to *https://scgup-dev.lbl.gov/mybrc-rest*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
 *ApiTokenAuthApi* | [**api_token_auth_create**](docs/ApiTokenAuthApi.md#api_token_auth_create) | **Post** /api_token_auth/ | 
 *CanSubmitJobApi* | [**can_submit_job_read**](docs/CanSubmitJobApi.md#can_submit_job_read) | **Get** /can_submit_job/{job_cost}/{user_id}/{account_id}/ | 
-*CpusApi* | [**cpus_create**](docs/CpusApi.md#cpus_create) | **Post** /cpus/ | 
 *JobsApi* | [**jobs_create**](docs/JobsApi.md#jobs_create) | **Post** /jobs/ | 
+*JobsApi* | [**jobs_list**](docs/JobsApi.md#jobs_list) | **Get** /jobs/ | 
 *JobsApi* | [**jobs_update**](docs/JobsApi.md#jobs_update) | **Put** /jobs/{jobslurmid}/ | 
 *PartitionsApi* | [**partitions_list**](docs/PartitionsApi.md#partitions_list) | **Get** /partitions/ | 
+*UploadCpuDataApi* | [**upload_cpu_data_update**](docs/UploadCpuDataApi.md#upload_cpu_data_update) | **Put** /upload_cpu_data/{filename} | 
 *UsersApi* | [**users_list**](docs/UsersApi.md#users_list) | **Get** /users/ | 
 
 
 ## Documentation For Models
 
- - [Cpu](docs/Cpu.md)
  - [InlineResponse200](docs/InlineResponse200.md)
  - [InlineResponse2001](docs/InlineResponse2001.md)
  - [InlineResponse2002](docs/InlineResponse2002.md)
+ - [InlineResponse2003](docs/InlineResponse2003.md)
  - [InlineResponse400](docs/InlineResponse400.md)
  - [Job](docs/Job.md)
  - [Node](docs/Node.md)

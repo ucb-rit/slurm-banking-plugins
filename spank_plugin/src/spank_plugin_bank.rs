@@ -127,9 +127,9 @@ pub extern "C" fn slurm_spank_init(sp: spank_t, _ac: c_int, _argv: *const *const
     let job_create_record = swagger::models::Job::new(
         job_id.to_string(),
         user_id.to_string(),
-        account,
-        expected_cost.to_string(),
+        account
     )
+    .with_amount(expected_cost.to_string())
     .with_jobstatus("RUNNING".to_string())
     .with_partition(partition)
     .with_qos(qos)
@@ -141,7 +141,8 @@ pub extern "C" fn slurm_spank_init(sp: spank_t, _ac: c_int, _argv: *const *const
 
     log(&format!("Creating job wih info: {:?}", job_create_record));
     let base_path = slurm_banking::prices_config::get_base_path(&conf);
-    let _ = accounting::create_job(base_path, job_create_record);
+    let auth_token = slurm_banking::prices_config::get_auth_token(&conf);
+    let _ = accounting::create_job(base_path, &auth_token, job_create_record);
 
     unsafe { slurm_free_job_info_msg(job_buffer_ptr) };
     log(&format!("slurm_spank_init(). Job ID: {}", job_id));

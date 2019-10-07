@@ -54,12 +54,12 @@ mod api_token_auth_api;
 pub use self::api_token_auth_api::{ ApiTokenAuthApi, ApiTokenAuthApiClient };
 mod can_submit_job_api;
 pub use self::can_submit_job_api::{ CanSubmitJobApi, CanSubmitJobApiClient };
-mod cpus_api;
-pub use self::cpus_api::{ CpusApi, CpusApiClient };
 mod jobs_api;
 pub use self::jobs_api::{ JobsApi, JobsApiClient };
 mod partitions_api;
 pub use self::partitions_api::{ PartitionsApi, PartitionsApiClient };
+mod upload_cpu_data_api;
+pub use self::upload_cpu_data_api::{ UploadCpuDataApi, UploadCpuDataApiClient };
 mod users_api;
 pub use self::users_api::{ UsersApi, UsersApiClient };
 

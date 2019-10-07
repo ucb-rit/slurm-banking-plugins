@@ -154,9 +154,9 @@ pub extern "C" fn slurm_jobcomp_log_record(job_ptr: *const job_record) -> u32 {
     let job_update_record = swagger::models::Job::new(
         jobslurmid.clone(),
         user_id,
-        account,
-        expected_cost.to_string(),
+        account
     )
+    .with_amount(expected_cost.to_string())
     .with_jobstatus(job_state_str)
     .with_partition(partition)
     .with_qos(qos)
@@ -175,7 +175,8 @@ pub extern "C" fn slurm_jobcomp_log_record(job_ptr: *const job_record) -> u32 {
         &format!("Updating job with info: {:?}", job_update_record),
     );
     let base_path = slurm_banking::prices_config::get_base_path(&conf);
-    let _ = accounting::update_job(base_path, &jobslurmid, job_update_record);
+    let auth_token = slurm_banking::prices_config::get_auth_token(&conf);
+    let _ = accounting::update_job(base_path, &auth_token, &jobslurmid, job_update_record);
 
     SLURM_SUCCESS
 }

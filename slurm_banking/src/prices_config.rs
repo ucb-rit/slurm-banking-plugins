@@ -18,7 +18,16 @@ pub fn get_base_path(conf: &Config) -> String {
         Ok(api_conf) => api_conf,
         Err(_) => return default_value,
     };
-    api_conf.get("url").unwrap_or(&default_value).clone()
+    api_conf.get("url").unwrap_or(&default_value).to_string()
+}
+
+pub fn get_auth_token(conf: &Config) -> String {
+    let default_value = "".to_string();
+    let api_conf = match conf.get::<HashMap<String, String>>("API") {
+        Ok(api_conf) => api_conf,
+        Err(_) => return default_value,
+    };
+    api_conf.get("token").unwrap_or(&default_value).to_string()
 }
 
 pub fn load_config_from_file(conf: &mut Config) -> Result<(), config::ConfigError> {

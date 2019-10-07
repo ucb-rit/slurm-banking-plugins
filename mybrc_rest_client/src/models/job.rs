@@ -27,7 +27,7 @@ pub struct Job {
   #[serde(rename = "accountid")]
   accountid: String,
   #[serde(rename = "amount")]
-  amount: String,
+  amount: Option<String>,
   #[serde(rename = "jobstatus")]
   jobstatus: Option<String>,
   #[serde(rename = "partition")]
@@ -49,7 +49,7 @@ pub struct Job {
 }
 
 impl Job {
-  pub fn new(jobslurmid: String, userid: String, accountid: String, amount: String) -> Job {
+  pub fn new(jobslurmid: String, userid: String, accountid: String) -> Job {
     Job {
       jobslurmid: jobslurmid,
       submitdate: None,
@@ -57,7 +57,7 @@ impl Job {
       enddate: None,
       userid: userid,
       accountid: accountid,
-      amount: amount,
+      amount: None,
       jobstatus: None,
       partition: None,
       qos: None,
@@ -164,18 +164,21 @@ impl Job {
 
 
   pub fn set_amount(&mut self, amount: String) {
-    self.amount = amount;
+    self.amount = Some(amount);
   }
 
   pub fn with_amount(mut self, amount: String) -> Job {
-    self.amount = amount;
+    self.amount = Some(amount);
     self
   }
 
-  pub fn amount(&self) -> &String {
-    &self.amount
+  pub fn amount(&self) -> Option<&String> {
+    self.amount.as_ref()
   }
 
+  pub fn reset_amount(&mut self) {
+    self.amount = None;
+  }
 
   pub fn set_jobstatus(&mut self, jobstatus: String) {
     self.jobstatus = Some(jobstatus);

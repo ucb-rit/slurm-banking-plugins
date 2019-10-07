@@ -1,4 +1,5 @@
 extern crate futures;
+extern crate hyper_tls;
 extern crate rust_decimal;
 extern crate swagger;
 extern crate tokio_core;
@@ -65,6 +66,7 @@ pub fn expected_cost(
 
 pub fn check_sufficient_funds(
     base_path: String,
+    auth_token: &str,
     job_cost: Decimal,
     user_id: &str,
     account_id: &str,
@@ -76,7 +78,9 @@ pub fn check_sufficient_funds(
     )
     .unwrap();
 
-    let hyper_client = hyper::client::Client::new(&core.handle());
+    let hyper_client = hyper::Client::configure()
+        .connector(hyper_tls::HttpsConnector::new(4, &core.handle()).unwrap())
+        .build(&core.handle());
     let mut configuration = swagger::apis::configuration::Configuration::new(hyper_client);
     configuration.base_path = base_path;
     let api_client = swagger::apis::client::APIClient::new(configuration);
@@ -86,7 +90,7 @@ pub fn check_sufficient_funds(
     // Reference (timeouts): https://stackoverflow.com/a/45314194
     let work = api_client
         .can_submit_job_api()
-        .can_submit_job_read(&job_cost_str, user_id, account_id)
+        .can_submit_job_read(&job_cost_str, &auth_token, user_id, account_id)
         .select2(timeout)
         .then(|res| match res {
             Ok(Either::A((result, _timeout))) => Ok(result),
@@ -112,6 +116,7 @@ pub fn check_sufficient_funds(
 
 pub fn create_job(
     base_path: String,
+    auth_token: &str,
     job_create_record: swagger::models::Job,
 ) -> Result<(), String> {
     let mut core = tokio_core::reactor::Core::new().unwrap();
@@ -121,7 +126,9 @@ pub fn create_job(
     )
     .unwrap();
 
-    let hyper_client = hyper::client::Client::new(&core.handle());
+    let hyper_client = hyper::Client::configure()
+        .connector(hyper_tls::HttpsConnector::new(4, &core.handle()).unwrap())
+        .build(&core.handle());
     let mut configuration = swagger::apis::configuration::Configuration::new(hyper_client);
     configuration.base_path = base_path;
     let api_client = swagger::apis::client::APIClient::new(configuration);
@@ -130,7 +137,7 @@ pub fn create_job(
     // Reference (timeouts): https://stackoverflow.com/a/45314194
     let work = api_client
         .jobs_api()
-        .jobs_create(job_create_record)
+        .jobs_create(job_create_record, auth_token)
         .select2(timeout)
         .then(|res| match res {
             Ok(Either::A((result, _timeout))) => Ok(result),
@@ -149,6 +156,7 @@ pub fn create_job(
 
 pub fn update_job(
     base_path: String,
+    auth_token: &str,
     jobslurmid: &str,
     job_update_record: swagger::models::Job,
 ) -> Result<(), String> {
@@ -159,7 +167,9 @@ pub fn update_job(
     )
     .unwrap();
 
-    let hyper_client = hyper::client::Client::new(&core.handle());
+    let hyper_client = hyper::Client::configure()
+        .connector(hyper_tls::HttpsConnector::new(4, &core.handle()).unwrap())
+        .build(&core.handle());
     let mut configuration = swagger::apis::configuration::Configuration::new(hyper_client);
     configuration.base_path = base_path;
     let api_client = swagger::apis::client::APIClient::new(configuration);
@@ -168,7 +178,7 @@ pub fn update_job(
     // Reference (timeouts): https://stackoverflow.com/a/45314194
     let work = api_client
         .jobs_api()
-        .jobs_update(jobslurmid, job_update_record)
+        .jobs_update(jobslurmid, job_update_record, auth_token)
         .select2(timeout)
         .then(|res| match res {
             Ok(Either::A((result, _timeout))) => Ok(result),
