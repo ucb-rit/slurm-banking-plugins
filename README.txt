@@ -133,7 +133,8 @@ _________________
   | make install
   | vim /etc/slurm/slurm.conf # Edit slurm.conf to enable the job submit and job completion plugins
   | vim /etc/slurm/plugstack.conf # Edit plugstack.conf to enable the spank plugin
-  | cp bank-config.toml /etc/slurm/bank-config.toml
+  | cp bank-config.toml.example /etc/slurm/bank-config.toml
+  | vim /etc/slurm/bank-config.toml # Edit bank-config.toml to desired settings
   `----
 
   *When adding the .so binaries to the nodes with Warewulf, you must use
