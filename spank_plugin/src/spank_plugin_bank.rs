@@ -124,20 +124,17 @@ pub extern "C" fn slurm_spank_init(sp: spank_t, _ac: c_int, _argv: *const *const
     .collect();
     log(&format!("Nodes: {:?}", nodes));
 
-    let job_create_record = swagger::models::Job::new(
-        job_id.to_string(),
-        user_id.to_string(),
-        account
-    )
-    .with_amount(expected_cost.to_string())
-    .with_jobstatus("RUNNING".to_string())
-    .with_partition(partition)
-    .with_qos(qos)
-    .with_startdate(start_timestamp_str)
-    .with_submitdate(submit_timestamp_str)
-    .with_nodes(nodes)
-    .with_num_cpus(num_cpus as i32)
-    .with_num_alloc_nodes(num_nodes as i32);
+    let job_create_record =
+        swagger::models::Job::new(job_id.to_string(), user_id.to_string(), account)
+            .with_amount(expected_cost.to_string())
+            .with_jobstatus("RUNNING".to_string())
+            .with_partition(partition)
+            .with_qos(qos)
+            .with_startdate(start_timestamp_str)
+            .with_submitdate(submit_timestamp_str)
+            .with_nodes(nodes)
+            .with_num_cpus(num_cpus as i32)
+            .with_num_alloc_nodes(num_nodes as i32);
 
     log(&format!("Creating job wih info: {:?}", job_create_record));
     let base_path = slurm_banking::prices_config::get_base_path(&conf);
