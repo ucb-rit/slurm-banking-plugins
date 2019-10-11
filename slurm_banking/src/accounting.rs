@@ -1,18 +1,14 @@
-extern crate futures;
-extern crate hyper_tls;
 extern crate rust_decimal;
-extern crate swagger;
-extern crate tokio_core;
+extern crate openapi;
 
 use super::logging::safe_info;
 use config::Config;
-use futures::future::{Either, Future};
 use rust_decimal::{Decimal, RoundingStrategy};
 use std::collections::HashMap;
 use std::str::FromStr;
 use std::time::Duration;
 
-static REQUEST_TIMEOUT_MS: u64 = 10 * 1000;
+static REQUEST_TIMEOUT_SECS: u64 = 5;
 
 fn log(message: &str) {
     safe_info(&("slurm_banking_lib: ".to_owned() + message))
@@ -70,46 +66,25 @@ pub fn check_sufficient_funds(
     job_cost: Decimal,
     user_id: &str,
     account_id: &str,
-) -> Result<bool, String> {
-    let mut core = tokio_core::reactor::Core::new().unwrap();
-    let timeout = tokio_core::reactor::Timeout::new(
-        Duration::from_millis(REQUEST_TIMEOUT_MS),
-        &core.handle(),
-    )
-    .unwrap();
-
-    let hyper_client = hyper::Client::configure()
-        .connector(hyper_tls::HttpsConnector::new(4, &core.handle()).unwrap())
-        .build(&core.handle());
-    let mut configuration = swagger::apis::configuration::Configuration::new(hyper_client);
+) -> Result<bool, openapi::apis::Error> {
+    let mut configuration = openapi::apis::configuration::Configuration::new();
     configuration.base_path = base_path;
-    let api_client = swagger::apis::client::APIClient::new(configuration);
+    configuration.client = reqwest::Client::builder().timeout(Duration::from_secs(REQUEST_TIMEOUT_SECS)).build()?;
+    let api_client = openapi::apis::client::APIClient::new(configuration);
     log("check_sufficient_funds: api client created");
     let job_cost_str = job_cost.to_string();
 
-    // Reference (timeouts): https://stackoverflow.com/a/45314194
-    let work = api_client
+    let result = api_client
         .can_submit_job_api()
-        .can_submit_job_read(&job_cost_str, user_id, account_id, &auth_token)
-        .select2(timeout)
-        .then(|res| match res {
-            Ok(Either::A((result, _timeout))) => Ok(result),
-            Ok(Either::B((_timeout, _result))) => Err("Timed out"),
-            Err(Either::A((err, _timeout))) => {
-                log(&format!("{:?}", err));
-                Err("Request error")
-            }
-            Err(Either::B((_timeout_err, _result))) => Err("Timed out"),
-        });
+        .can_submit_job_read(&job_cost_str, user_id, account_id, &auth_token);
 
-    let result = core.run(work);
     log(&format!("{:?}", result));
     let result = match result {
         Ok(response) => response,
-        Err(err) => return Err(err.to_string()),
+        Err(err) => return Err(err),
     };
-    match result.success() {
-        Some(value) => Ok(*value),
+    match result.success {
+        Some(value) => Ok(value),
         None => Ok(false), // Got a response from the API, but not containing the success field
     }
 }
@@ -117,39 +92,18 @@ pub fn check_sufficient_funds(
 pub fn create_job(
     base_path: String,
     auth_token: &str,
-    job_create_record: swagger::models::Job,
-) -> Result<(), String> {
-    let mut core = tokio_core::reactor::Core::new().unwrap();
-    let timeout = tokio_core::reactor::Timeout::new(
-        Duration::from_millis(REQUEST_TIMEOUT_MS),
-        &core.handle(),
-    )
-    .unwrap();
-
-    let hyper_client = hyper::Client::configure()
-        .connector(hyper_tls::HttpsConnector::new(4, &core.handle()).unwrap())
-        .build(&core.handle());
-    let mut configuration = swagger::apis::configuration::Configuration::new(hyper_client);
+    job_create_record: openapi::models::Job,
+) -> Result<(), openapi::apis::Error> {
+    let mut configuration = openapi::apis::configuration::Configuration::new();
     configuration.base_path = base_path;
-    let api_client = swagger::apis::client::APIClient::new(configuration);
+    configuration.client = reqwest::Client::builder().timeout(Duration::from_secs(REQUEST_TIMEOUT_SECS)).build()?;
+    let api_client = openapi::apis::client::APIClient::new(configuration);
     log("create_job: api client created");
 
-    // Reference (timeouts): https://stackoverflow.com/a/45314194
-    let work = api_client
+    let result = api_client
         .jobs_api()
-        .jobs_create(job_create_record, auth_token)
-        .select2(timeout)
-        .then(|res| match res {
-            Ok(Either::A((result, _timeout))) => Ok(result),
-            Ok(Either::B((_timeout, _result))) => Err("Timed out"),
-            Err(Either::A((err, _timeout))) => {
-                log(&format!("{:?}", err));
-                Err("Request error")
-            }
-            Err(Either::B((_timeout_err, _result))) => Err("Timed out"),
-        });
+        .jobs_create(job_create_record, auth_token);
 
-    let result = core.run(work);
     log(&format!("create_job response: {:?}", result));
     Ok(())
 }
@@ -158,39 +112,18 @@ pub fn update_job(
     base_path: String,
     auth_token: &str,
     jobslurmid: &str,
-    job_update_record: swagger::models::Job,
-) -> Result<(), String> {
-    let mut core = tokio_core::reactor::Core::new().unwrap();
-    let timeout = tokio_core::reactor::Timeout::new(
-        Duration::from_millis(REQUEST_TIMEOUT_MS),
-        &core.handle(),
-    )
-    .unwrap();
-
-    let hyper_client = hyper::Client::configure()
-        .connector(hyper_tls::HttpsConnector::new(4, &core.handle()).unwrap())
-        .build(&core.handle());
-    let mut configuration = swagger::apis::configuration::Configuration::new(hyper_client);
+    job_update_record: openapi::models::Job,
+) -> Result<(), openapi::apis::Error> {
+    let mut configuration = openapi::apis::configuration::Configuration::new();
     configuration.base_path = base_path;
-    let api_client = swagger::apis::client::APIClient::new(configuration);
+    configuration.client = reqwest::Client::builder().timeout(Duration::from_secs(REQUEST_TIMEOUT_SECS)).build()?;
+    let api_client = openapi::apis::client::APIClient::new(configuration);
     log("update_job: api client created");
 
-    // Reference (timeouts): https://stackoverflow.com/a/45314194
-    let work = api_client
+    let result = api_client
         .jobs_api()
-        .jobs_update(jobslurmid, job_update_record, auth_token)
-        .select2(timeout)
-        .then(|res| match res {
-            Ok(Either::A((result, _timeout))) => Ok(result),
-            Ok(Either::B((_timeout, _result))) => Err("Timed out"),
-            Err(Either::A((err, _timeout))) => {
-                log(&format!("{:?}", err));
-                Err("Request error")
-            }
-            Err(Either::B((_timeout_err, _result))) => Err("Timed out"),
-        });
+        .jobs_update(jobslurmid, job_update_record, auth_token);
 
-    let result = core.run(work);
     log(&format!("update_job response: {:?}", result));
     Ok(())
 }

@@ -4,7 +4,7 @@ extern crate lazy_static;
 extern crate config;
 extern crate rust_decimal;
 extern crate slurm_banking;
-extern crate swagger;
+extern crate openapi;
 
 use slurm_banking::accounting;
 use slurm_banking::bindings::*;
@@ -120,21 +120,21 @@ pub extern "C" fn slurm_spank_init(sp: spank_t, _ac: c_int, _argv: *const *const
         &safe_helpers::deref_cstr(nodes_raw).unwrap_or("".to_string()),
     )
     .into_iter()
-    .map(|name| swagger::models::Node::new(name))
+    .map(|name| openapi::models::Node::new(name))
     .collect();
     log(&format!("Nodes: {:?}", nodes));
 
-    let job_create_record =
-        swagger::models::Job::new(job_id.to_string(), user_id.to_string(), account)
-            .with_amount(expected_cost.to_string())
-            .with_jobstatus("RUNNING".to_string())
-            .with_partition(partition)
-            .with_qos(qos)
-            .with_startdate(start_timestamp_str)
-            .with_submitdate(submit_timestamp_str)
-            .with_nodes(nodes)
-            .with_num_cpus(num_cpus as i32)
-            .with_num_alloc_nodes(num_nodes as i32);
+    let mut job_create_record =
+        openapi::models::Job::new(job_id.to_string(), user_id.to_string(), account);
+    job_create_record.amount = Some(expected_cost.to_string());
+    job_create_record.jobstatus = Some("RUNNING".to_string());
+    job_create_record.partition = Some(partition);
+    job_create_record.qos = Some(qos);
+    job_create_record.startdate = Some(start_timestamp_str);
+    job_create_record.submitdate = Some(submit_timestamp_str);
+    job_create_record.nodes = Some(nodes);
+    job_create_record.num_cpus = Some(num_cpus as i32);
+    job_create_record.num_alloc_nodes = Some(num_nodes as i32);
 
     log(&format!("Creating job wih info: {:?}", job_create_record));
     let base_path = slurm_banking::prices_config::get_base_path(&conf);
