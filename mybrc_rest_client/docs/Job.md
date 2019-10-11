@@ -1,24 +1,25 @@
 # Job
 
 ## Properties
+
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**jobslurmid** | **String** |  | [default to null]
-**submitdate** | **String** |  | [optional] [default to null]
-**startdate** | **String** |  | [optional] [default to null]
-**enddate** | **String** |  | [optional] [default to null]
-**userid** | **String** |  | [default to null]
-**accountid** | **String** |  | [default to null]
-**amount** | **String** |  | [optional] [default to null]
-**jobstatus** | **String** |  | [optional] [default to null]
-**partition** | **String** |  | [optional] [default to null]
-**qos** | **String** |  | [optional] [default to null]
-**nodes** | [**Vec<::models::Node>**](Node.md) |  | [optional] [default to null]
-**num_cpus** | **i32** |  | [optional] [default to null]
-**num_req_nodes** | **i32** |  | [optional] [default to null]
-**num_alloc_nodes** | **i32** |  | [optional] [default to null]
-**raw_time** | **f32** |  | [optional] [default to null]
-**cpu_time** | **f32** |  | [optional] [default to null]
+**jobslurmid** | **String** |  | 
+**submitdate** | **String** |  | [optional] 
+**startdate** | **String** |  | [optional] 
+**enddate** | **String** |  | [optional] 
+**userid** | **String** |  | 
+**accountid** | **String** |  | 
+**amount** | **String** |  | [optional] 
+**jobstatus** | **String** |  | [optional] 
+**partition** | **String** |  | [optional] 
+**qos** | **String** |  | [optional] 
+**nodes** | [**Vec<crate::models::Node>**](Node.md) |  | [optional] 
+**num_cpus** | **i32** |  | [optional] 
+**num_req_nodes** | **i32** |  | [optional] 
+**num_alloc_nodes** | **i32** |  | [optional] 
+**raw_time** | **f32** |  | [optional] 
+**cpu_time** | **f32** |  | [optional] 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

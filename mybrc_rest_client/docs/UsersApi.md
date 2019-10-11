@@ -4,32 +4,27 @@ All URIs are relative to *https://scgup-dev.lbl.gov/mybrc-rest*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**users_list**](UsersApi.md#users_list) | **Get** /users/ | 
+[**users_list**](UsersApi.md#users_list) | **get** /users/ | 
 
 
-# **users_list**
-> ::models::InlineResponse2003 users_list(ctx, optional)
+
+## users_list
+
+> crate::models::InlineResponse2003 users_list(page)
 
 
 A ViewSet for the SCGUser model.
 
-### Required Parameters
+### Parameters
 
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **ctx** | **context.Context** | context containing the authentication | nil if no authentication
- **optional** | **map[string]interface{}** | optional parameters | nil if no parameters
 
-### Optional Parameters
-Optional parameters are passed through a map[string]interface{}.
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **page** | **i32**| A page number within the paginated result set. | 
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**page** | **i32** | A page number within the paginated result set. |  | 
 
 ### Return type
 
-[**::models::InlineResponse2003**](inline_response_200_3.md)
+[**crate::models::InlineResponse2003**](inline_response_200_3.md)
 
 ### Authorization
 
@@ -37,8 +32,8 @@ Name | Type | Description  | Notes
 
 ### HTTP request headers
 
- - **Content-Type**: application/json
- - **Accept**: application/json
+- **Content-Type**: Not defined
+- **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
