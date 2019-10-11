@@ -3,9 +3,9 @@ extern crate lazy_static;
 
 extern crate chrono;
 extern crate config;
+extern crate openapi;
 extern crate rust_decimal;
 extern crate slurm_banking;
-extern crate openapi;
 
 use slurm_banking::accounting;
 use slurm_banking::bindings::*;

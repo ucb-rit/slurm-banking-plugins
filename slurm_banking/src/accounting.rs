@@ -1,5 +1,5 @@
-extern crate rust_decimal;
 extern crate openapi;
+extern crate rust_decimal;
 
 use super::logging::safe_info;
 use config::Config;
@@ -69,14 +69,19 @@ pub fn check_sufficient_funds(
 ) -> Result<bool, openapi::apis::Error> {
     let mut configuration = openapi::apis::configuration::Configuration::new();
     configuration.base_path = base_path;
-    configuration.client = reqwest::Client::builder().timeout(Duration::from_secs(REQUEST_TIMEOUT_SECS)).build()?;
+    configuration.client = reqwest::Client::builder()
+        .timeout(Duration::from_secs(REQUEST_TIMEOUT_SECS))
+        .build()?;
     let api_client = openapi::apis::client::APIClient::new(configuration);
     log("check_sufficient_funds: api client created");
     let job_cost_str = job_cost.to_string();
 
-    let result = api_client
-        .can_submit_job_api()
-        .can_submit_job_read(&job_cost_str, user_id, account_id, &auth_token);
+    let result = api_client.can_submit_job_api().can_submit_job_read(
+        &job_cost_str,
+        user_id,
+        account_id,
+        &auth_token,
+    );
 
     log(&format!("{:?}", result));
     let result = match result {
@@ -96,7 +101,9 @@ pub fn create_job(
 ) -> Result<(), openapi::apis::Error> {
     let mut configuration = openapi::apis::configuration::Configuration::new();
     configuration.base_path = base_path;
-    configuration.client = reqwest::Client::builder().timeout(Duration::from_secs(REQUEST_TIMEOUT_SECS)).build()?;
+    configuration.client = reqwest::Client::builder()
+        .timeout(Duration::from_secs(REQUEST_TIMEOUT_SECS))
+        .build()?;
     let api_client = openapi::apis::client::APIClient::new(configuration);
     log("create_job: api client created");
 
@@ -116,7 +123,9 @@ pub fn update_job(
 ) -> Result<(), openapi::apis::Error> {
     let mut configuration = openapi::apis::configuration::Configuration::new();
     configuration.base_path = base_path;
-    configuration.client = reqwest::Client::builder().timeout(Duration::from_secs(REQUEST_TIMEOUT_SECS)).build()?;
+    configuration.client = reqwest::Client::builder()
+        .timeout(Duration::from_secs(REQUEST_TIMEOUT_SECS))
+        .build()?;
     let api_client = openapi::apis::client::APIClient::new(configuration);
     log("update_job: api client created");
 
