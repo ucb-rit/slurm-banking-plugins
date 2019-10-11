@@ -75,11 +75,6 @@ pub extern "C" fn job_submit(
     }
     // END: Check if this plugin should be enabled
 
-    /*
-    unsafe {
-        *error_msg = xstrdup(std::ffi::CString::new("hello").unwrap().as_ptr())
-    }
-    */
     let userid: u32 = unsafe { (*job_desc).user_id };
     let account: String = match safe_helpers::deref_cstr(unsafe { (*job_desc).account }) {
         Some(account) => account,
@@ -149,7 +144,11 @@ pub extern "C" fn job_submit(
     // Return success if there are enough funds
     match has_funds {
         true => SLURM_SUCCESS,
-        false => ESLURM_ACCOUNTING_POLICY,
+        false => {
+            let msg = std::ffi::CString::new("This user/account pair does not have enough service units to afford this job's estimated cost").unwrap();
+            unsafe { *error_msg = xstrdup(msg.as_ptr()) }
+            ESLURM_ACCOUNTING_POLICY
+        }
     }
 }
 
