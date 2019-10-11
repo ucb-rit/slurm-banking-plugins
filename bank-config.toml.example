@@ -26,7 +26,7 @@ savio3_gpu = 1.00
 [QosMultiplier]
 # QoS Multipliers can be used to change how users are charged
 #  based on their QoS. For example, setting the multiplier to 0
-#  for a condo account would not charge that condo account for
+#  for a condo QoS would not charge that condo account for
 #  jobs submitted with that QoS.
 # If the QoS is not in this list, the default multiplier is 1.
 normal = 1 
