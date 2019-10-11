@@ -32,18 +32,19 @@ You will have to first run ~./configure~ on the Slurm source code, otherwise ~<s
 3. After building, you will find the ~.so~ files in the same directory as the Makefile.
 
 *** On Savio
+You will need the Rust and ~clang~ dependencies. Rust can be installed following the instructions on [[https://rustup.rs][rustup.rs]]. ~clang~ can be loaded as a module.
+
+The plugins can be built as an unprivileged user, as long as that user can read the Slurm source code.
+
 #+BEGIN_SRC shell
 # After installing Rust (using rustup)...
 module load clang
 git clone https://github.com/ucb-rit/slurm-banking-plugins.git && cd slurm-banking-plugins
 rmdir slurm && ln -s /path/to/slurm/source slurm # Point to slurm source
 make
-make install
-vim /etc/slurm/slurm.conf # Edit slurm.conf to enable the job submit and job completion plugins
-vim /etc/slurm/plugstack.conf # Edit plugstack.conf to enable the spank plugin
-cp bank-config.toml.example /etc/slurm/bank-config.toml
-vim /etc/slurm/bank-config.toml # Edit bank-config.toml to desired settings
 #+END_SRC
+
+Then, follow the instructions in [[usage][Usage]] to install, enable, and configure the plugins.
 
 *When adding the .so binaries to the nodes with Warewulf, you must use "wwsh file import" instead of "wwsh file new". Make sure the format in "wwsh file print" is listed as binary.*
 
@@ -58,27 +59,32 @@ make
 *** Help
 For additional reference on building, check [[https://travis-ci.org/ucb-rit/slurm-banking-plugins][the build on travis-ci]].
 
-** Usage
-1. Move the ~.so~ files to ~/usr/lib64/slurm~ and ~/etc/slurm/spank~:
+** <<usage>> Usage
+*** Install, enable, and configure
+**** Install the ~.so~ files
+The ~job_submit_slurm_banking.so` and ~jobcomp_slurm_banking.so~ should be installed in ~/usr/lib64/slurm/~. The ~spank_slurm_banking.so~ plugin should be installed in ~/etc/slurm/spank/~.
 #+BEGIN_SRC shell
 make install
 #+END_SRC
 
-2. Move ~bank-config.toml~ to ~/etc/slurm/bank-config.toml~ and update the partitions/prices accordingly.
-#+BEGIN_SRC shell
-cp bank-config.toml /etc/slurm/bank-config.toml
-#+END_SRC
-
-3. Include the spank plugin in ~/etc/slurm/plugstack.conf~ and the others in ~/etc/slurm/slurm.conf~:
-#+BEGIN_SRC shell
-cp plugstack.conf /etc/slurm/.
-#+END_SRC
-
-*** /etc/slurm/slurm.conf
+**** /etc/slurm/slurm.conf
+Enable the submit and completion plugins:
 #+BEGIN_SRC shell
 # other config options above...
-JobSubmitPlugins=job_submit/bank
-JobCompType=jobcomp/bank
+JobSubmitPlugins=job_submit/slurm_banking
+JobCompType=jobcomp/slurm_banking
+#+END_SRC
+
+**** /etc/slurm/plugstack.conf
+Enable the spank plugin:
+#+BEGIN_SRC shell
+required /etc/slurm/spank/spank_slurm_banking.so
+#+END_SRC
+
+**** /etc/slurm/bank-config.toml
+Configure the plugin settings. Options that *must* be set properly include the API URL, API token, and partition names. You can use the example provided as a template.
+#+BEGIN_SRC shell
+cp bank-config.toml.example /etc/slurm/bank-config.toml
 #+END_SRC
 
 *** Help/Debugging
