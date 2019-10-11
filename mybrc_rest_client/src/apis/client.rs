@@ -25,28 +25,27 @@ impl APIClient {
         }
     }
 
-    pub fn api_token_auth_api(&self) -> &dyn crate::apis::ApiTokenAuthApi{
+    pub fn api_token_auth_api(&self) -> &dyn crate::apis::ApiTokenAuthApi {
         self.api_token_auth_api.as_ref()
     }
 
-    pub fn can_submit_job_api(&self) -> &dyn crate::apis::CanSubmitJobApi{
+    pub fn can_submit_job_api(&self) -> &dyn crate::apis::CanSubmitJobApi {
         self.can_submit_job_api.as_ref()
     }
 
-    pub fn jobs_api(&self) -> &dyn crate::apis::JobsApi{
+    pub fn jobs_api(&self) -> &dyn crate::apis::JobsApi {
         self.jobs_api.as_ref()
     }
 
-    pub fn partitions_api(&self) -> &dyn crate::apis::PartitionsApi{
+    pub fn partitions_api(&self) -> &dyn crate::apis::PartitionsApi {
         self.partitions_api.as_ref()
     }
 
-    pub fn upload_cpu_data_api(&self) -> &dyn crate::apis::UploadCpuDataApi{
+    pub fn upload_cpu_data_api(&self) -> &dyn crate::apis::UploadCpuDataApi {
         self.upload_cpu_data_api.as_ref()
     }
 
-    pub fn users_api(&self) -> &dyn crate::apis::UsersApi{
+    pub fn users_api(&self) -> &dyn crate::apis::UsersApi {
         self.users_api.as_ref()
     }
-
 }
