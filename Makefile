@@ -17,10 +17,11 @@ spank_slurm_banking.so: slurm/slurm/slurm.h spank_plugin/**/*
 	CPATH=$(CPATH):$(SLURM_SOURCE_CODE_DIR) SLURM_SOURCE_CODE_DIR=$(SLURM_SOURCE_CODE_DIR) $(MAKE) -C spank_plugin all
 	cp spank_plugin/*.so .
 mybrc_rest_client: spec/swagger.json
-	docker run --rm -v $(shell pwd):/local swaggerapi/swagger-codegen-cli generate \
+	docker run --rm -v $(shell pwd):/local openapitools/openapi-generator-cli generate \
 		-i /local/spec/swagger.json \
-		-l rust \
-		-o /local/mybrc_rest_client
+		-g rust \
+		-o /local/mybrc_rest_client \
+		--library=reqwest
 
 .PHONY: test
 test: slurm/slurm/slurm.h
