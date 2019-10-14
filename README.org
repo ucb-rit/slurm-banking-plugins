@@ -62,7 +62,7 @@ For additional reference on building, check [[https://travis-ci.org/ucb-rit/slur
 ** <<usage>> Usage
 *** Install, enable, and configure
 **** Install the ~.so~ files
-The ~job_submit_slurm_banking.so` and ~jobcomp_slurm_banking.so~ should be installed in ~/usr/lib64/slurm/~. The ~spank_slurm_banking.so~ plugin should be installed in ~/etc/slurm/spank/~.
+The ~job_submit_slurm_banking.so~ and ~jobcomp_slurm_banking.so~ should be installed in ~/usr/lib64/slurm/~. The ~spank_slurm_banking.so~ plugin should be installed in ~/etc/slurm/spank/~.
 #+BEGIN_SRC shell
 make install
 #+END_SRC

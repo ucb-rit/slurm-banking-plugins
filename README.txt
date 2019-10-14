@@ -190,7 +190,7 @@ _________________
 5.1.1 Install the `.so' files
 -----------------------------
 
-  The `job_submit_slurm_banking.so` and ~jobcomp_slurm_banking.so'
+  The `job_submit_slurm_banking.so' and `jobcomp_slurm_banking.so'
   should be installed in `/usr/lib64/slurm/'. The
   `spank_slurm_banking.so' plugin should be installed in
   `/etc/slurm/spank/'.
