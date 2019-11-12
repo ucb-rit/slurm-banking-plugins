@@ -129,8 +129,9 @@ _________________
 ~~~~~~~~~~~~
 
   You will need the Rust and `clang' dependencies. Rust can be installed
-  following the instructions on [rustup.rs]. `clang' can be loaded as a
-  module.
+  following the instructions on [rustup.rs], and is easiest if installed
+  locally for each user. `clang' can be loaded as a module (or by
+  setting the environment variables).
 
   The plugins can be built as an unprivileged user, as long as that user
   can read the Slurm source code.
