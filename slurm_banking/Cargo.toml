@@ -11,4 +11,4 @@ rust_decimal = "1.0.1"
 openapi = { path = "../mybrc_rest_client" }
 
 [build-dependencies]
-bindgen = "0.49.0"
+bindgen = "0.52.0"
