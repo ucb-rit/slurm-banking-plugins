@@ -1,0 +1,29 @@
+name: CentOS 6
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Build Docker image
+      run: |
+        cd docker/centos6
+        docker build -t slurm-banking-plugins-centos6:latest .
+    - name: Compile plugins
+      run: docker run -v $(pwd):/tmp slurm-banking-plugins-centos6:latest
+    - name: Move artifacts
+      run: |
+        mkdir -p artifacts
+        mv *.so artifacts/.
+    - name: Upload artifact
+      uses: actions/upload-artifact@v1.0.0
+      with:
+        # Artifact name
+        name: plugins
+        # Directory containing files to upload
+        path: artifacts
+      
