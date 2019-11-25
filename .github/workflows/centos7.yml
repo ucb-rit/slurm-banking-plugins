@@ -16,7 +16,7 @@ jobs:
         cd docker/centos7
         docker build -t slurm-banking-plugins-centos7:latest .
     - name: Compile plugins
-      run: docker run -v $(pwd):/tmp slurm-banking-plugins-centos6:latest
+      run: docker run -v $(pwd):/tmp slurm-banking-plugins-centos7:latest
     - name: Move artifacts
       run: |
         mkdir -p artifacts
