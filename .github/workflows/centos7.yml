@@ -1,4 +1,4 @@
-name: CentOS 6
+name: CentOS 7
 
 on: [push]
 
