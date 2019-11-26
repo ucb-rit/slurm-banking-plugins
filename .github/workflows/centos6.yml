@@ -16,11 +16,14 @@ jobs:
         cd docker/centos6
         docker build -t slurm-banking-plugins-centos6:latest .
     - name: Compile plugins
-      run: docker run -v $(pwd):/tmp slurm-banking-plugins-centos6:latest
+      run: |
+        scripts/build-with-docker.sh slurm-18-08-7-1 slurm-banking-plugins-centos6:latest
+        scripts/build-with-docker.sh slurm-18-08-8-1 slurm-banking-plugins-centos6:latest
+        scripts/build-with-docker.sh slurm-19-05-4-1 slurm-banking-plugins-centos6:latest
     - name: Move artifacts
       run: |
         mkdir -p artifacts
-        mv *.so artifacts/.
+        mv plugins-*.tar.gz artifacts/.
     - name: Upload artifact
       uses: actions/upload-artifact@v1.0.0
       with:
