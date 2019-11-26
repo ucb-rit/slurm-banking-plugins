@@ -6,4 +6,4 @@ RUN curl --tlsv1.2 -sSf https://sh.rustup.rs -o rustup.sh \
   && sh rustup.sh -y
 ENV PATH /root/.cargo/bin:$PATH
 WORKDIR /tmp
-CMD [ "make" ]
+CMD [ "make clean && make" ]
