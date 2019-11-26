@@ -1,7 +1,7 @@
 #!/bin/sh
 SLURM_TAG=$1
 DOCKER_IMAGE=$2
-pushd slurm && git checkout "$SLURM_TAG" && popd
+cd slurm && git checkout "$SLURM_TAG" && cd ..
 sudo make clean
 docker run -v $(pwd):/tmp "$DOCKER_IMAGE"
 
