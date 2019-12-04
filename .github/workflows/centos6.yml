@@ -27,7 +27,8 @@ jobs:
     - name: Move artifacts
       run: |
         mkdir -p artifacts
-        mv plugins-*.tar.gz artifacts/.
+        mv plugins-* artifacts/.
+        tar -czvf plugins.tar.gz artifacts/.
     - name: Upload artifact
       uses: actions/upload-artifact@v1.0.0
       with:
