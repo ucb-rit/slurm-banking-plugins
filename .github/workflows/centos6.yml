@@ -22,8 +22,6 @@ jobs:
     - name: Compile plugins
       run: |
         scripts/build-with-docker.sh slurm-18-08-7-1 slurm-banking-plugins-centos6:latest
-        scripts/build-with-docker.sh slurm-18-08-8-1 slurm-banking-plugins-centos6:latest
-        scripts/build-with-docker.sh slurm-19-05-4-1 slurm-banking-plugins-centos6:latest
     - name: Move artifacts
       run: |
         mkdir -p artifacts
