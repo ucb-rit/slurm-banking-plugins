@@ -342,7 +342,7 @@ _________________
   build using Docker for CentOS 6 and CentOS 7. In each of these, you
   may specify the version of Slurm to compile against in the "Compile
   plugins" stage by changing the tag to checkout of the Slurm source
-  code. The GitHub actions are in [.github/workflows]. In this example,
+  code. The GitHub Actions are in [.github/workflows]. In this example,
   it's using `slurm-18-08-7-1' in the CentOS 6 build environment:
 
   ,----

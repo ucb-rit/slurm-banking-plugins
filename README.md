@@ -1,30 +1,30 @@
 
 # Table of Contents
 
-1.  [Introduction](#orgf3d0b7e)
-2.  [Limitations](#org1d360a1)
-3.  [Build Requirements](#orgc7ed64a)
-4.  [Building](#org67d0330)
-    1.  [On Savio](#orgcdfd892)
-    2.  [NixOS](#orgef2c662)
-    3.  [Help](#orgda22fbe)
-5.  [Usage](#org52a68b7)
-    1.  [Install, enable, and configure](#orgf9dd203)
-        1.  [Install the `.so` files](#org272dbac)
-        2.  [/etc/slurm/slurm.conf](#org3254f60)
-        3.  [/etc/slurm/plugstack.conf](#org81f6bec)
-        4.  [/etc/slurm/bank-config.toml](#org99930b0)
-    2.  [Help/Debugging](#org945d041)
-6.  [Developing](#org86073ad)
-    1.  [Project Structure](#orgda37d9f)
-    2.  [myBRC API Codegen](#org408b944)
-    3.  [Testing with myBRC](#org79a754e)
-    4.  [Creating a Release](#org6531feb)
+1.  [Introduction](#org28bdffb)
+2.  [Limitations](#org873df10)
+3.  [Build Requirements](#org445fdaf)
+4.  [Building](#org7cf7e6a)
+    1.  [On Savio](#org0f22cca)
+    2.  [NixOS](#org24c5004)
+    3.  [Help](#org032a63d)
+5.  [Usage](#orgb025e09)
+    1.  [Install, enable, and configure](#org46e939a)
+        1.  [Install the `.so` files](#org13f8ded)
+        2.  [/etc/slurm/slurm.conf](#orga9afff2)
+        3.  [/etc/slurm/plugstack.conf](#org4f57e00)
+        4.  [/etc/slurm/bank-config.toml](#org95e76de)
+    2.  [Help/Debugging](#org41c3415)
+6.  [Developing](#org2985d94)
+    1.  [Project Structure](#org6c49c24)
+    2.  [myBRC API Codegen](#org6e13e4e)
+    3.  [Testing with myBRC](#orgba6b747)
+    4.  [Creating a Release](#orgb4b8d34)
 
-<a href="https://travis-ci.org/ucb-rit/slurm-banking-plugins"><img src="https://travis-ci.org/ucb-rit/slurm-banking-plugins.svg?branch=master"></a> <a href="."><img src="https://img.shields.io/github/languages/top/ucb-rit/slurm-banking-plugins"></a> <a href="."><img src="https://img.shields.io/github/repo-size/ucb-rit/slurm-banking-plugins"></a>
+<a href="https://travis-ci.org/ucb-rit/slurm-banking-plugins"><img src="https://travis-ci.org/ucb-rit/slurm-banking-plugins.svg?branch=master"></a> <a href="."><img src="https://img.shields.io/github/v/tag/ucb-rit/slurm-banking-plugins"></a> <a href="."><img src="https://img.shields.io/github/languages/top/ucb-rit/slurm-banking-plugins"></a> <a href="."><img src="https://img.shields.io/github/repo-size/ucb-rit/slurm-banking-plugins"></a>
 
 
-<a id="orgf3d0b7e"></a>
+<a id="org28bdffb"></a>
 
 # Introduction
 
@@ -37,7 +37,7 @@ Slurm banking plugins provide allocation management to Slurm. The plugins deduct
 These plugins are written in [Rust](https://www.rust-lang.org) to help with safety. It uses [rust-bindgen](https://github.com/rust-lang/rust-bindgen) to automatically generate the Rust foreign function interface (FFI) bindings based on the Slurm C header files.
 
 
-<a id="org1d360a1"></a>
+<a id="org873df10"></a>
 
 # Limitations
 
@@ -46,7 +46,7 @@ These plugins are written in [Rust](https://www.rust-lang.org) to help with safe
 -   If the myBRC API is offline (or returns errors), the submit plugin will let the job go through.
 
 
-<a id="orgc7ed64a"></a>
+<a id="org445fdaf"></a>
 
 # Build Requirements
 
@@ -55,7 +55,7 @@ These plugins are written in [Rust](https://www.rust-lang.org) to help with safe
 -   [Clang](http://clang.llvm.org/get_started.html) (dependency for [rust-bindgen](https://rust-lang.github.io/rust-bindgen/requirements.html))
 
 
-<a id="org67d0330"></a>
+<a id="org7cf7e6a"></a>
 
 # Building
 
@@ -68,7 +68,7 @@ You will have to first run `./configure` on the Slurm source code, otherwise `<s
 3.  After building, you will find the `.so` files in the same directory as the Makefile.
 
 
-<a id="orgcdfd892"></a>
+<a id="org0f22cca"></a>
 
 ## On Savio
 
@@ -84,12 +84,12 @@ The plugins can be built as an unprivileged user, as long as that user can read 
     rmdir slurm && ln -s /path/to/slurm/source slurm # Point to slurm source
     make
 
-Then, follow the instructions in [Usage](#orgce11a53) to install, enable, and configure the plugins.
+Then, follow the instructions in [Usage](#orgb62e248) to install, enable, and configure the plugins.
 
 **When adding the .so binaries to the nodes with Warewulf, you must use "wwsh file import" instead of "wwsh file new". Make sure the format in "wwsh file print" is listed as binary.**
 
 
-<a id="orgef2c662"></a>
+<a id="org24c5004"></a>
 
 ## NixOS
 
@@ -99,24 +99,24 @@ Then, follow the instructions in [Usage](#orgce11a53) to install, enable, and co
     make
 
 
-<a id="orgda22fbe"></a>
+<a id="org032a63d"></a>
 
 ## Help
 
 For additional reference on building, check [the build on travis-ci](https://travis-ci.org/ucb-rit/slurm-banking-plugins).
 
 
-<a id="org52a68b7"></a>
+<a id="orgb025e09"></a>
 
-# <a id="orgce11a53"></a> Usage
+# <a id="orgb62e248"></a> Usage
 
 
-<a id="orgf9dd203"></a>
+<a id="org46e939a"></a>
 
 ## Install, enable, and configure
 
 
-<a id="org272dbac"></a>
+<a id="org13f8ded"></a>
 
 ### Install the `.so` files
 
@@ -125,7 +125,7 @@ The `job_submit_slurm_banking.so` and `jobcomp_slurm_banking.so` should be insta
     make install
 
 
-<a id="org3254f60"></a>
+<a id="orga9afff2"></a>
 
 ### /etc/slurm/slurm.conf
 
@@ -136,7 +136,7 @@ Enable the submit and completion plugins:
     JobCompType=jobcomp/slurm_banking
 
 
-<a id="org81f6bec"></a>
+<a id="org4f57e00"></a>
 
 ### /etc/slurm/plugstack.conf
 
@@ -145,7 +145,7 @@ Enable the spank plugin:
     required /etc/slurm/spank/spank_slurm_banking.so
 
 
-<a id="org99930b0"></a>
+<a id="org95e76de"></a>
 
 ### /etc/slurm/bank-config.toml
 
@@ -154,7 +154,7 @@ Configure the plugin settings. Options that **must** be set properly include the
     cp bank-config.toml.example /etc/slurm/bank-config.toml
 
 
-<a id="org945d041"></a>
+<a id="org41c3415"></a>
 
 ## Help/Debugging
 
@@ -162,7 +162,7 @@ Configure the plugin settings. Options that **must** be set properly include the
 -   For a working example installation, refer to [the Docker files](./docker)
 
 
-<a id="org86073ad"></a>
+<a id="org2985d94"></a>
 
 # Developing
 
@@ -171,14 +171,14 @@ I use the [docker-centos7-slurm](https://github.com/giovtorres/docker-centos7-sl
 `make docker-dev` builds the development container with Slurm plus all the other necessary dependencies for the plugins and drops you into a shell. The code is stored in `/slurm-banking-plugins` in the container. After making your changes, use `make && make install` to compile and install the plugins, copy the `plugstack.conf` and `bank-config.toml` config files to `/etc/slurm/`, and finally restart Slurm with `supervisorctl restart all`.
 
 
-<a id="orgda37d9f"></a>
+<a id="org6c49c24"></a>
 
 ## Project Structure
 
 Each plugin is its own Rust project: [job\_completion\_plugin](./job_completion_plugin), [job\_submit\_plugin](./job_submit_plugin), and [spank\_plugin](./spank_plugin). Each of these uses the [slurm\_banking](./slurm_banking) project, which includes the job calculation functionality and helpers for calling the API. Communication with the myBRC API is done through [mybrc\_rest\_client](./mybrc_rest_client), described in the next section.
 
 
-<a id="org408b944"></a>
+<a id="org6e13e4e"></a>
 
 ## myBRC API Codegen
 
@@ -194,7 +194,7 @@ If the API spec changes and you need to update this plugin, just regenerate the 
 You may find the generated files are not owned by your user, so just run `chown -R $USER mybrc_rest_client`.
 
 
-<a id="org79a754e"></a>
+<a id="orgba6b747"></a>
 
 ## Testing with myBRC
 
@@ -213,7 +213,7 @@ You may find the generated files are not owned by your user, so just run `chown 
       --link mybrc-rest -it -h ernie slurm-banking-plugins-dev
 
 
-<a id="org6531feb"></a>
+<a id="orgb4b8d34"></a>
 
 ## Creating a Release
 
@@ -221,7 +221,7 @@ GitHub Actions is set up to automatically build [releases](https://github.com/uc
 For example, if I push a tag `v0.1.0`, it will build releases for the code at that point.
 There is a GitHub action to build using Docker for CentOS 6 and CentOS 7. In each of these,
 you may specify the version of Slurm to compile against in the "Compile plugins" stage by changing
-the tag to checkout of the Slurm source code. The GitHub actions are in [.github/workflows](./.github/workflows). 
+the tag to checkout of the Slurm source code. The GitHub Actions are in [.github/workflows](./.github/workflows). 
 In this example, it's using `slurm-18-08-7-1` in the CentOS 6 build environment:
 
     - name: Compile plugins

@@ -1,7 +1,7 @@
 #+TITLE: Slurm Banking Plugins 
 #+OPTIONS: ^:nil
 
-#+HTML: <a href="https://travis-ci.org/ucb-rit/slurm-banking-plugins"><img src="https://travis-ci.org/ucb-rit/slurm-banking-plugins.svg?branch=master"></a> <a href="."><img src="https://img.shields.io/github/languages/top/ucb-rit/slurm-banking-plugins"></a> <a href="."><img src="https://img.shields.io/github/repo-size/ucb-rit/slurm-banking-plugins"></a>
+#+HTML: <a href="https://travis-ci.org/ucb-rit/slurm-banking-plugins"><img src="https://travis-ci.org/ucb-rit/slurm-banking-plugins.svg?branch=master"></a> <a href="."><img src="https://img.shields.io/github/v/tag/ucb-rit/slurm-banking-plugins"></a> <a href="."><img src="https://img.shields.io/github/languages/top/ucb-rit/slurm-banking-plugins"></a> <a href="."><img src="https://img.shields.io/github/repo-size/ucb-rit/slurm-banking-plugins"></a>
 
 ** Introduction
 Slurm banking plugins provide allocation management to Slurm. The plugins deduct service units for completed and running jobs and prevent jobs from running if there are insufficient service units available. The plugins interact with a REST API (provided by myBRC), documented in the [[./spec/swagger.json][spec/swagger.json]]. The following three plugins are used:
@@ -136,7 +136,7 @@ GitHub Actions is set up to automatically build [[https://github.com/ucb-rit/slu
 For example, if I push a tag ~v0.1.0~, it will build releases for the code at that point.
 There is a GitHub action to build using Docker for CentOS 6 and CentOS 7. In each of these,
 you may specify the version of Slurm to compile against in the "Compile plugins" stage by changing
-the tag to checkout of the Slurm source code. The GitHub actions are in [[./.github/workflows][.github/workflows]]. 
+the tag to checkout of the Slurm source code. The GitHub Actions are in [[./.github/workflows][.github/workflows]]. 
 In this example, it's using ~slurm-18-08-7-1~ in the CentOS 6 build environment:
 
 #+BEGIN_SRC yaml
