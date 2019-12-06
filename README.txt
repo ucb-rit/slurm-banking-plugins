@@ -25,6 +25,7 @@ _________________
 .. 1. Project Structure
 .. 2. myBRC API Codegen
 .. 3. Testing with myBRC
+.. 4. Creating a Release
 
 
 
@@ -330,3 +331,27 @@ _________________
   |   -v $(pwd)/slurm_banking/src:/slurm-banking-plugins/slurm_banking/src \
   |   --link mybrc-rest -it -h ernie slurm-banking-plugins-dev
   `----
+
+
+6.4 Creating a Release
+~~~~~~~~~~~~~~~~~~~~~~
+
+  GitHub Actions is set up to automatically build [releases] for tags
+  starting with a `v'. For example, if I push a tag `v0.1.0', it will
+  build releases for the code at that point. There is a GitHub action to
+  build using Docker for CentOS 6 and CentOS 7. In each of these, you
+  may specify the version of Slurm to compile against in the "Compile
+  plugins" stage by changing the tag to checkout of the Slurm source
+  code. The GitHub actions are in [.github/workflows]. In this example,
+  it's using `slurm-18-08-7-1' in the CentOS 6 build environment:
+
+  ,----
+  | - name: Compile plugins
+  |   run: |
+  |     scripts/build-with-docker.sh slurm-18-08-7-1 slurm-banking-plugins-centos6:latest
+  `----
+
+
+[releases] <https://github.com/ucb-rit/slurm-banking-plugins/releases>
+
+[.github/workflows] <./.github/workflows>
