@@ -1,5 +1,5 @@
 all: src/*.rs
-	cargo build --release
+	cargo build --debug
 	cp target/release/libspank_plugin_bank.so spank_slurm_banking.so
 clean:
 	rm -rf target
