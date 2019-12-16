@@ -154,6 +154,5 @@ pub extern "C" fn job_submit(
 
 #[no_mangle]
 pub extern "C" fn job_modify() -> u32 {
-    println!("Job modified");
     return SLURM_SUCCESS;
 }
