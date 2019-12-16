@@ -14,18 +14,17 @@ use slurm_banking::safe_helpers;
 use config::Config;
 use std::collections::HashMap;
 use std::os::raw::{c_char, c_int};
-use std::sync::Mutex;
 
 static PLUGIN_NAME: &str = "job_submit_bank";
 
 lazy_static! {
-    static ref SETTINGS: Mutex<Config> = {
+    static ref SETTINGS: Config = {
         let mut conf = Config::default();
         match slurm_banking::prices_config::load_config_from_file(&mut conf) {
             Ok(_) => {}
             Err(_) => {}
         };
-        Mutex::new(conf)
+        conf
     };
 }
 
@@ -62,7 +61,7 @@ pub extern "C" fn job_submit(
     error_msg: *mut *const c_char,
 ) -> u32 {
     // BEGIN: Check if this plugin should be enabled
-    let conf = SETTINGS.lock().unwrap();
+    let conf = &SETTINGS;
     let plugin_enable_config = match conf.get::<HashMap<String, bool>>("Enable") {
         Ok(v) => v,
         Err(_) => return SLURM_SUCCESS,

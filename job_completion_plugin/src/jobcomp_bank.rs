@@ -16,18 +16,17 @@ use chrono::prelude::*;
 use config::Config;
 use std::collections::HashMap;
 use std::os::raw::c_char;
-use std::sync::Mutex;
 
 static PLUGIN_NAME: &str = "jobcomp_bank";
 
 lazy_static! {
-    static ref SETTINGS: Mutex<Config> = {
+    static ref SETTINGS: Config = {
         let mut conf = Config::default();
         match slurm_banking::prices_config::load_config_from_file(&mut conf) {
             Ok(_) => {}
             Err(_) => {}
         };
-        Mutex::new(conf)
+        conf
     };
 }
 
@@ -74,7 +73,7 @@ pub extern "C" fn slurm_jobcomp_set_location(_location: *const c_char) -> u32 {
 #[no_mangle]
 pub extern "C" fn slurm_jobcomp_log_record(job_ptr: *const job_record) -> u32 {
     // BEGIN: Check if this plugin should be enabled
-    let conf = SETTINGS.lock().unwrap();
+    let conf = &SETTINGS;
     let plugin_enable_config = match conf.get::<HashMap<String, bool>>("Enable") {
         Ok(v) => v,
         Err(_) => return 0,

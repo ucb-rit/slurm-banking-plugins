@@ -15,18 +15,17 @@ use chrono::prelude::*;
 use config::Config;
 use std::collections::HashMap;
 use std::os::raw::{c_char, c_int};
-use std::sync::Mutex;
 
 static PLUGIN_NAME: &str = "spank_slurm_banking";
 
 lazy_static! {
-    static ref SETTINGS: Mutex<Config> = {
+    static ref SETTINGS: Config = {
         let mut conf = Config::default();
         match slurm_banking::prices_config::load_config_from_file(&mut conf) {
             Ok(_) => {}
             Err(_) => {}
         };
-        Mutex::new(conf)
+        conf
     };
 }
 
@@ -70,7 +69,7 @@ pub extern "C" fn slurm_spank_init(sp: spank_t, _ac: c_int, _argv: *const *const
     }
 
     // BEGIN: Check if this plugin should be enabled
-    let conf = SETTINGS.lock().unwrap();
+    let conf = &SETTINGS;
     let plugin_enable_config = match conf.get::<HashMap<String, bool>>("Enable") {
         Ok(v) => v,
         Err(_) => return SLURM_SUCCESS,
