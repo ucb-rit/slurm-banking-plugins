@@ -19,8 +19,9 @@ These plugins are written in [[https://www.rust-lang.org][Rust]] to help with sa
 
 ** Build Requirements
 - [[https://www.rust-lang.org/][Rust]] (including [[https://doc.rust-lang.org/cargo/][cargo]])
+- [[https://openssl.org][OpenSSL]] (needed for making an HTTPS connection to the API)
 - [[https://github.com/SchedMD/slurm][Slurm]] header files and source code
-- [[http://clang.llvm.org/get_started.html][Clang]] (dependency for [[https://rust-lang.github.io/rust-bindgen/requirements.html][rust-bindgen]])
+- [[http://clang.llvm.org/get_started.html][Clang]] (build dependency for [[https://rust-lang.github.io/rust-bindgen/requirements.html][rust-bindgen]])
 
 ** Building
 Since the Slurm ~jobcomp~ plugins need access to the ~src/common/slurm_jobcomp.h~ header, we need access to the Slurm source code ~src~ directory in order to build (as well as the normal ~<slurm/slurm.h>~ headers on the ~CPATH~). 
@@ -39,10 +40,22 @@ Rust can be installed following the instructions on [[https://rustup.rs][rustup.
 The plugins can be built as an unprivileged user, as long as that user can read the Slurm source code.
 
 #+BEGIN_SRC shell
-# After installing Rust (using rustup)...
-module load clang
+# Install Rust locally for your user, and select default installation
+curl --tlsv1.2 -sSf https://sh.rustup.rs | sh
+source $HOME/.cargo/env
+
+# Clone the plugins repository
 git clone https://github.com/ucb-rit/slurm-banking-plugins.git && cd slurm-banking-plugins
+
+# Compile clang from source and load environment
+scripts/clang/build-clang.sh
+source scripts/clang/clang-env.sh
+
+# Point to slurm source code (OR you can make a copy)
 rmdir slurm && ln -s /path/to/slurm/source slurm # Point to slurm source
+rmdir slurm && cp -r /path/to/slurm/source slurm # OR make a copy
+
+# Compile plugins
 make
 #+END_SRC
 

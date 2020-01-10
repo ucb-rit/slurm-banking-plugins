@@ -90,13 +90,16 @@ _________________
 ====================
 
   - [Rust] (including [cargo])
+  - [OpenSSL] (needed for making an HTTPS connection to the API)
   - [Slurm] header files and source code
-  - [Clang] (dependency for [rust-bindgen])
+  - [Clang] (build dependency for [rust-bindgen])
 
 
 [Rust] <https://www.rust-lang.org/>
 
 [cargo] <https://doc.rust-lang.org/cargo/>
+
+[OpenSSL] <https://openssl.org>
 
 [Slurm] <https://github.com/SchedMD/slurm>
 
@@ -138,10 +141,22 @@ _________________
   can read the Slurm source code.
 
   ,----
-  | # After installing Rust (using rustup)...
-  | module load clang
+  | # Install Rust locally for your user, and select default installation
+  | curl --tlsv1.2 -sSf https://sh.rustup.rs | sh
+  | source $HOME/.cargo/env
+  | 
+  | # Clone the plugins repository
   | git clone https://github.com/ucb-rit/slurm-banking-plugins.git && cd slurm-banking-plugins
+  | 
+  | # Compile clang from source and load environment
+  | scripts/clang/build-clang.sh
+  | source scripts/clang/clang-env.sh
+  | 
+  | # Point to slurm source code (OR you can make a copy)
   | rmdir slurm && ln -s /path/to/slurm/source slurm # Point to slurm source
+  | rmdir slurm && cp -r /path/to/slurm/source slurm # OR make a copy
+  | 
+  | # Compile plugins
   | make
   `----
 
