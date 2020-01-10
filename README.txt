@@ -232,7 +232,7 @@ _________________
 
   Enable the spank plugin:
   ,----
-  | required /etc/slurm/spank/spank_slurm_banking.so
+  | optional /etc/slurm/spank/spank_slurm_banking.so
   `----
 
 
