@@ -60,6 +60,7 @@ pub extern "C" fn job_submit(
     _submit_uid: u32,
     error_msg: *mut *const c_char,
 ) -> u32 {
+    log("job_submit() invoked");
     // BEGIN: Check if this plugin should be enabled
     let conf = &SETTINGS;
     let plugin_enable_config = match conf.get::<HashMap<String, bool>>("Enable") {
@@ -70,18 +71,24 @@ pub extern "C" fn job_submit(
         .get("enable_job_submit_plugin")
         .unwrap_or(&false);
     if !enabled {
+        log("job_submit() not enabled; exiting");
         return SLURM_SUCCESS;
     }
     // END: Check if this plugin should be enabled
+    log("job_submit() settings loaded");
 
     let userid: u32 = unsafe { (*job_desc).user_id };
+    log("job_submit() loaded userid");
     let account: String = match safe_helpers::deref_cstr(unsafe { (*job_desc).account }) {
         Some(account) => account,
         None => return ESLURM_INVALID_ACCOUNT,
     };
+    log("job_submit() loaded account");
 
     let cpus_per_task = unsafe { (*job_desc).cpus_per_task };
+    log("job_submit() loaded cpus_per_task");
     let num_tasks = unsafe { (*job_desc).num_tasks };
+    log("job_submit() loaded num_tasks");
     // When not specified, cpus_per_task=65534, num_tasks=4294967294
     let max_cpus: u32 = if cpus_per_task == 65534 || num_tasks == 4294967294 {
         // TODO: In this calculation, assume 0 CPUs if unspecified
@@ -90,17 +97,22 @@ pub extern "C" fn job_submit(
     } else {
         ((unsafe { (*job_desc).cpus_per_task }) as u32) * (unsafe { (*job_desc).num_tasks })
     };
+    log("job_submit() loaded max_cpus");
 
     let time_limit_minutes: i64 = unsafe { (*job_desc).time_limit } as i64; // in minutes
+    log("job_submit() loaded time_limit_minutes");
     let time_limit_seconds = time_limit_minutes * 60;
+    log("job_submit() loaded time_limit_seconds");
     let partition: String = match safe_helpers::deref_cstr(unsafe { (*job_desc).partition }) {
         Some(partition) => partition,
         None => return ESLURM_INVALID_PARTITION_NAME,
     };
+    log("job_submit() loaded partition");
     let qos: String = match safe_helpers::deref_cstr(unsafe { (*job_desc).qos }) {
         Some(qos) => qos,
         None => return ESLURM_INVALID_QOS,
     };
+    log("job_submit() loaded qos");
 
     log(&format!(
         "Processing request from user_id {:?} with account {:?}: \

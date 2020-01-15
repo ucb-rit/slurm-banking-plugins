@@ -72,6 +72,7 @@ pub extern "C" fn slurm_jobcomp_set_location(_location: *const c_char) -> u32 {
 
 #[no_mangle]
 pub extern "C" fn slurm_jobcomp_log_record(job_ptr: *const job_record) -> u32 {
+    log("slurm_jobcomp_log_record() invoked");
     // BEGIN: Check if this plugin should be enabled
     let conf = &SETTINGS;
     let plugin_enable_config = match conf.get::<HashMap<String, bool>>("Enable") {
