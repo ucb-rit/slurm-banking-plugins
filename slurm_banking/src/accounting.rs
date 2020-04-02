@@ -15,13 +15,11 @@ fn log(message: &str) {
 }
 
 pub fn price_per_cpu_hour(partition: &str, conf: &Config) -> Decimal {
-    let prices = match conf.get::<HashMap<String, String>>("PartitionPrice") {
-        Ok(prices) => prices,
-        Err(_) => return Decimal::from(0),
-    };
-    prices.get(partition)
+    conf.get::<HashMap<String, String>>("PartitionPrice").ok().as_ref()
+        .and_then(|prices| prices.get(partition))
         .and_then(|price| Decimal::from_str(price).ok())
-        .unwrap_or(Decimal::from(0)) // If not specified, default price is 0
+        // If not specified, default price is 0
+        .unwrap_or(Decimal::from(0))
 }
 
 // pub fn qos_multiplier(qos: &str, conf: &Config) -> Option<Decimal> {
