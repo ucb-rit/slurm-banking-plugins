@@ -75,7 +75,13 @@ pub extern "C" fn job_submit(
         return SLURM_SUCCESS;
     }
     // END: Check if this plugin should be enabled
+
     log("job_submit() settings loaded");
+    let partition: String = match safe_helpers::deref_cstr(unsafe { (*job_desc).partition }) {
+        Some(partition) => partition,
+        None => return ESLURM_INVALID_PARTITION_NAME,
+    };
+    log("job_submit() loaded partition");
 
     let userid: u32 = unsafe { (*job_desc).user_id };
     log("job_submit() loaded userid");
@@ -103,34 +109,25 @@ pub extern "C" fn job_submit(
     log("job_submit() loaded time_limit_minutes");
     let time_limit_seconds = time_limit_minutes * 60;
     log("job_submit() loaded time_limit_seconds");
-    let partition: String = match safe_helpers::deref_cstr(unsafe { (*job_desc).partition }) {
-        Some(partition) => partition,
-        None => return ESLURM_INVALID_PARTITION_NAME,
-    };
-    log("job_submit() loaded partition");
-    let qos: String = match safe_helpers::deref_cstr(unsafe { (*job_desc).qos }) {
-        Some(qos) => qos,
-        None => return ESLURM_INVALID_QOS,
-    };
-    log("job_submit() loaded qos");
+
 
     log(&format!(
         "Processing request from user_id {:?} with account {:?}: \
-         partition: {:?}, qos: {:?}, time_limit_minutes: {:?}, max_cpus: {:?}",
-        userid, account, partition, qos, time_limit_seconds, max_cpus
+         partition: {:?}, time_limit_minutes: {:?}, max_cpus: {:?}",
+        userid, account, partition, time_limit_seconds, max_cpus
     ));
 
     // Calculate the expected cost of the job
     let expected_cost =
-        match accounting::expected_cost(&partition, &qos, max_cpus, time_limit_seconds, &conf) {
+        match accounting::expected_cost(&partition, max_cpus, time_limit_seconds, &conf) {
             Some(cost) => cost,
             None => return ESLURM_INTERNAL,
         };
 
     log(&format!(
         "Expected cost is {:?} SU for user_id {:?} with account {:?}: \
-         partition: {:?}, qos: {:?}, time_limit_minutes: {:?}, max_cpus: {:?}",
-        expected_cost, userid, account, partition, qos, time_limit_minutes, max_cpus
+         partition: {:?}, time_limit_minutes: {:?}, max_cpus: {:?}",
+        expected_cost, userid, account, partition, time_limit_minutes, max_cpus
     ));
 
     // Check if the account has sufficient funds for the job
@@ -146,8 +143,8 @@ pub extern "C" fn job_submit(
         Ok(result) => result,
         Err(_err) => {
             log(&format!("API connection error on check_sufficient_funds. Job specifications are: \
-            user_id: {:?}, account: {:?}, partition: {:?}, qos: {:?}, time_limit_minutes: {:?}, max_cpus: {:?}",
-            userid, account, partition, qos, time_limit_minutes, max_cpus));
+            user_id: {:?}, account: {:?}, partition: {:?}, time_limit_minutes: {:?}, max_cpus: {:?}",
+            userid, account, partition, time_limit_minutes, max_cpus));
             true
         }
     };

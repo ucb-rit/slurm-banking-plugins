@@ -14,31 +14,29 @@ fn log(message: &str) {
     safe_info(&("slurm_banking_lib: ".to_owned() + message))
 }
 
-pub fn price_per_cpu_hour(partition: &str, conf: &Config) -> Option<Decimal> {
+pub fn price_per_cpu_hour(partition: &str, conf: &Config) -> Decimal {
     let prices = match conf.get::<HashMap<String, String>>("PartitionPrice") {
         Ok(prices) => prices,
-        Err(_) => return None,
+        Err(_) => return Decimal::from(0),
     };
-    match prices.get(partition) {
-        Some(price) => Decimal::from_str(price).ok(),
-        None => None,
-    }
+    prices.get(partition)
+        .and_then(|price| Decimal::from_str(price).ok())
+        .unwrap_or(Decimal::from(0)) // If not specified, default price is 0
 }
 
-pub fn qos_multiplier(qos: &str, conf: &Config) -> Option<Decimal> {
-    let qos_multipliers = match conf.get::<HashMap<String, String>>("QosMultiplier") {
-        Ok(multipliers) => multipliers,
-        Err(_) => return None,
-    };
-    match qos_multipliers.get(qos) {
-        Some(multiplier) => Decimal::from_str(multiplier).ok(),
-        None => None,
-    }
-}
+// pub fn qos_multiplier(qos: &str, conf: &Config) -> Option<Decimal> {
+//     let qos_multipliers = match conf.get::<HashMap<String, String>>("QosMultiplier") {
+//         Ok(multipliers) => multipliers,
+//         Err(_) => return None,
+//     };
+//     match qos_multipliers.get(qos) {
+//         Some(multiplier) => Decimal::from_str(multiplier).ok(),
+//         None => None,
+//     }
+// }
 
 pub fn expected_cost(
     partition: &str,
-    qos: &str,
     max_cpus: u32,
     time_limit_seconds: i64,
     conf: &Config,
@@ -46,16 +44,9 @@ pub fn expected_cost(
     let max_cpus = Decimal::from(max_cpus);
     let time_limit_seconds = Decimal::from(time_limit_seconds);
     let time_limit_hours = time_limit_seconds / Decimal::new(60 * 60, 0);
-    let hourly_price = match price_per_cpu_hour(partition, conf) {
-        Some(hourly_price) => hourly_price,
-        None => return None,
-    };
-    let qos_multiplier = match qos_multiplier(qos, conf) {
-        Some(qos_multiplier) => qos_multiplier,
-        None => Decimal::from(1),
-    };
+    let hourly_price = price_per_cpu_hour(partition, conf);
     Some(
-        (hourly_price * max_cpus * time_limit_hours * qos_multiplier)
+        (hourly_price * max_cpus * time_limit_hours)
             .round_dp_with_strategy(2, RoundingStrategy::RoundHalfUp),
     )
 }

@@ -97,7 +97,7 @@ pub extern "C" fn slurm_spank_init(sp: spank_t, _ac: c_int, _argv: *const *const
         partition, qos, account, num_cpus, max_cpus, time_limit_seconds, num_nodes, max_nodes));
 
     let expected_cost =
-        match accounting::expected_cost(&partition, &qos, num_cpus, time_limit_seconds, &conf) {
+        match accounting::expected_cost(&partition, num_cpus, time_limit_seconds, &conf) {
             Some(cost) => cost,
             None => return SLURM_SUCCESS,
         };
