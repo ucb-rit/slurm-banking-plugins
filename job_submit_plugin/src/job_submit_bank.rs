@@ -85,7 +85,7 @@ pub extern "C" fn job_submit(
 
     let partition_price = accounting::price_per_cpu_hour(&partition, conf);
     log(&format!(
-        "Partition: {} Price: {}",
+        "Partition: {:?} Price: {:?}",
         partition, partition_price
     ));
     if !partition_price.is_sign_positive() {
