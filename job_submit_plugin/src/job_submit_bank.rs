@@ -83,6 +83,11 @@ pub extern "C" fn job_submit(
     };
     log("job_submit() loaded partition");
 
+    let partition_price = accounting::price_per_cpu_hour(&partition, conf);
+    if !partition_price.is_sign_positive() {
+        return SLURM_SUCCESS;
+    }
+
     let userid: u32 = unsafe { (*job_desc).user_id };
     log("job_submit() loaded userid");
     let account: String = match safe_helpers::deref_cstr(unsafe { (*job_desc).account }) {
@@ -109,7 +114,6 @@ pub extern "C" fn job_submit(
     log("job_submit() loaded time_limit_minutes");
     let time_limit_seconds = time_limit_minutes * 60;
     log("job_submit() loaded time_limit_seconds");
-
 
     log(&format!(
         "Processing request from user_id {:?} with account {:?}: \

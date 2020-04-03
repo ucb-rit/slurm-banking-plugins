@@ -15,7 +15,9 @@ fn log(message: &str) {
 }
 
 pub fn price_per_cpu_hour(partition: &str, conf: &Config) -> Decimal {
-    conf.get::<HashMap<String, String>>("PartitionPrice").ok().as_ref()
+    conf.get::<HashMap<String, String>>("PartitionPrice")
+        .ok()
+        .as_ref()
         .and_then(|prices| prices.get(partition))
         .and_then(|price| Decimal::from_str(price).ok())
         // If not specified, default price is 0
