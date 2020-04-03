@@ -84,7 +84,12 @@ pub extern "C" fn job_submit(
     log("job_submit() loaded partition");
 
     let partition_price = accounting::price_per_cpu_hour(&partition, conf);
+    log(&format!(
+        "Partition: {} Price: {}",
+        partition, partition_price
+    ));
     if !partition_price.is_sign_positive() {
+        log("Partition price is not positive -- skipping allocation check");
         return SLURM_SUCCESS;
     }
 
