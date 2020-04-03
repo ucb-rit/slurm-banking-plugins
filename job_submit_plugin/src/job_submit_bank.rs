@@ -12,6 +12,7 @@ use slurm_banking::logging;
 use slurm_banking::safe_helpers;
 
 use config::Config;
+use rust_decimal::prelude::Zero;
 use std::collections::HashMap;
 use std::os::raw::{c_char, c_int};
 
@@ -88,8 +89,8 @@ pub extern "C" fn job_submit(
         "Partition: {:?} Price: {:?}",
         partition, partition_price
     ));
-    if !partition_price.is_sign_positive() {
-        log("Partition price is not positive -- skipping allocation check");
+    if partition_price.is_zero() {
+        log("Partition price is 0 -- accepting job without checking API");
         return SLURM_SUCCESS;
     }
 
