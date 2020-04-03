@@ -6,7 +6,7 @@ enable_job_complete_plugin = true   # Requires Slurm restart
 [PartitionPrice]
 # All partitions must be listed here.
 # If a job requests to use a partition that is not listed here, 
-#  it will be rejected.
+#  its default cost is 0.
 # These numbers are the cost of one CPU-hour on the partition.
 normal = 1
 debug = 0.5
@@ -22,15 +22,6 @@ savio3 = 1.00
 savio3_bigmem = 2.67
 savio3_xlmem = 1.00
 savio3_gpu = 1.00
-
-[QosMultiplier]
-# QoS Multipliers can be used to change how users are charged
-#  based on their QoS. For example, setting the multiplier to 0
-#  for a condo QoS would not charge that condo account for
-#  jobs submitted with that QoS.
-# If the QoS is not in this list, the default multiplier is 1.
-normal = 1 
-lowprio = 0
 
 [API]
 # Provide the base path to the myBRC API WITHOUT the trailing /
