@@ -52,8 +52,7 @@ scripts/clang/build-clang.sh
 source scripts/clang/clang-env.sh
 
 # Point to slurm source code (OR you can make a copy)
-rmdir slurm && ln -s /path/to/slurm/source slurm # Point to slurm source
-rmdir slurm && cp -r /path/to/slurm/source slurm # OR make a copy
+rmdir slurm && cp -r /path/to/slurm/source slurm
 
 # Compile plugins
 make

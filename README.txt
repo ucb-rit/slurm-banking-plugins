@@ -1,6 +1,8 @@
                         _______________________
 
                          SLURM BANKING PLUGINS
+
+                                John Doe
                         _______________________
 
 
@@ -153,8 +155,7 @@ _________________
   | source scripts/clang/clang-env.sh
   | 
   | # Point to slurm source code (OR you can make a copy)
-  | rmdir slurm && ln -s /path/to/slurm/source slurm # Point to slurm source
-  | rmdir slurm && cp -r /path/to/slurm/source slurm # OR make a copy
+  | rmdir slurm && cp -r /path/to/slurm/source slurm
   | 
   | # Compile plugins
   | make
@@ -313,11 +314,11 @@ _________________
   schema, I use the Dockerized version of [swagger-codegen] like so:
 
   ,----
-  | docker run --rm -v $(shell pwd):/local openapitools/openapi-generator-cli generate \
-  |   -i /local/spec/swagger.json \
-  |   -g rust \
-  |   -o /local/mybrc_rest_client \
-  |   --library=reqwest
+  | 	docker run --rm -v $(shell pwd):/local openapitools/openapi-generator-cli generate \
+  | 		-i /local/spec/swagger.json \
+  | 		-g rust \
+  | 		-o /local/mybrc_rest_client \
+  | 		--library=reqwest
   `----
 
   You may find the generated files are not owned by your user, so just
