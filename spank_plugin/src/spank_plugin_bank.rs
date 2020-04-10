@@ -9,6 +9,7 @@ extern crate slurm_banking;
 use slurm_banking::accounting;
 use slurm_banking::bindings::*;
 use slurm_banking::logging;
+use slurm_banking::logging::display_job_record;
 use slurm_banking::safe_helpers;
 
 use chrono::prelude::*;
@@ -83,10 +84,28 @@ pub extern "C" fn slurm_spank_init(sp: spank_t, _ac: c_int, _argv: *const *const
     // END: Check if this plugin should be enabled
 
     let partition =
-        safe_helpers::deref_cstr(unsafe { (*((*job_buffer_ptr).job_array)).partition }).unwrap();
-    let qos = safe_helpers::deref_cstr(unsafe { (*((*job_buffer_ptr).job_array)).qos }).unwrap();
+        match safe_helpers::deref_cstr(unsafe { (*((*job_buffer_ptr).job_array)).partition }) {
+            Some(partition) => partition,
+            None => {
+                log("Failed to load partition");
+                return SLURM_SUCCESS;
+            }
+        };
+    let qos = match safe_helpers::deref_cstr(unsafe { (*((*job_buffer_ptr).job_array)).qos }) {
+        Some(qos) => qos,
+        None => {
+            log("Failed to load QoS");
+            return SLURM_SUCCESS;
+        }
+    };
     let account =
-        safe_helpers::deref_cstr(unsafe { (*((*job_buffer_ptr).job_array)).account }).unwrap();
+        match safe_helpers::deref_cstr(unsafe { (*((*job_buffer_ptr).job_array)).account }) {
+            Some(account) => account,
+            None => {
+                log("Failed to load account name");
+                return SLURM_SUCCESS;
+            }
+        };
     let num_cpus = unsafe { (*((*job_buffer_ptr).job_array)).num_cpus };
     let max_cpus = unsafe { (*((*job_buffer_ptr).job_array)).max_cpus };
     let num_nodes = unsafe { (*((*job_buffer_ptr).job_array)).num_nodes };
@@ -122,11 +141,12 @@ pub extern "C" fn slurm_spank_init(sp: spank_t, _ac: c_int, _argv: *const *const
     .map(|name| openapi::models::Node::new(name))
     .collect();
     log(&format!("Nodes: {:?}", nodes));
+    let jobstatus = "RUNNING".to_string();
 
     let mut job_create_record =
         openapi::models::Job::new(job_id.to_string(), user_id.to_string(), account);
     job_create_record.amount = Some(expected_cost.to_string());
-    job_create_record.jobstatus = Some("RUNNING".to_string());
+    job_create_record.jobstatus = Some(jobstatus);
     job_create_record.partition = Some(partition);
     job_create_record.qos = Some(qos);
     job_create_record.startdate = Some(start_timestamp_str);
@@ -135,7 +155,10 @@ pub extern "C" fn slurm_spank_init(sp: spank_t, _ac: c_int, _argv: *const *const
     job_create_record.num_cpus = Some(num_cpus as i32);
     job_create_record.num_alloc_nodes = Some(num_nodes as i32);
 
-    log(&format!("Creating job wih info: {:?}", job_create_record));
+    log(&format!(
+        "Creating job wih info: {}",
+        display_job_record(&job_create_record)
+    ));
     let base_path = slurm_banking::prices_config::get_base_path(&conf);
     let auth_token = slurm_banking::prices_config::get_auth_token(&conf);
     let _ = accounting::create_job(base_path, &auth_token, job_create_record);

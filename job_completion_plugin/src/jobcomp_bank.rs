@@ -10,6 +10,7 @@ extern crate slurm_banking;
 use slurm_banking::accounting;
 use slurm_banking::bindings::*;
 use slurm_banking::logging;
+use slurm_banking::logging::display_job_record;
 use slurm_banking::safe_helpers;
 
 use chrono::prelude::*;
@@ -143,7 +144,7 @@ pub extern "C" fn slurm_jobcomp_log_record(job_ptr: *const job_record) -> u32 {
 
     let job_state = unsafe { (*job_ptr).job_state };
     let job_state_ptr = unsafe { job_state_string(job_state) };
-    let job_state_str = safe_helpers::deref_cstr(job_state_ptr).unwrap();
+    let job_state_str = safe_helpers::deref_cstr(job_state_ptr).unwrap_or("".to_string());
 
     let num_req_nodes = unsafe { (*(*job_ptr).details).min_nodes };
     let num_alloc_nodes = unsafe { (*job_ptr).total_nodes };
@@ -167,7 +168,10 @@ pub extern "C" fn slurm_jobcomp_log_record(job_ptr: *const job_record) -> u32 {
 
     log_with_jobid(
         &jobslurmid,
-        &format!("Updating job with info: {:?}", job_update_record),
+        &format!(
+            "Updating job with info: {}",
+            display_job_record(&job_update_record)
+        ),
     );
     let base_path = slurm_banking::prices_config::get_base_path(&conf);
     let auth_token = slurm_banking::prices_config::get_auth_token(&conf);
