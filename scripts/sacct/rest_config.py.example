@@ -1,0 +1,2 @@
+MYBRC_REST_URL = "https://scgup-dev.lbl.gov:8443/mybrc-rest" # no trailing /
+TOKEN = "Token <PUT TOKEN HERE>"
