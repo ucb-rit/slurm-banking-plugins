@@ -88,13 +88,30 @@ pub extern "C" fn slurm_jobcomp_log_record(job_ptr: *const job_record) -> u32 {
     }
     // END: Check if this plugin should be enabled
 
+    // job_ptr contains bad account partition in the case where it is "savio,savio2"
+    // In this case, the job only runs on savio but the partition is set as "savio,savio2"
+    // The correct partition is obtained from slurm_load_job (same as spank plugin)
+    let mut job_buffer_ptr: *mut job_info_msg_t = std::ptr::null_mut();
+    unsafe {
+        if slurm_load_job(
+            &mut job_buffer_ptr as *mut *mut job_info_msg_t,
+            (*job_ptr).job_id,
+            SHOW_ALL as u16,
+        ) != 0
+        {
+            return ESLURM_INTERNAL;
+        }
+    }
+    let partition: String =
+        match safe_helpers::deref_cstr(unsafe { (*(*job_buffer_ptr).job_array).partition }) {
+            Some(partition) => partition,
+            None => return ESLURM_INVALID_PARTITION_NAME,
+        };
+    unsafe { slurm_free_job_info_msg(job_buffer_ptr) };
+
     let account: String = match safe_helpers::deref_cstr(unsafe { (*job_ptr).account }) {
         Some(account) => account,
         None => return ESLURM_INVALID_ACCOUNT,
-    };
-    let partition: String = match safe_helpers::deref_cstr(unsafe { (*job_ptr).partition }) {
-        Some(partition) => partition,
-        None => return ESLURM_INVALID_PARTITION_NAME,
     };
     let qos: String = match safe_helpers::deref_cstr(unsafe { (*(*job_ptr).qos_ptr).name }) {
         Some(qos) => qos,
