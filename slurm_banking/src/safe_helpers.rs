@@ -7,8 +7,7 @@ pub fn deref_cstr(string_ptr: *const c_char) -> Option<String> {
         Some(ptr) => unsafe { CStr::from_ptr(ptr).to_str().ok() },
         None => None,
     };
-    // .clone() is so we can free the source string
-    return string_cstr.map(|s| s.to_owned().clone());
+    return string_cstr.map(|s| s.to_owned());
 }
 
 pub fn deref_cstr_array(string_ptr: *const c_char, length: usize) -> Vec<String> {
