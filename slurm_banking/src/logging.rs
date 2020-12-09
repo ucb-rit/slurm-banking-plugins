@@ -45,21 +45,21 @@ fn display_option<T: std::fmt::Debug>(option: &Option<T>) -> String {
 pub fn display_job_record(job_record: &openapi::models::Job) -> String {
     format!(
         "jobslurmid: {jobslurmid}, \
-            submitdate: {submitdate}, \
-            startdate: {startdate}, \
-            enddate: {enddate}, \
-            userid: {userid}, \
-            accountid: {accountid}, \
-            amount: {amount}, \
-            jobstatus: {jobstatus}, \
-            partition: {partition}, \
-            qos: {qos}, \
-            nodes: {nodes}, \
-            num_cpus: {num_cpus}, \
-            num_req_nodes: {num_req_nodes}, \
-            num_alloc_nodes: {num_alloc_nodes}, \
-            raw_time: {raw_time}, \
-            cpu_time: {cpu_time}",
+         submitdate: {submitdate}, \
+         startdate: {startdate}, \
+         enddate: {enddate}, \
+         userid: {userid}, \
+         accountid: {accountid}, \
+         amount: {amount}, \
+         jobstatus: {jobstatus}, \
+         partition: {partition}, \
+         qos: {qos}, \
+         nodes: {nodes}, \
+         num_cpus: {num_cpus}, \
+         num_req_nodes: {num_req_nodes}, \
+         num_alloc_nodes: {num_alloc_nodes}, \
+         raw_time: {raw_time}, \
+         cpu_time: {cpu_time}",
         jobslurmid = job_record.jobslurmid,
         submitdate = display_option(&job_record.submitdate),
         startdate = display_option(&job_record.startdate),
