@@ -1,13 +1,13 @@
 use std::ffi::CString;
-use std::os::raw::c_char;
+// use std::os::raw::c_char;
 
 use super::bindings::*;
 
 extern crate openapi;
 
-extern "C" {
-    fn info(message: *const c_char);
-}
+// extern "C" {
+//    fn info(message: *const c_char);
+// }
 
 /// Provides a safe interface for info logging
 /// This usually shows up in `slurmctld.log`
