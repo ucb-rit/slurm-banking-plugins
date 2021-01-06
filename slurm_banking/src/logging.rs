@@ -15,16 +15,18 @@ pub fn safe_info(message: &str) {
     // Be wary of CString lifetimes with pointers
     // i.e., do not refactor as `info(CString::new(message).unwrap().as_ptr())`
     // Reference: https://stackoverflow.com/a/52175101/8706910
+    let format_cstring = CString::new("%s").expect("Could not create format string");
     let message_cstring = CString::new(message).expect("Could not create message");
     unsafe {
-        info(message_cstring.as_ptr());
+        slurm_info(format_cstring.as_ptr(), message_cstring.as_ptr());
     }
 }
 
 pub fn safe_spank_info(message: &str) {
+    let format_cstring = CString::new("%s").expect("Could not create format string");
     let message_cstring = CString::new(message).expect("Could not create message");
     unsafe {
-        slurm_info(message_cstring.as_ptr());
+        slurm_info(format_cstring.as_ptr(), message_cstring.as_ptr());
     }
 }
 
