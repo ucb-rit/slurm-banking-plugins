@@ -1,5 +1,7 @@
 FROM centos:6
-RUN yum install -y epel-release \
+COPY ./CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo
+RUN yum clean all \
+  && yum install -y epel-release \
   && yum install -y git clang openssl-devel \
   && yum groupinstall -y "Development Tools"
 RUN curl --tlsv1.2 -sSf https://sh.rustup.rs -o rustup.sh \
