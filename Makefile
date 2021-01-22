@@ -38,7 +38,7 @@ docker: docker/**/* **/*
 .PHONY: docker-dev
 docker-dev: docker/**/* **/*
 	docker build -t docker-centos7-slurm:latest docker-centos7-slurm
-	docker build --no-cache -f docker/dev/Dockerfile -t slurm-banking-plugins-centos7-dev .
+	docker build -f docker/dev/Dockerfile -t slurm-banking-plugins-centos7-dev .
 	docker run \
 		-v $(shell pwd)/job_submit_plugin/src:/slurm-banking-plugins/job_submit_plugin/src \
 		-v $(shell pwd)/job_completion_plugin/src:/slurm-banking-plugins/job_completion_plugin/src \
@@ -49,7 +49,7 @@ docker-dev: docker/**/* **/*
 .PHONY: docker-centos6-dev
 docker-centos6-dev: docker/**/* **/*
 	docker build -t docker-centos6-slurm:latest docker-centos6-slurm
-	docker build --no-cache -f docker/centos6-dev/Dockerfile -t slurm-banking-plugins-centos6-dev .
+	docker build -f docker/centos6-dev/Dockerfile -t slurm-banking-plugins-centos6-dev .
 	docker run \
 		-v $(shell pwd)/job_submit_plugin/src:/slurm-banking-plugins/job_submit_plugin/src \
 		-v $(shell pwd)/job_completion_plugin/src:/slurm-banking-plugins/job_completion_plugin/src \
