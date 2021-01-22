@@ -106,9 +106,11 @@ cp bank-config.toml.example /etc/slurm/bank-config.toml
 - For a working example installation, refer to [[./docker][the Docker files]]
 
 ** Developing
-I use the [[https://github.com/giovtorres/docker-centos7-slurm][docker-centos7-slurm]] Docker container as a base, and build the plugins on top of it. 
+I use the [[https://github.com/giovtorres/docker-centos7-slurm][docker-centos7-slurm]] Docker container as a base, and build the plugins on top of it. For newer versions of Slurm, we use our own fork at [[https://github.com/ucb-rit/docker-centos7-slurm][docker-centos7-slurm]]. For CentOS 6 testing we also have [[https://github.com/ucb-rit/docker-centos6-slurm][docker-centos6-slurm]].
 
-~make docker-dev~ builds the development container with Slurm plus all the other necessary dependencies for the plugins and drops you into a shell. The code is stored in ~/slurm-banking-plugins~ in the container. After making your changes, use ~make && make install~ to compile and install the plugins, copy the ~plugstack.conf~ and ~bank-config.toml~ config files to ~/etc/slurm/~, and finally restart Slurm with ~supervisorctl restart all~.
+~make docker-dev~ builds the development container with Slurm (CentOS 7) plus all the other necessary dependencies for the plugins and drops you into a shell. The code is stored in ~/slurm-banking-plugins~ in the container. After making your changes, use ~make && make install~ to compile and install the plugins, copy the ~plugstack.conf~ and ~bank-config.toml~ config files to ~/etc/slurm/~, and finally restart Slurm with ~supervisorctl restart all~.
+
+There is also the CentOS 6 equivalent with ~make docker-centos6-dev~.
 
 *** Project Structure
 Each plugin is its own Rust project: [[./job_completion_plugin][job_completion_plugin]], [[./job_submit_plugin][job_submit_plugin]], and [[./spank_plugin][spank_plugin]]. Each of these uses the [[./slurm_banking][slurm_banking]] project, which includes the job calculation functionality and helpers for calling the API. Communication with the myBRC API is done through [[./mybrc_rest_client][mybrc_rest_client]], described in the next section.
@@ -144,6 +146,7 @@ docker run \
   -v $(pwd)/slurm_banking/src:/slurm-banking-plugins/slurm_banking/src \
   --link mybrc-rest -it -h ernie slurm-banking-plugins-dev
 #+END_SRC
+
 *** Creating a Release
 GitHub Actions is set up to automatically build [[https://github.com/ucb-rit/slurm-banking-plugins/releases][releases]] for tags starting with a ~v~.
 For example, if I push a tag ~v0.1.0~, it will build releases for the code at that point.

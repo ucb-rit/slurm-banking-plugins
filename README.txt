@@ -264,19 +264,27 @@ _________________
 ============
 
   I use the [docker-centos7-slurm] Docker container as a base, and build
-  the plugins on top of it.
+  the plugins on top of it. For newer versions of Slurm, we use our own
+  fork at [docker-centos7-slurm]. For CentOS 6 testing we also have
+  [docker-centos6-slurm].
 
-  `make docker-dev' builds the development container with Slurm plus all
-  the other necessary dependencies for the plugins and drops you into a
-  shell. The code is stored in `/slurm-banking-plugins' in the
-  container. After making your changes, use `make && make install' to
-  compile and install the plugins, copy the `plugstack.conf' and
+  `make docker-dev' builds the development container with Slurm (CentOS
+  7) plus all the other necessary dependencies for the plugins and drops
+  you into a shell. The code is stored in `/slurm-banking-plugins' in
+  the container. After making your changes, use `make && make install'
+  to compile and install the plugins, copy the `plugstack.conf' and
   `bank-config.toml' config files to `/etc/slurm/', and finally restart
   Slurm with `supervisorctl restart all'.
+
+  There is also the CentOS 6 equivalent with `make docker-centos6-dev'.
 
 
 [docker-centos7-slurm]
 <https://github.com/giovtorres/docker-centos7-slurm>
+
+[docker-centos7-slurm] <https://github.com/ucb-rit/docker-centos7-slurm>
+
+[docker-centos6-slurm] <https://github.com/ucb-rit/docker-centos6-slurm>
 
 6.1 Project Structure
 ~~~~~~~~~~~~~~~~~~~~~
