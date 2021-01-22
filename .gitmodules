@@ -1,3 +1,9 @@
 [submodule "slurm"]
 	path = slurm
 	url = https://github.com/SchedMD/slurm.git
+[submodule "docker-centos6-slurm"]
+	path = docker-centos6-slurm
+	url = https://github.com/ucb-rit/docker-centos6-slurm.git
+[submodule "docker-centos7-slurm"]
+	path = docker-centos7-slurm
+	url = https://github.com/ucb-rit/docker-centos7-slurm.git
