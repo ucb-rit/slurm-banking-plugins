@@ -30,13 +30,6 @@ pub fn safe_spank_info(message: &str) {
     }
 }
 
-pub fn safe_spank_error(message: &str) {
-    let message_cstring = CString::new(message).expect("Could not create message");
-    unsafe {
-        slurm_error(message_cstring.as_ptr());
-    }
-}
-
 fn display_option<T: std::fmt::Debug>(option: &Option<T>) -> String {
     match option {
         Some(x) => format!("{:?}", x),
