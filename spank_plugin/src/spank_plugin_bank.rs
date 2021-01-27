@@ -128,7 +128,7 @@ pub extern "C" fn slurm_spank_init(sp: spank_t, _ac: c_int, _argv: *const *const
         DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(start_timestamp, 0), Utc)
             .to_rfc3339();
 
-    let submit_timestamp = unsafe { (*((*job_buffer_ptr).job_array)).start_time };
+    let submit_timestamp = unsafe { (*((*job_buffer_ptr).job_array)).submit_time };
     let submit_timestamp_str =
         DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(submit_timestamp, 0), Utc)
             .to_rfc3339();
