@@ -58,3 +58,8 @@ This documents the Slurm API/functions used by each of the plugins.
   - `pub job_state: u32`
   - `pub total_nodes: u32`
 - `pub fn job_state_string(inx: u32) -> *mut ::std::os::raw::c_char;`
+
+## Notes
+In a previous version, `info()` from Slurm was called incorrectly as a single-argument function instead of as a variable argument function. This did not cause errors in CentOS 7 testing and worked on BRC master node (SL6) until breaking (causing segfaults) in Slurm 20.
+
+As it is now called with the correct matching function signature, this issue isn't expected to arise again. However, to mitigate the risk, other potential solutions include having the plugins log to their own file. This would add (probably unnecessary) complexity to the plugins, especially when we consider that multiple instances of the Spank plugin may be running at the same time on a given node. So the plugins would either have to implement their own locking control mechanism (to prevent race conditions from multiple processes writing to the same file) or log to a different file per job ID.
