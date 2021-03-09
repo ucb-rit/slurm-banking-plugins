@@ -108,7 +108,22 @@ cp bank-config.toml.example /etc/slurm/bank-config.toml
 ** Developing
 I use the [[https://github.com/giovtorres/docker-centos7-slurm][docker-centos7-slurm]] Docker container as a base, and build the plugins on top of it. For newer versions of Slurm, we use our own fork at [[https://github.com/ucb-rit/docker-centos7-slurm][docker-centos7-slurm]]. For CentOS 6 testing we also have [[https://github.com/ucb-rit/docker-centos6-slurm][docker-centos6-slurm]].
 
-~make docker-dev~ builds the development container with Slurm (CentOS 7) plus all the other necessary dependencies for the plugins and drops you into a shell. The code is stored in ~/slurm-banking-plugins~ in the container. After making your changes, use ~make && make install~ to compile and install the plugins, copy the ~plugstack.conf~ and ~bank-config.toml~ config files to ~/etc/slurm/~, and finally restart Slurm with ~supervisorctl restart all~.
+~make docker-dev~ builds the development container with Slurm (CentOS 7) plus all the other necessary dependencies for the plugins and drops you into a shell. The code is stored in ~/slurm-banking-plugins~ in the container.
+
+Once in the container, check the Slurm version with ~scontrol -V~ and checkout the corresponding Slurm version in ~/slurm-banking-plugins/slurm~ so that the plugins are compiled against the correct Slurm version:
+#+BEGIN_SRC shell
+pushd /slurm-banking-plugins/slurm
+git checkout tags/slurm-20-02-6-1 # for example
+popd
+#+END_SRC
+
+After making your changes, use ~make && make install~ to compile and install the plugins, copy the ~plugstack.conf~ and ~bank-config.toml~ config files to ~/etc/slurm/~, make configuration changes as desired, and finally restart Slurm with ~supervisorctl restart all~.
+
+If the services do not start correctly, try starting them one-by-one with:
+#+BEGIN_SRC shell
+supervisorctl status # inspect status
+supervisorctl start slurmctld
+#+END_SRC
 
 There is also the CentOS 6 equivalent with ~make docker-centos6-dev~.
 

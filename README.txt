@@ -271,10 +271,29 @@ _________________
   `make docker-dev' builds the development container with Slurm (CentOS
   7) plus all the other necessary dependencies for the plugins and drops
   you into a shell. The code is stored in `/slurm-banking-plugins' in
-  the container. After making your changes, use `make && make install'
-  to compile and install the plugins, copy the `plugstack.conf' and
-  `bank-config.toml' config files to `/etc/slurm/', and finally restart
-  Slurm with `supervisorctl restart all'.
+  the container.
+
+  Once in the container, check the Slurm version with `scontrol -V' and
+  checkout the corresponding Slurm version in
+  `/slurm-banking-plugins/slurm' so that the plugins are compiled
+  against the correct Slurm version:
+  ,----
+  | pushd /slurm-banking-plugins/slurm
+  | git checkout tags/slurm-20-02-6-1 # for example
+  | popd
+  `----
+
+  After making your changes, use `make && make install' to compile and
+  install the plugins, copy the `plugstack.conf' and `bank-config.toml'
+  config files to `/etc/slurm/', make configuration changes as desired,
+  and finally restart Slurm with `supervisorctl restart all'.
+
+  If the services do not start correctly, try starting them one-by-one
+  with:
+  ,----
+  | supervisorctl status # inspect status
+  | supervisorctl start slurmctld
+  `----
 
   There is also the CentOS 6 equivalent with `make docker-centos6-dev'.
 

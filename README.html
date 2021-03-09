@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-01-22 Fri 15:47 -->
+<!-- 2021-03-09 Tue 15:45 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Slurm Banking Plugins</title>
@@ -225,35 +225,35 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#org77bfca1">1. Introduction</a></li>
-<li><a href="#orgc6d8a34">2. Limitations</a></li>
-<li><a href="#org488fdb2">3. Build Requirements</a></li>
-<li><a href="#org105aaf6">4. Building</a>
+<li><a href="#org3a42485">1. Introduction</a></li>
+<li><a href="#orgb7e24e3">2. Limitations</a></li>
+<li><a href="#org223800d">3. Build Requirements</a></li>
+<li><a href="#orgd299b50">4. Building</a>
 <ul>
-<li><a href="#orgfcccc83">4.1. On Savio</a></li>
-<li><a href="#org5022c76">4.2. NixOS</a></li>
-<li><a href="#org62a6b2a">4.3. Help</a></li>
+<li><a href="#orgbda081c">4.1. On Savio</a></li>
+<li><a href="#org8e664b0">4.2. NixOS</a></li>
+<li><a href="#orgbc4ed7f">4.3. Help</a></li>
 </ul>
 </li>
-<li><a href="#orgb1bcd75">5. Usage</a>
+<li><a href="#org81837d1">5. Usage</a>
 <ul>
-<li><a href="#orge050150">5.1. Install, enable, and configure</a>
+<li><a href="#org7bd6c4e">5.1. Install, enable, and configure</a>
 <ul>
-<li><a href="#orge44a9cc">5.1.1. Install the <code>.so</code> files</a></li>
-<li><a href="#org7f17e04">5.1.2. /etc/slurm/slurm.conf</a></li>
-<li><a href="#org7e0c314">5.1.3. /etc/slurm/plugstack.conf</a></li>
-<li><a href="#orgcd0b5b2">5.1.4. /etc/slurm/bank-config.toml</a></li>
+<li><a href="#org47dad21">5.1.1. Install the <code>.so</code> files</a></li>
+<li><a href="#org6c33b4d">5.1.2. /etc/slurm/slurm.conf</a></li>
+<li><a href="#orgc1f1a39">5.1.3. /etc/slurm/plugstack.conf</a></li>
+<li><a href="#org262a1d7">5.1.4. /etc/slurm/bank-config.toml</a></li>
 </ul>
 </li>
-<li><a href="#orgc1de254">5.2. Help/Debugging</a></li>
+<li><a href="#orgb44de0e">5.2. Help/Debugging</a></li>
 </ul>
 </li>
-<li><a href="#org17dfe0e">6. Developing</a>
+<li><a href="#orge86adff">6. Developing</a>
 <ul>
-<li><a href="#org315af32">6.1. Project Structure</a></li>
-<li><a href="#org02f266d">6.2. myBRC API Codegen</a></li>
-<li><a href="#org4b57e98">6.3. Testing with myBRC</a></li>
-<li><a href="#org9a00f85">6.4. Creating a Release</a></li>
+<li><a href="#org2ee963a">6.1. Project Structure</a></li>
+<li><a href="#orgf06419e">6.2. myBRC API Codegen</a></li>
+<li><a href="#orgd885368">6.3. Testing with myBRC</a></li>
+<li><a href="#orgdb76f89">6.4. Creating a Release</a></li>
 </ul>
 </li>
 </ul>
@@ -261,8 +261,8 @@
 </div>
 <a href="https://travis-ci.org/ucb-rit/slurm-banking-plugins"><img src="https://travis-ci.org/ucb-rit/slurm-banking-plugins.svg?branch=master"></a> <a href="."><img src="https://img.shields.io/github/v/tag/ucb-rit/slurm-banking-plugins"></a> <a href="."><img src="https://img.shields.io/github/languages/top/ucb-rit/slurm-banking-plugins"></a> <a href="."><img src="https://img.shields.io/github/repo-size/ucb-rit/slurm-banking-plugins"></a>
 
-<div id="outline-container-org77bfca1" class="outline-2">
-<h2 id="org77bfca1"><span class="section-number-2">1</span> Introduction</h2>
+<div id="outline-container-org3a42485" class="outline-2">
+<h2 id="org3a42485"><span class="section-number-2">1</span> Introduction</h2>
 <div class="outline-text-2" id="text-1">
 <p>
 Slurm banking plugins provide allocation management to Slurm. The plugins deduct service units for completed and running jobs and prevent jobs from running if there are insufficient service units available. The plugins interact with a REST API (provided by myBRC), documented in the <a href="./spec/swagger.json">spec/swagger.json</a>. The following three plugins are used:
@@ -280,8 +280,8 @@ These plugins are written in <a href="https://www.rust-lang.org">Rust</a> to hel
 </div>
 </div>
 
-<div id="outline-container-orgc6d8a34" class="outline-2">
-<h2 id="orgc6d8a34"><span class="section-number-2">2</span> Limitations</h2>
+<div id="outline-container-orgb7e24e3" class="outline-2">
+<h2 id="orgb7e24e3"><span class="section-number-2">2</span> Limitations</h2>
 <div class="outline-text-2" id="text-2">
 <ul class="org-ul">
 <li>Since the spank plugin cannot cancel a job, the user could overdraw their service unit allocation if they had enough service units at the time of submission, but not enough service units at the time the job starts running, since the units are only actually deducted from the balance when the job starts running.</li>
@@ -291,8 +291,8 @@ These plugins are written in <a href="https://www.rust-lang.org">Rust</a> to hel
 </div>
 </div>
 
-<div id="outline-container-org488fdb2" class="outline-2">
-<h2 id="org488fdb2"><span class="section-number-2">3</span> Build Requirements</h2>
+<div id="outline-container-org223800d" class="outline-2">
+<h2 id="org223800d"><span class="section-number-2">3</span> Build Requirements</h2>
 <div class="outline-text-2" id="text-3">
 <ul class="org-ul">
 <li><a href="https://www.rust-lang.org/">Rust</a> (including <a href="https://doc.rust-lang.org/cargo/">cargo</a>)</li>
@@ -303,8 +303,8 @@ These plugins are written in <a href="https://www.rust-lang.org">Rust</a> to hel
 </div>
 </div>
 
-<div id="outline-container-org105aaf6" class="outline-2">
-<h2 id="org105aaf6"><span class="section-number-2">4</span> Building</h2>
+<div id="outline-container-orgd299b50" class="outline-2">
+<h2 id="orgd299b50"><span class="section-number-2">4</span> Building</h2>
 <div class="outline-text-2" id="text-4">
 <p>
 Since the Slurm <code>jobcomp</code> plugins need access to the <code>src/common/slurm_jobcomp.h</code> header, we need access to the Slurm source code <code>src</code> directory in order to build (as well as the normal <code>&lt;slurm/slurm.h&gt;</code> headers on the <code>CPATH</code>). 
@@ -321,8 +321,8 @@ You will have to first run <code>./configure</code> on the Slurm source code, ot
 </ol>
 </div>
 
-<div id="outline-container-orgfcccc83" class="outline-3">
-<h3 id="orgfcccc83"><span class="section-number-3">4.1</span> On Savio</h3>
+<div id="outline-container-orgbda081c" class="outline-3">
+<h3 id="orgbda081c"><span class="section-number-3">4.1</span> On Savio</h3>
 <div class="outline-text-3" id="text-4-1">
 <p>
 You will need the Rust and <code>clang</code> dependencies. 
@@ -355,7 +355,7 @@ rmdir slurm &amp;&amp; <span style="color: #ECBE7B;">cp</span> -r /path/to/slurm
 </div>
 
 <p>
-Then, follow the instructions in <a href="#org9b4ab92">Usage</a> to install, enable, and configure the plugins.
+Then, follow the instructions in <a href="#org5f0d319">Usage</a> to install, enable, and configure the plugins.
 </p>
 
 <p>
@@ -364,8 +364,8 @@ Then, follow the instructions in <a href="#org9b4ab92">Usage</a> to install, ena
 </div>
 </div>
 
-<div id="outline-container-org5022c76" class="outline-3">
-<h3 id="org5022c76"><span class="section-number-3">4.2</span> NixOS</h3>
+<div id="outline-container-org8e664b0" class="outline-3">
+<h3 id="org8e664b0"><span class="section-number-3">4.2</span> NixOS</h3>
 <div class="outline-text-3" id="text-4-2">
 <p>
 <code>shell.nix</code> provides the environment for development on <a href="https://nixos.org">NixOS</a>. I run the following:
@@ -379,8 +379,8 @@ Then, follow the instructions in <a href="#org9b4ab92">Usage</a> to install, ena
 </div>
 </div>
 
-<div id="outline-container-org62a6b2a" class="outline-3">
-<h3 id="org62a6b2a"><span class="section-number-3">4.3</span> Help</h3>
+<div id="outline-container-orgbc4ed7f" class="outline-3">
+<h3 id="orgbc4ed7f"><span class="section-number-3">4.3</span> Help</h3>
 <div class="outline-text-3" id="text-4-3">
 <p>
 For additional reference on building, check <a href="https://travis-ci.org/ucb-rit/slurm-banking-plugins">the build on travis-ci</a>.
@@ -389,16 +389,16 @@ For additional reference on building, check <a href="https://travis-ci.org/ucb-r
 </div>
 </div>
 
-<div id="outline-container-orgb1bcd75" class="outline-2">
-<h2 id="orgb1bcd75"><span class="section-number-2">5</span> <a id="org9b4ab92"></a> Usage</h2>
+<div id="outline-container-org81837d1" class="outline-2">
+<h2 id="org81837d1"><span class="section-number-2">5</span> <a id="org5f0d319"></a> Usage</h2>
 <div class="outline-text-2" id="text-5">
 </div>
-<div id="outline-container-orge050150" class="outline-3">
-<h3 id="orge050150"><span class="section-number-3">5.1</span> Install, enable, and configure</h3>
+<div id="outline-container-org7bd6c4e" class="outline-3">
+<h3 id="org7bd6c4e"><span class="section-number-3">5.1</span> Install, enable, and configure</h3>
 <div class="outline-text-3" id="text-5-1">
 </div>
-<div id="outline-container-orge44a9cc" class="outline-4">
-<h4 id="orge44a9cc"><span class="section-number-4">5.1.1</span> Install the <code>.so</code> files</h4>
+<div id="outline-container-org47dad21" class="outline-4">
+<h4 id="org47dad21"><span class="section-number-4">5.1.1</span> Install the <code>.so</code> files</h4>
 <div class="outline-text-4" id="text-5-1-1">
 <p>
 The <code>job_submit_slurm_banking.so</code> and <code>jobcomp_slurm_banking.so</code> should be installed in <code>/usr/lib64/slurm/</code>. The <code>spank_slurm_banking.so</code> plugin should be installed in <code>/etc/slurm/spank/</code>.
@@ -410,8 +410,8 @@ The <code>job_submit_slurm_banking.so</code> and <code>jobcomp_slurm_banking.so<
 </div>
 </div>
 
-<div id="outline-container-org7f17e04" class="outline-4">
-<h4 id="org7f17e04"><span class="section-number-4">5.1.2</span> /etc/slurm/slurm.conf</h4>
+<div id="outline-container-org6c33b4d" class="outline-4">
+<h4 id="org6c33b4d"><span class="section-number-4">5.1.2</span> /etc/slurm/slurm.conf</h4>
 <div class="outline-text-4" id="text-5-1-2">
 <p>
 Enable the submit and completion plugins:
@@ -425,8 +425,8 @@ Enable the submit and completion plugins:
 </div>
 </div>
 
-<div id="outline-container-org7e0c314" class="outline-4">
-<h4 id="org7e0c314"><span class="section-number-4">5.1.3</span> /etc/slurm/plugstack.conf</h4>
+<div id="outline-container-orgc1f1a39" class="outline-4">
+<h4 id="orgc1f1a39"><span class="section-number-4">5.1.3</span> /etc/slurm/plugstack.conf</h4>
 <div class="outline-text-4" id="text-5-1-3">
 <p>
 Enable the spank plugin:
@@ -438,8 +438,8 @@ Enable the spank plugin:
 </div>
 </div>
 
-<div id="outline-container-orgcd0b5b2" class="outline-4">
-<h4 id="orgcd0b5b2"><span class="section-number-4">5.1.4</span> /etc/slurm/bank-config.toml</h4>
+<div id="outline-container-org262a1d7" class="outline-4">
+<h4 id="org262a1d7"><span class="section-number-4">5.1.4</span> /etc/slurm/bank-config.toml</h4>
 <div class="outline-text-4" id="text-5-1-4">
 <p>
 Configure the plugin settings. Options that <b>must</b> be set properly include the API URL, API token, and partition names. You can use the example provided as a template.
@@ -452,8 +452,8 @@ Configure the plugin settings. Options that <b>must</b> be set properly include 
 </div>
 </div>
 
-<div id="outline-container-orgc1de254" class="outline-3">
-<h3 id="orgc1de254"><span class="section-number-3">5.2</span> Help/Debugging</h3>
+<div id="outline-container-orgb44de0e" class="outline-3">
+<h3 id="orgb44de0e"><span class="section-number-3">5.2</span> Help/Debugging</h3>
 <div class="outline-text-3" id="text-5-2">
 <ul class="org-ul">
 <li>The plugins log errors to the slurmd (spank plugin) and slurmctld (job submit and job completion plugins) logs. You can filter for their output by grepping for <code>_bank</code>.</li>
@@ -463,24 +463,47 @@ Configure the plugin settings. Options that <b>must</b> be set properly include 
 </div>
 </div>
 
-<div id="outline-container-org17dfe0e" class="outline-2">
-<h2 id="org17dfe0e"><span class="section-number-2">6</span> Developing</h2>
+<div id="outline-container-orge86adff" class="outline-2">
+<h2 id="orge86adff"><span class="section-number-2">6</span> Developing</h2>
 <div class="outline-text-2" id="text-6">
 <p>
 I use the <a href="https://github.com/giovtorres/docker-centos7-slurm">docker-centos7-slurm</a> Docker container as a base, and build the plugins on top of it. For newer versions of Slurm, we use our own fork at <a href="https://github.com/ucb-rit/docker-centos7-slurm">docker-centos7-slurm</a>. For CentOS 6 testing we also have <a href="https://github.com/ucb-rit/docker-centos6-slurm">docker-centos6-slurm</a>.
 </p>
 
 <p>
-<code>make docker-dev</code> builds the development container with Slurm (CentOS 7) plus all the other necessary dependencies for the plugins and drops you into a shell. The code is stored in <code>/slurm-banking-plugins</code> in the container. After making your changes, use <code>make &amp;&amp; make install</code> to compile and install the plugins, copy the <code>plugstack.conf</code> and <code>bank-config.toml</code> config files to <code>/etc/slurm/</code>, and finally restart Slurm with <code>supervisorctl restart all</code>.
+<code>make docker-dev</code> builds the development container with Slurm (CentOS 7) plus all the other necessary dependencies for the plugins and drops you into a shell. The code is stored in <code>/slurm-banking-plugins</code> in the container.
 </p>
+
+<p>
+Once in the container, check the Slurm version with <code>scontrol -V</code> and checkout the corresponding Slurm version in <code>/slurm-banking-plugins/slurm</code> so that the plugins are compiled against the correct Slurm version:
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">pushd /slurm-banking-plugins/slurm
+<span style="color: #ECBE7B;">git</span> checkout tags/slurm-20-02-6-1 <span style="color: #5B6268;"># </span><span style="color: #5B6268;">for example</span>
+popd
+</pre>
+</div>
+
+<p>
+After making your changes, use <code>make &amp;&amp; make install</code> to compile and install the plugins, copy the <code>plugstack.conf</code> and <code>bank-config.toml</code> config files to <code>/etc/slurm/</code>, make configuration changes as desired, and finally restart Slurm with <code>supervisorctl restart all</code>.
+</p>
+
+<p>
+If the services do not start correctly, try starting them one-by-one with:
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">supervisorctl status <span style="color: #5B6268;"># </span><span style="color: #5B6268;">inspect status</span>
+supervisorctl start slurmctld
+</pre>
+</div>
 
 <p>
 There is also the CentOS 6 equivalent with <code>make docker-centos6-dev</code>.
 </p>
 </div>
 
-<div id="outline-container-org315af32" class="outline-3">
-<h3 id="org315af32"><span class="section-number-3">6.1</span> Project Structure</h3>
+<div id="outline-container-org2ee963a" class="outline-3">
+<h3 id="org2ee963a"><span class="section-number-3">6.1</span> Project Structure</h3>
 <div class="outline-text-3" id="text-6-1">
 <p>
 Each plugin is its own Rust project: <a href="./job_completion_plugin">job_completion_plugin</a>, <a href="./job_submit_plugin">job_submit_plugin</a>, and <a href="./spank_plugin">spank_plugin</a>. Each of these uses the <a href="./slurm_banking">slurm_banking</a> project, which includes the job calculation functionality and helpers for calling the API. Communication with the myBRC API is done through <a href="./mybrc_rest_client">mybrc_rest_client</a>, described in the next section.
@@ -488,8 +511,8 @@ Each plugin is its own Rust project: <a href="./job_completion_plugin">job_compl
 </div>
 </div>
 
-<div id="outline-container-org02f266d" class="outline-3">
-<h3 id="org02f266d"><span class="section-number-3">6.2</span> myBRC API Codegen</h3>
+<div id="outline-container-orgf06419e" class="outline-3">
+<h3 id="orgf06419e"><span class="section-number-3">6.2</span> myBRC API Codegen</h3>
 <div class="outline-text-3" id="text-6-2">
 <p>
 I use <a href="https://github.com/OpenAPITools/openapi-generator">openapi-generator</a> to generate a library to abstract away access to the API. The API is described by a schema file in <a href="./spec/swagger.json">spec/swagger.json</a>. This file is automatically generated by the myBRC API, and can be obtained at <code>/swagger.json</code> on the myBRC API.
@@ -514,8 +537,8 @@ You may find the generated files are not owned by your user, so just run <code>c
 </div>
 </div>
 
-<div id="outline-container-org4b57e98" class="outline-3">
-<h3 id="org4b57e98"><span class="section-number-3">6.3</span> Testing with myBRC</h3>
+<div id="outline-container-orgd885368" class="outline-3">
+<h3 id="orgd885368"><span class="section-number-3">6.3</span> Testing with myBRC</h3>
 <div class="outline-text-3" id="text-6-3">
 <div class="org-src-container">
 <pre class="src src-shell"><span style="color: #5B6268;"># </span><span style="color: #5B6268;">Build mybrc-rest Docker image from scgup</span>
@@ -536,8 +559,8 @@ docker run <span style="color: #98be65;">\</span>
 </div>
 </div>
 
-<div id="outline-container-org9a00f85" class="outline-3">
-<h3 id="org9a00f85"><span class="section-number-3">6.4</span> Creating a Release</h3>
+<div id="outline-container-orgdb76f89" class="outline-3">
+<h3 id="orgdb76f89"><span class="section-number-3">6.4</span> Creating a Release</h3>
 <div class="outline-text-3" id="text-6-4">
 <p>
 GitHub Actions is set up to automatically build <a href="https://github.com/ucb-rit/slurm-banking-plugins/releases">releases</a> for tags starting with a <code>v</code>.
@@ -560,7 +583,7 @@ In this example, it&rsquo;s using <code>slurm-18-08-7-1</code> in the CentOS 6 b
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: John Doe</p>
-<p class="date">Created: 2021-01-22 Fri 15:47</p>
+<p class="date">Created: 2021-03-09 Tue 15:45</p>
 </div>
 </body>
 </html>
