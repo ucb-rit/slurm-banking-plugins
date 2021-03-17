@@ -32,8 +32,9 @@ test: slurm/slurm/slurm.h
 
 .PHONY: docker
 docker: docker/**/* **/*
-	docker build -f docker/build/Dockerfile -t slurm-banking-plugins .
-	docker run -it -h ernie slurm-banking-plugins
+	docker build -t docker-centos7-slurm:latest docker-centos7-slurm
+	docker build -f docker/dev/Dockerfile -t slurm-banking-plugins-centos7-dev .
+	docker run -it -h ernie slurm-banking-plugins-centos7-dev
 
 .PHONY: docker-dev
 docker-dev: docker/**/* **/*
