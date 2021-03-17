@@ -44,8 +44,8 @@ docker-dev: docker/**/* **/*
 		-v $(shell pwd)/job_completion_plugin/src:/slurm-banking-plugins/job_completion_plugin/src \
 		-v $(shell pwd)/spank_plugin/src:/slurm-banking-plugins/spank_plugin/src \
 		-v $(shell pwd)/slurm_banking/src:/slurm-banking-plugins/slurm_banking/src \
-		-it -h ernie slurm-banking-plugins-dev
-
+		-it -h ernie slurm-banking-plugins-centos7-dev
+		
 .PHONY: docker-centos6-dev
 docker-centos6-dev: docker/**/* **/*
 	docker build -t docker-centos6-slurm:latest docker-centos6-slurm
@@ -55,7 +55,7 @@ docker-centos6-dev: docker/**/* **/*
 		-v $(shell pwd)/job_completion_plugin/src:/slurm-banking-plugins/job_completion_plugin/src \
 		-v $(shell pwd)/spank_plugin/src:/slurm-banking-plugins/spank_plugin/src \
 		-v $(shell pwd)/slurm_banking/src:/slurm-banking-plugins/slurm_banking/src \
-		-it -h ernie slurm-banking-plugins-dev
+		-it -h ernie slurm-banking-plugins-centos6-dev
 
 
 install:
