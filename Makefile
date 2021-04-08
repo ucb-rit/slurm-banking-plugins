@@ -71,6 +71,21 @@ uninstall:
 	rm -f $(PLUGIN_INSTALL_PREFIX)/job_submit_slurm_banking.so
 	rm -f $(SPANK_PLUGIN_INSTALL_PREFIX)/spank_slurm_banking.so
 
+rpmbuild:
+	rpmdev-setuptree
+
+rpmbuild/SPECS/slurm-banking-plugins.spec: rpmbuild slurm-banking-plugins.spec
+	cp slurm-banking-plugins.spec rpmbuild/SPECS/.
+
+rpmbuild/SOURCES/slurm-banking-plugins-1.tar.gz: job_completion_plugin/**/* job_submit_plugin/**/* spank_plugin/**/*
+	tar -czf rpmbuild/SOURCES/slurm-banking-plugins-1.tar.gz --exclude './rpmbuild' . --transform 's,^,slurm-banking-plugins-1/,'
+
+srpm: rpmbuild/SPECS/slurm-banking-plugins.spec rpmbuild/SOURCES/slurm-banking-plugins-1.tar.gz
+	rpmbuild -bs rpmbuild/SPECS/slurm-banking-plugins.spec
+
+rpm: rpmbuild/SPECS/slurm-banking-plugins.spec rpmbuild/SOURCES/slurm-banking-plugins-1.tar.gz
+	rpmbuild -bb rpmbuild/SPECS/slurm-banking-plugins.spec
+
 clean:
 	$(MAKE) -C job_completion_plugin clean
 	$(MAKE) -C job_submit_plugin clean
