@@ -80,9 +80,11 @@ rpmbuild/SPECS/slurm-banking-plugins.spec: rpmbuild slurm-banking-plugins.spec
 rpmbuild/SOURCES/slurm-banking-plugins-1.tar.gz: job_completion_plugin/**/* job_submit_plugin/**/* spank_plugin/**/*
 	tar -czf rpmbuild/SOURCES/slurm-banking-plugins-1.tar.gz --exclude './rpmbuild' . --transform 's,^,slurm-banking-plugins-1/,'
 
+.PHONY: srpm
 srpm: rpmbuild/SPECS/slurm-banking-plugins.spec rpmbuild/SOURCES/slurm-banking-plugins-1.tar.gz
 	rpmbuild -bs rpmbuild/SPECS/slurm-banking-plugins.spec
 
+.PHONY: rpm
 rpm: rpmbuild/SPECS/slurm-banking-plugins.spec rpmbuild/SOURCES/slurm-banking-plugins-1.tar.gz
 	rpmbuild -bb rpmbuild/SPECS/slurm-banking-plugins.spec
 

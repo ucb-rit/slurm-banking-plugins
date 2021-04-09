@@ -10,6 +10,8 @@ Source0:        %{name}-%{version}.tar.gz
 BuildRequires: make clang gcc openssl-devel
 Requires: glibc clang openssl-devel
 
+%define debug_package %{nil}
+
 %description
 
 
@@ -27,12 +29,19 @@ make
 %install
 rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT/usr/lib64/slurm $RPM_BUILD_ROOT/etc/slurm/spank
-%make_install
+mkdir -p $RPM_BUILD_ROOT/%{_bindir}
+cp job_completion_plugin/jobcomp_slurm_banking.so $RPM_BUILD_ROOT/usr/lib64/slurm
+cp job_submit_plugin/job_submit_slurm_banking.so $RPM_BUILD_ROOT/usr/lib64/slurm
+cp spank_plugin/spank_slurm_banking.so $RPM_BUILD_ROOT/etc/slurm/spank
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 %files
+/usr/lib64/slurm/job_submit_slurm_banking.so
+/usr/lib64/slurm/jobcomp_slurm_banking.so
+/etc/slurm/spank/spank_slurm_banking.so
+
 %doc
 
 

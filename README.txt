@@ -14,6 +14,7 @@ _________________
 3. Build Requirements
 4. Building
 .. 1. On Savio
+..... 1. RPM
 .. 2. NixOS
 .. 3. Help
 5. Usage
@@ -172,6 +173,22 @@ _________________
 [rustup.rs] <https://rustup.rs>
 
 [Usage] See section 5
+
+4.1.1 RPM
+---------
+
+  You can also build an RPM. The binary RPM must be built on the
+  environment where it will be installed and requires that the build
+  dependencies are available when compiling. The build dependencies are
+  listed in the RPM except for `cargo' (the Rust build tool), which is
+  installed in the prep phase.
+
+  To build the RPM:
+  ,----
+  | make rpm
+  `----
+
+  Then the RPM will be located in `rpmbuild/RPMS/x86_64/'.
 
 
 4.2 NixOS
